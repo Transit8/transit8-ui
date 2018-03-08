@@ -1,11 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Home from '../components/Home.vue'
-import Register from '../components/Register.vue'
+import Home from '../components/fragments/Home.vue'
+import Signup from '../components/auth/Signup.vue'
 import NotesEdit from '../components/Notes.edit'
 import NotesShow from '../components/Notes.show'
-import store from '../services/store.service'
+import authorization from '../services/authorization'
 
 Vue.use(Router)
 
@@ -34,22 +34,20 @@ const router = new Router({
         }
       ]
     }, {
-      path: '/auth',
-      name: 'register',
-      component: Register,
+      path: '/signup',
+      name: 'signup',
+      component: Signup
     }, {
-      path: '*',
-      redirect: '/auth'
+      path: '/'
     }
   ]
 })
 
 router.beforeEach((to, from, next) => {
-  if (store.auth.isSignedIn()) {
-    store.auth.loadUserData()
-    
+  if (authorization.isSignedIn()) {
+    // authorization.loadUserData()
     next()
-  } else if (store.auth.isSignInPending()) {
+  } else if (authorization.isSignInPending()) {
     next()
   } else {
     next()

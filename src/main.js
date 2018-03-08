@@ -4,6 +4,7 @@ import Vue from 'vue'
 import router from './router'
 import App from './App'
 import _ from 'lodash'
+import '@/styles/element-variables.scss'
 
 Vue.config.productionTip = false
 
