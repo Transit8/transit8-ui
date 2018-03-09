@@ -2,10 +2,10 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import Home from '../components/fragments/Home.vue'
-import Signup from '../components/auth/Signup.vue'
+import GetBrowser from '../components/auth/GetBrowser.vue'
+import Login from '../components/auth/Login.vue'
 import NotesEdit from '../components/Notes.edit'
 import NotesShow from '../components/Notes.show'
-import authorization from '../services/authorization'
 
 Vue.use(Router)
 
@@ -34,24 +34,26 @@ const router = new Router({
         }
       ]
     }, {
-      path: '/signup',
-      name: 'signup',
-      component: Signup
+      path: '/getBrowser',
+      name: 'getBrowser',
+      component: GetBrowser
     }, {
-      path: '/'
+      path: '/login',
+      name: 'login',
+      component: Login
     }
   ]
 })
 
-router.beforeEach((to, from, next) => {
-  if (authorization.isSignedIn()) {
-    // authorization.loadUserData()
-    next()
-  } else if (authorization.isSignInPending()) {
-    next()
-  } else {
-    next()
-  }
-})
+// router.beforeEach((to, from, next) => {
+//   if (authorization.isLoggedIn()) {
+//     // authorization.loadUserData()
+//     next()
+//   } else if (authorization.isSignInPending()) {
+//     next()
+//   } else {
+//     next()
+//   }
+// })
 
 export default router
