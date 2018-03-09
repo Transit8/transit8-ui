@@ -7,9 +7,9 @@
 </template>
 
 <script>
-import Navigation from '@/components/Navigation'
-import Home from '@/components/fragments/Home'
-import FootBar from '@/components/fragments/FootBar'
+import Navigation from '@/components/nav/Navigation'
+import Home from '@/components/home/Home'
+import FootBar from '@/components/home/FootBar'
 
 export default {
   name: 'App',

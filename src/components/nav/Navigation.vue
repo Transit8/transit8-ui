@@ -5,7 +5,7 @@
       <router-link class="fa-rotate-270" to="/" style="font-size:2.6em; color:Tomato">
         <i class="fas fa-bicycle"></i>
       </router-link>
-      <router-link class="fa-rotate-270" to="/" style="margin-left: -20px; margin-bottom: 0px; font-size:2.6em; color:Tomato">
+      <router-link class="fa-rotate-270" to="/" style="margin-left: -25px; margin-bottom: 0px; font-size:2.6em; color:Tomato">
         <i class="fas fa-bicycle"></i>
       </router-link>
     </div>
@@ -16,13 +16,20 @@
     </div>
   </div>
   <div id="navMenu" class="navbar-menu">
+    <div class="navbar-start">
+      <a href="http://localhost:8888/"
+        class="navbar-item"
+        target="_blank">
+          Blockstack Browser
+      </a>
+    </div>
     <nav-item-auth />
   </div>
 </nav>
 </template>
 
 <script>
-import NavItemAuth from '@/components/fragments/NavItemAuth'
+import NavItemAuth from '@/components/nav/NavItemAuth'
 
 export default {
   name: 'Navigation',

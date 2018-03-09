@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import Cards from '@/components/fragments/Cards'
+import Cards from '@/components/home/Cards'
 
 export default {
   data: () => ({

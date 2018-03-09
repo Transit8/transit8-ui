@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Home from '../components/fragments/Home.vue'
+import Home from '../components/home/Home.vue'
 import GetBrowser from '../components/auth/GetBrowser.vue'
 import Login from '../components/auth/Login.vue'
 import NotesEdit from '../components/Notes.edit'
