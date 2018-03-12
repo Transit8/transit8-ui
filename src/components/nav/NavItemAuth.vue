@@ -4,10 +4,15 @@
   <nav-item-dev-tools v-if="debug"/>
   <div class="navbar-item has-dropdown" v-bind:class="{ 'is-active': isActive }" @click="isActive = ! isActive">
     <div v-if="loggedIn" class="navbar-link">
+      <div v-if="hasAvatar">
       <img
-        class="rounded-circle avatar"
+        class="avatar"
         v-bind:src="avatarUrl"/>
-        {{ name }}
+      </div>
+      <div v-else class="fa-large avatar">
+        <i class="fas fa-user"></i>
+      </div>
+      {{ name }}
     </div>
     <div v-if="loggedIn" class="navbar-dropdown">
       <a @click="logout"
@@ -44,6 +49,7 @@ export default {
       debug: false,
       loggedIn: false,
       avatarUrl: '',
+      hasAvatar: false,
       name: '',
       isActive: false,
       cantLogIn: false,
@@ -58,14 +64,10 @@ export default {
     }
     bulma.initDropdowns()
     if (authorization.isLoggedIn()) {
-      this.avatarUrl = authorization.person.avatarUrl()
-      this.name = authorization.person.name()
-      this.loggedIn = true
+      this.setLoginData()
     } else if (authorization.isPending()) {
       authorization.handlePending().then((data) => {
-        this.avatarUrl = authorization.person.avatarUrl()
-        this.name = authorization.person.name()
-        this.loggedIn = true
+        this.setLoginData()
       })
     }
     authorization.canLogIn().then((data) => {
@@ -75,9 +77,17 @@ export default {
     })
   },
   methods: {
+    setLoginData: function () {
+      this.avatarUrl = authorization.avatarUrl
+      if (this.avatarUrl && this.avatarUrl.length > 0) {
+        this.hasAvatar = true
+      }
+      this.name = authorization.name
+      this.loggedIn = true
+    },
     logout: function (event) {
       authorization.logout()
-    },
+    }
   },
   components: {
     NavItemBlockstack,
@@ -92,5 +102,8 @@ export default {
   width: 40px;
   height: 40px;
   margin-right: 10px;
+}
+.fa-large {
+  font-size:2em;
 }
 </style>

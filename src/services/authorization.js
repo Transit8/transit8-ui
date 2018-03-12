@@ -3,9 +3,13 @@ import axios from 'axios'
 
 const authorization = {
   loadUserData: function () {
-    var userData = blockstack.loadUserData()
-    if (userData && userData.profile) {
-      this.person = new blockstack.Person(userData.profile)
+    this.userData = blockstack.loadUserData()
+    let person = new blockstack.Person(this.userData.profile)
+    if (this.userData.profile && this.userData.profile.givenName && this.userData.profile.givenName.length > 0) {
+      this.name = person.name()
+      this.avatarUrl = person.avatarUrl()
+    } else {
+      this.name = this.userData.username
     }
   },
   handlePending: function () {
