@@ -2,8 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import Home from '../components/home/Home.vue'
-import GetBrowser from '../components/auth/GetBrowser.vue'
-import Login from '../components/auth/Login.vue'
 
 Vue.use(Router)
 
@@ -14,14 +12,6 @@ const router = new Router({
       name: 'home',
       meta: { requiresAuth: true },
       component: Home
-    }, {
-      path: '/getBrowser',
-      name: 'getBrowser',
-      component: GetBrowser
-    }, {
-      path: '/login',
-      name: 'login',
-      component: Login
     }
   ]
 })

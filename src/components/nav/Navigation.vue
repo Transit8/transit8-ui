@@ -23,22 +23,36 @@
           Blockstack Browser
       </a>
     </div>
-    <nav-item-auth />
+    <div class="navbar-end">
+      <nav-item-blockstack v-if="debug"/>
+      <nav-item-dev-tools v-if="debug"/>
+      <bright-block-auth />
+    </div>
   </div>
 </nav>
 </template>
 
 <script>
-import NavItemAuth from '@/components/nav/NavItemAuth'
+import BrightBlockAuth from '@/components/auth/BrightBlockAuth'
+import NavItemBlockstack from '@/components/nav/NavItemBlockstack'
+import NavItemDevTools from '@/components/nav/NavItemDevTools'
 
 export default {
   name: 'Navigation',
   data: () => {
     return {
+      debug: false
+    }
+  },
+  mounted () {
+    if (this.$route.query && this.$route.query.debug) {
+      this.debug = true
     }
   },
   components: {
-    NavItemAuth
+    BrightBlockAuth,
+    NavItemBlockstack,
+    NavItemDevTools
   }
 }
 </script>
