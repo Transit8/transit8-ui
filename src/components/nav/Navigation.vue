@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import BrightBlockAuth from '@/components/auth/BrightBlockAuth'
+import BrightBlockAuth from 'bright-block-auth'
 import NavItemBlockstack from '@/components/nav/NavItemBlockstack'
 import NavItemDevTools from '@/components/nav/NavItemDevTools'
 
