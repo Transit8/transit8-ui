@@ -1,7 +1,7 @@
 {
-  "name": "brightblock",
+  "name": "brightblock ui",
   "version": "1.0.0",
-  "description": "Rebuild of brightblock.org using vuejs",
+  "description": "Brighton Blockchain Website - Decentralised applications built on blockstack infrastructure.",
   "author": "Mike Cohen <mjoecohen@gmail.com>",
   "private": true,
   "scripts": {

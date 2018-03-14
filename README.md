@@ -1,6 +1,6 @@
 # brightbloc
 
-> Rebuild of brightbloc.org using vuejs
+> Brighton Blockchain Website - Decentralised applications built on blockstack infrastructure.
 
 ## Build Setup
 
@@ -30,4 +30,3 @@ npm test
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
 For information on authors experience of switching to vuejs see [guide](https://mijoco.atlassian.net/wiki/spaces/WIK/blog/2018/01/27/20021249/Learning+Vuejs).
-
