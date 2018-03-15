@@ -1,6 +1,6 @@
 {
-  "name": "brightblock ui",
-  "version": "1.0.0",
+  "name": "brightblock-ui",
+  "version": "1.0.2",
   "description": "Brighton Blockchain Website - Decentralised applications built on blockstack infrastructure.",
   "author": "Mike Cohen <mjoecohen@gmail.com>",
   "private": true,
@@ -16,7 +16,7 @@
   "dependencies": {
     "axios": "^0.17.1",
     "blockstack": "^0.15.1",
-    "bright-block-auth": "^1.0.0",
+    "bright-block-auth": "^1.0.7",
     "bulma": "^0.6.2",
     "lodash": "^4.17.5",
     "moment": "^2.21.0",
