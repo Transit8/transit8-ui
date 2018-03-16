@@ -8,20 +8,17 @@
       </div>
     </div>
   </section>
-  <cards/>
   <tipe-content />
 </div>
 </template>
 
 <script>
-import Cards from '@/components/home/Cards'
 import TipeContent from '@/components/home/TipeContent'
 
 export default {
   data: () => ({
   }),
   components: {
-    Cards,
     TipeContent
   }
 }

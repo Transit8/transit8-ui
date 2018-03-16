@@ -26,11 +26,7 @@
     <div class="navbar-end">
       <nav-item-blockstack v-if="debug"/>
       <nav-item-dev-tools v-if="debug"/>
-      <router-link
-        class="navbar-item"
-        to="/content">
-          Content Block
-      </router-link>
+      <tipe-nav-links />
       <bright-block-auth />
     </div>
   </div>
@@ -42,6 +38,7 @@ import BrightBlockAuth from 'bright-block-auth/src/components/auth/BrightBlockAu
 import NavItemBlockstack from '@/components/nav/NavItemBlockstack'
 import NavItemDevTools from '@/components/nav/NavItemDevTools'
 import bulma from '@/services/bulma'
+import TipeNavLinks from './TipeNavLinks'
 
 export default {
   name: 'Navigation',
@@ -60,7 +57,8 @@ export default {
   components: {
     BrightBlockAuth,
     NavItemBlockstack,
-    NavItemDevTools
+    NavItemDevTools,
+    TipeNavLinks
   }
 }
 </script>

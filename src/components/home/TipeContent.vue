@@ -13,14 +13,13 @@ import tipes from '@/services/tipes'
 export default {
   data: () => {
     return {
-      homepage: 'nothing yet',
+      homepage: '<i class="fas fa-cog fa-spin"></i>',
     }
   },
   mounted () {
     tipes.fetch().then((response) => {
       if (response) {
         this.homepage = response.data.blocks[0].value
-        // this.homepage = text1.replace('{{link1}}', response.data.blocks[1].value)
       }
     })
   }
