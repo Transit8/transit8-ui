@@ -11,8 +11,4 @@ export default {
 </script>
 
 <style>
-.container {
-  margin-top: 20px;
-  margin-bottom: 50px;
-}
 </style>
