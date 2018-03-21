@@ -1,0 +1,27 @@
+<template>
+<section class="page">
+  <div class="columns">
+    <div class="column is-one-fifth">
+      <account-side-bar />
+    </div>
+    <div class="column">
+      <router-view></router-view>
+    </div>
+  </div>
+</section>
+</template>
+
+<script>
+import AccountSideBar from '@/components/account/AccountSideBar'
+
+export default {
+  data: () => ({
+  }),
+  components: {
+    AccountSideBar
+  }
+}
+</script>
+
+<style>
+</style>

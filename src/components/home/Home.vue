@@ -1,5 +1,5 @@
 <template>
-<div class="page">
+<div>
   <section class="hero is-primary">
     <div class="hero-body">
       <div class="container">
@@ -8,7 +8,7 @@
       </div>
     </div>
   </section>
-  <tipe-content />
+  <tipe-content class="page"/>
 </div>
 </template>
 
@@ -24,5 +24,11 @@ export default {
 }
 </script>
 
-<style>
+<style lang="sass" src="bulma">
+$blue: #72d0eb;
+$primary: #000;
+$primary: $blue;
+$danger: $blue;
+@import '~bulma/sass/utilities/_all'
+@import '~bulma/sass/base/_all'
 </style>

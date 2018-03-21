@@ -3,11 +3,18 @@
   <div class="navbar-link">
     Dev Tools
   </div>
+
   <div class="navbar-dropdown">
     <div class="navbar-item is-size-6 has-text-primary">
       Vuejs
     </div>
     <hr class="navbar-divider">
+    <a
+      href="https://012.vuejs.org/guide/best-practices.html#Communication_Between_Instances"
+      class="navbar-item"
+      target="_blank">
+      Vue Best Practices
+    </a>
     <a
       href="https://vuejs.org/v2/style-guide/#Component-style-scoping-essential"
       class="navbar-item"

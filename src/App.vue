@@ -31,6 +31,9 @@ export default {
 p {
   margin-bottom: 15px;
 }
+.container {
+  padding-top: 20px;
+}
 .main {
   min-height: calc(100vh - 90px);
 }

@@ -2,7 +2,9 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import Home from '../components/home/Home'
-import Content from '../components/home/Content'
+import Account from '../components/account/Account'
+import AccountProfile from '../components/account/AccountProfile'
+import AccountLookup from '../components/account/AccountLookup'
 import authorization from 'bright-block-auth'
 import Login from 'bright-block-auth/src/components/auth/Login'
 
@@ -15,10 +17,19 @@ const router = new Router({
       name: 'home',
       component: Home
     }, {
-      path: '/content',
-      name: 'content',
+      path: '/account',
+      name: 'account',
       meta: { requiresAuth: true },
-      component: Content
+      component: Account,
+      children: [
+        {
+          path: '/account/profile',
+          component: AccountProfile
+        }, {
+          path: '/account/lookup',
+          component: AccountLookup
+        }
+      ]
     }, {
       path: '/login',
       name: 'login',
