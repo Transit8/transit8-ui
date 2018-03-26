@@ -5,6 +5,9 @@
       <div class="container">
         <h1 class="title is-1">Brighton Blockchain</h1>
         <h2 class="subtitle is-3">Building Decentralised Applications</h2>
+        <h3 class="subtitle is-1">
+          <button class="button"><a href="dcms.brightblock.org">Content Block</a></button>
+        </h3>
       </div>
     </div>
   </section>
@@ -25,10 +28,4 @@ export default {
 </script>
 
 <style lang="sass" src="bulma">
-$blue: #72d0eb;
-$primary: #000;
-$primary: $blue;
-$danger: $blue;
-@import '~bulma/sass/utilities/_all'
-@import '~bulma/sass/base/_all'
 </style>

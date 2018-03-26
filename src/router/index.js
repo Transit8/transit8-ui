@@ -58,15 +58,4 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-// router.beforeEach((to, from, next) => {
-//   if (authorization.isLoggedIn()) {
-//     // authorization.loadUserData()
-//     next()
-//   } else if (authorization.isSignInPending()) {
-//     next()
-//   } else {
-//     next()
-//   }
-// })
-
 export default router

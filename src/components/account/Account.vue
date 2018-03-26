@@ -4,7 +4,7 @@
     <div class="column is-one-fifth">
       <account-side-bar />
     </div>
-    <div class="column">
+    <div class="column is-four-fifths">
       <router-view></router-view>
     </div>
   </div>
