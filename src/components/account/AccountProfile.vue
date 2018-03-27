@@ -95,6 +95,7 @@
 import authorization from 'bright-block-auth'
 
 export default {
+  name: 'AccountProfile',
   data () {
     return {
       account: {},

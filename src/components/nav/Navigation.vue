@@ -27,7 +27,7 @@
       <nav-item-blockstack v-if="debug"/>
       <nav-item-dev-tools v-if="debug"/>
       <tipe-nav-links />
-      <bright-block-auth />
+      <bright-block-auth showAccountLink="true"/>
     </div>
   </div>
 </nav>

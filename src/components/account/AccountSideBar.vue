@@ -16,6 +16,12 @@
         Lookup
       </router-link>
     </li>
+    <li>
+      <router-link
+        to="/account/zonefile">
+        Zonefile
+      </router-link>
+    </li>
   </ul>
 </aside>
 </template>
