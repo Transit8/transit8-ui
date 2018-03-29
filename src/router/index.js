@@ -2,10 +2,12 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import Home from '../components/home/Home'
-import Account from '../components/account/Account'
-import AccountProfile from '../components/account/AccountProfile'
-import AccountLookup from '../components/account/AccountLookup'
-import AccountZonefile from '../components/account/AccountZonefile'
+import Account from 'bright-block-auth/src/components/account/Account'
+import AccountUserData from 'bright-block-auth/src/components/account/AccountUserData'
+import AccountLookup from 'bright-block-auth/src/components/account/AccountLookup'
+import AccountDisplay from 'bright-block-auth/src/components/account/AccountDisplay'
+import AccountFiles from 'bright-block-auth/src/components/account/AccountFiles'
+
 import authorization from 'bright-block-auth'
 import Login from 'bright-block-auth/src/components/auth/Login'
 
@@ -24,14 +26,22 @@ const router = new Router({
       component: Account,
       children: [
         {
-          path: '/account/profile',
-          component: AccountProfile
+          path: '/account/userData',
+          name: 'userData',
+          component: AccountUserData
         }, {
           path: '/account/lookup',
           component: AccountLookup
         }, {
-          path: '/account/zonefile',
-          component: AccountZonefile
+          path: '/account/display/:username',
+          name: 'display',
+          props: true,
+          component: AccountDisplay
+        }, {
+          path: '/account/files/:username/:appUrl/:gaiaUrl',
+          name: 'files',
+          props: true,
+          component: AccountFiles
         }
       ]
     }, {

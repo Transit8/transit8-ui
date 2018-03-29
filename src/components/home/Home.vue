@@ -19,8 +19,14 @@
 import TipeContent from '@/components/home/TipeContent'
 
 export default {
-  data: () => ({
-  }),
+  data () {
+    return {
+      prof: {},
+      state: {}
+    }
+  },
+  mounted () {
+  },
   components: {
     TipeContent
   }

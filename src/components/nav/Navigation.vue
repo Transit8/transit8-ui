@@ -8,6 +8,9 @@
       <router-link class="fa-rotate-270" to="/" style="margin-left: -25px; margin-bottom: 0px; font-size:2.6em; color:Tomato">
         <i class="fas fa-bicycle"></i>
       </router-link>
+      <router-link to="/" style="font-size:1.6em; color:Tomato">
+        Bright Block
+      </router-link>
     </div>
     <div class="navbar-burger" data-target="navMenu">
       <span></span>
@@ -17,13 +20,13 @@
   </div>
   <div id="navMenu" class="navbar-menu">
     <div class="navbar-start">
+    </div>
+    <div class="navbar-end">
       <a href="http://localhost:8888/"
         class="navbar-item"
         target="_blank">
           Blockstack Browser
       </a>
-    </div>
-    <div class="navbar-end">
       <nav-item-blockstack v-if="debug"/>
       <nav-item-dev-tools v-if="debug"/>
       <tipe-nav-links />

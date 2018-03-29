@@ -28,6 +28,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     },
     clientLogLevel: 'warning',
     historyApiFallback: {
+      disableDotRule: true,
       rewrites: [
         { from: /.*/, to: path.posix.join(config.dev.assetsPublicPath, 'index.html') }
       ]
