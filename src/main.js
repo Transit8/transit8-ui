@@ -11,6 +11,7 @@ Vue.config.productionTip = false
 Vue.filter('truncate', function (value) {
   return _.truncate(value, { length: 45, omission: '...' })
 })
+Vue.prototype.$appName = 'My App'
 
 /* eslint-disable no-new */
 new Vue({

@@ -9,7 +9,7 @@
         <i class="fas fa-bicycle"></i>
       </router-link>
       <router-link to="/" style="font-size:1.6em; color:Tomato">
-        Bright Block
+        BrightBlock
       </router-link>
     </div>
     <div class="navbar-burger" data-target="navMenu">
@@ -22,14 +22,16 @@
     <div class="navbar-start">
     </div>
     <div class="navbar-end">
+    <!--
       <a href="http://localhost:8888/"
         class="navbar-item"
         target="_blank">
           Blockstack Browser
       </a>
+      -->
       <nav-item-blockstack v-if="debug"/>
       <nav-item-dev-tools v-if="debug"/>
-      <tipe-nav-links />
+      <!-- <tipe-nav-links /> -->
       <bright-block-auth showAccountLink="true"/>
     </div>
   </div>
