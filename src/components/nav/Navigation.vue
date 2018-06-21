@@ -3,13 +3,13 @@
   <div class="navbar-brand">
     <div class="navbar-item">
       <router-link class="fa-rotate-270" to="/" style="font-size:2.6em; color:Tomato">
-        <i class="fas fa-bicycle"></i>
+        <!-- <i class="fas fa-bicycle"></i> -->
       </router-link>
-      <router-link class="fa-rotate-270" to="/" style="margin-left: -25px; margin-bottom: 0px; font-size:2.6em; color:Tomato">
+      <router-link class="fa-rotate-270" to="/" style="margin-left: 25px; margin-bottom: 0px; font-size:2.6em; color:Tomato">
         <i class="fas fa-bicycle"></i>
       </router-link>
       <router-link to="/" style="font-size:1.6em; color:Tomato">
-        BrightBlock
+        Cosmos
       </router-link>
     </div>
     <div class="navbar-burger" data-target="navMenu">

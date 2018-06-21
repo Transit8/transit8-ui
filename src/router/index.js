@@ -9,6 +9,8 @@ import AccountDisplay from 'bright-block-auth/src/components/account/AccountDisp
 import AccountFiles from 'bright-block-auth/src/components/account/AccountFiles'
 
 import Iota from '../components/iota/Iota'
+import Eth from '../components/eth/Eth'
+import DataTypes from '../components/eth/DataTypes'
 
 import authorization from 'bright-block-auth'
 import Login from 'bright-block-auth/src/components/auth/Login'
@@ -26,6 +28,16 @@ const router = new Router({
       name: 'iota',
       meta: { requiresAuth: false },
       component: Iota,
+    }, {
+      path: '/types',
+      name: 'types',
+      meta: { requiresAuth: false },
+      component: DataTypes,
+    }, {
+      path: '/eth',
+      name: 'eth',
+      meta: { requiresAuth: false },
+      component: Eth,
     }, {
       path: '/account',
       name: 'account',
