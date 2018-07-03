@@ -7,7 +7,10 @@
     </div>
     <div class="column is-four-fifths">
       <h1 class="title is-1">Explore Lightning</h1>
-      <router-view :key="$route.params.action"></router-view>
+    </div>
+    <div class="column is-four-fifths" v-for="node in nodes" :key="node.name">
+      <lightning-node />
+      <!-- <router-view :key="$route.params.action"></router-view> -->
     </div>
   </div>
 </section>

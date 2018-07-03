@@ -10,6 +10,7 @@
         List Nodes
       </router-link>
     </li>
+    <!--
     <li>
       <router-link
         :to="`/lightning/nodes/${node}/getNodeInfo`">
@@ -22,6 +23,7 @@
         Get Info
       </router-link>
     </li>
+    -->
     <li>
       <a href="#" @click="describeGraph()">
         Describe Graph
