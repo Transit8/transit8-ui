@@ -16,9 +16,8 @@
 </template>
 
 <script>
-import SideBar from '@/components/SideBar'
-import IotaApiSideBar from '@/components/iota/IotaApiSideBar'
-import iotaApi from '@/services/iotaApiService'
+import IotaApiSideBar from '@/components/experimental/iota/IotaApiSideBar'
+import iotaApi from '@/services/experimental/iotaApiService'
 import VueJsonPretty from 'vue-json-pretty'
 
 export default {
@@ -47,7 +46,6 @@ export default {
     },
   },
   components: {
-    SideBar,
     IotaApiSideBar,
     VueJsonPretty
   }

@@ -45,9 +45,8 @@
 </template>
 
 <script>
-import SideBar from '@/components/SideBar'
-import EthApiSideBar from '@/components/eth/EthApiSideBar'
-import ethService from '@/services/ethApiService'
+import EthApiSideBar from '@/components/experimental/eth/EthApiSideBar'
+import ethService from '@/services/experimental/ethApiService'
 import VueJsonPretty from 'vue-json-pretty'
 
 export default {
@@ -87,7 +86,6 @@ export default {
     },
   },
   components: {
-    SideBar,
     EthApiSideBar,
     VueJsonPretty
   }

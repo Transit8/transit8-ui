@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import EthApiSideBar from '@/components/eth/EthApiSideBar'
+import EthApiSideBar from '@/components/experimental/eth/EthApiSideBar'
 import VueJsonPretty from 'vue-json-pretty'
 
 export default {

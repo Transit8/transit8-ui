@@ -1,14 +1,17 @@
 <template>
 <aside class="menu">
   <h3 class="menu-label">
-    Manage Content
+    Manage Provenance
   </h3>
   <ul class="menu-list">
     <li>
-      <a href="#" @click="clickName(name)">node info</a>
+      <a href="#/provenance/create">Create Provenance Records</a>
     </li>
     <li>
-      <a href="#" @click="clickName(name)">addresses</a>
+      <a href="#/provenance/list">List Provenance Records</a>
+    </li>
+    <li>
+      <a href="#" @click="clickName(name)">galleries</a>
     </li>
   </ul>
 </aside>
@@ -25,5 +28,4 @@ export default {
 </script>
 
 <style lang="scss">
-    @import "../../node_modules/bulma/bulma.sass";
 </style>

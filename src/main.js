@@ -5,6 +5,7 @@ import router from './router'
 import App from './App'
 import _ from 'lodash'
 import '@/styles/main.scss'
+// import Vuelidate from 'vuelidate'
 
 Vue.config.productionTip = false
 
@@ -12,6 +13,8 @@ Vue.filter('truncate', function (value) {
   return _.truncate(value, { length: 45, omission: '...' })
 })
 Vue.prototype.$appName = 'My App'
+
+// Vue.use(Vuelidate)
 
 /* eslint-disable no-new */
 new Vue({
