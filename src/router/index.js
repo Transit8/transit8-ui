@@ -15,9 +15,10 @@ import DataTypes from '../components/experimental/eth/DataTypes'
 import Provenance from '../components/provenance/Provenance'
 import ProvenanceCreate from '../components/provenance/ProvenanceCreate'
 import ProvenanceRegister from '../components/provenance/ProvenanceRegister'
+import ProvenanceList from '../components/provenance/ProvenanceList'
 
 import Lightning from '@/components/lightning/Lightning'
-import LightningNodes from '@/components/lightning/LightningNodes'
+// import LightningNodes from '@/components/lightning/LightningNodes'
 
 import authorization from 'bright-block-auth'
 import Login from 'bright-block-auth/src/components/auth/Login'
@@ -30,19 +31,6 @@ const router = new Router({
       path: '/',
       name: 'home',
       component: Home
-    }, {
-      path: '/lightning',
-      name: 'lightning',
-      meta: { requiresAuth: true },
-      props: true,
-      component: Lightning,
-      children: [
-        {
-          path: '/lightning/nodes/:node/:action',
-          name: 'lightningNodes',
-          component: LightningNodes
-        }
-      ]
     }, {
       path: '/provenance',
       name: 'provenance',
@@ -57,8 +45,25 @@ const router = new Router({
           path: '/provenance/create',
           name: 'provenanceCreate',
           component: ProvenanceCreate,
+        }, {
+          path: '/provenance/list',
+          name: 'provenanceList',
+          component: ProvenanceList,
         }
       ]
+    }, {
+      path: '/lightning',
+      name: 'lightning',
+      meta: { requiresAuth: true },
+      props: true,
+      component: Lightning,
+      // children: [
+      //  {
+      //    path: '/lightning/nodes/:node/:action',
+      //    name: 'lightningNodes',
+      //    component: LightningNodes
+      //  }
+      // ]
     }, {
       path: '/iota',
       name: 'iota',

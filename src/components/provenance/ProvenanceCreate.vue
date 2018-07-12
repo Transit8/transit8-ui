@@ -1,9 +1,5 @@
 <template>
-<div class="columns">
-  <div class="column is-one-fifth">
-    <provenance-actions/>
-  </div>
-  <div class="column">
+<div class="column">
   <h1 class="title is-1">Record of Ownership</h1>
   <form id="create-provenance" @submit="checkForm">
 
@@ -154,7 +150,6 @@
       </div>
     </div>
   </form>
-  </div>
 </div>
 </template>
 
@@ -164,6 +159,7 @@ import ProvenanceCreateImages from '@/components/provenance/ProvenanceCreateImag
 import provenanceService from '@/services/provenance/ProvenanceService'
 
 export default {
+  name: 'ProvenanceCreate',
   data () {
     return {
       title: 'Dreams of things to come',

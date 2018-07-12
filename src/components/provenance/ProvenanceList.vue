@@ -1,11 +1,17 @@
 <template>
-<div class="columns">
-  <div class="column is-one-fifth">
-    <provenance-actions/>
-  </div>
-  <div class="column">
-  <router-view></router-view>
-  </div>
+<div class="column">
+  <h1 class="title is-1">Provenance Records</h1>
+  <p>Your root file was created on: {{ niceTime(rootFile.created) }} and contains;</p>
+
+  <ul class="menu-list" v-if="rootFile">
+    <li v-for="record in rootFile.records"
+    :key="record.id"
+    >{{ record.title }}  [id: {{ record.id }}]
+      <span v-if="record.registered">registered on blockchain</span>
+      <span v-else><a :href="'#/provenance/register/'+record.id">register on blockchain</a></span>
+      (<i>{{ niceTime(record.id) }}</i>)
+    </li>
+  </ul>
 </div>
 </template>
 

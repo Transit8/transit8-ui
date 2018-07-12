@@ -1,13 +1,8 @@
 <template>
-<div class="columns">
-  <div class="column is-one-fifth">
-    <provenance-actions/>
-  </div>
   <div class="column">
     <h1 class="title is-1">Record of Ownership Saved</h1>
     <p class="subtitle is-3">Next step is to register the record on the blockchain</p>
-    <p class="subtitle is-3">Next step is to register the record on the blockchain</p>
-    <form id="create-provenance" @submit="checkForm">
+    <form id="create-provenance">
       <div class="field">
         <label class="label">Timestamp Proofs</label>
         <div class="control">
@@ -20,7 +15,6 @@
         </div>
       </div>
     </form>
-
     <div class="card" v-if="provenanceRecord">
       <div class="card-image" v-if="provenanceRecord.artwork">
         <figure class="image">
@@ -93,8 +87,6 @@
         </div>
       </div>
     </div>
-
-  </div>
 </div>
 </template>
 

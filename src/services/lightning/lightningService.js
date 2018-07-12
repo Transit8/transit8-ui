@@ -7,7 +7,7 @@ const GRPC_SERVER_PROT = 'http'
 /**
  *  The service is a client to the brightblock sever side grpc client.
 **/
-const lightningPeersService = {
+const lightningService = {
   makeCall: function (node, command, args) {
     let callInfo = {
       method: 'get',
@@ -26,19 +26,19 @@ const lightningPeersService = {
         })
         .catch(e => {
           console.log('Unable to fulfil request' + command, e)
-          resolve('Unable to fulfil request' + command)
+          resolve(e.response.data)
         })
     })
   },
-  node: function (nodeName) {
-    var node = {name: nodeName}
+  getNode: function (nodeName) {
+    let node = { name: nodeName }
     return new Promise(function (resolve) {
-      lightningPeersService.makeCall(nodeName, 'getInfo')
+      lightningService.makeCall(node.name, 'getInfo')
         .then(function (info) {
-          if (nodeName === 'alice') {
+          if (node.name === 'alice') {
             node.peerAddress = 'localhost:10011'
             node.rpcAddress = 'localhost:10001'
-          } else if (nodeName === 'bob') {
+          } else if (node.name === 'bob') {
             node.peerAddress = 'localhost:10012'
             node.rpcAddress = 'localhost:10002'
           }
@@ -46,25 +46,7 @@ const lightningPeersService = {
           node.numPendingChannels = info.numPendingChannels_
           node.numActiveChannels = info.numActiveChannels_
           node.numPeers = info.numPeers_
-          lightningPeersService.makeCall(node.name, 'walletbalance')
-            .then(function (balance) {
-              node.balance = balance.confirmedBalance_
-              node.balanceTotal = balance.totalBalance_
-              lightningPeersService.makeCall(node.name, 'getNodeInfo', [node.pubkey])
-                .then(function (nodeInfo) {
-                  node.alias = nodeInfo.node_.alias_
-                  node.addresses = nodeInfo.node_.addresses_
-                  if (node.numPeers > 0) {
-                    lightningPeersService.makeCall(node.name, 'listPeers')
-                      .then(function (peerInfo) {
-                        node.peers = peerInfo.peers_
-                        resolve(node)
-                      })
-                  } else {
-                    resolve(node)
-                  }
-                })
-            })
+          resolve(node)
         }).catch(function (e) {
           console.log('error get info for node: ' + node, e)
           resolve({error: 'Unable to create root file'})
@@ -72,41 +54,47 @@ const lightningPeersService = {
     })
   },
   getInfo: function () {
-    return lightningPeersService.makeCall('getInfo')
+    return lightningService.makeCall('getInfo')
   },
-  listPeers: function () {
-    return lightningPeersService.makeCall('listPeers')
+  showInfo: function (nodeName, info) {
+    if (info === 'listPeers') {
+      return lightningService.makeCall(nodeName, 'listPeers')
+    } else if (info === 'walletbalance') {
+      return lightningService.makeCall(nodeName, 'walletbalance')
+    } else if (info === 'pendingChannels') {
+      return lightningService.makeCall(nodeName, 'pendingChannels')
+    } else if (info === 'listChannels') {
+      return lightningService.makeCall(nodeName, 'listChannels')
+    } else if (info === 'closedChannels') {
+      return lightningService.makeCall(nodeName, 'closedChannels')
+    } else if (info === 'listInvoices') {
+      return lightningService.makeCall(nodeName, 'listInvoices')
+    }
+  },
+  addInvoice: function (nodeName, value, descriptionHash, memo) {
+    return lightningService.makeCall(nodeName, 'addInvoice', [value, descriptionHash, memo])
   },
   describeGraph: function (nodeName) {
-    return lightningPeersService.makeCall(nodeName, 'describeGraph')
+    return lightningService.makeCall(nodeName, 'describeGraph')
   },
   getNodeInfo: function (pubkey) {
-    return lightningPeersService.makeCall('getNodeInfo', [pubkey])
+    return lightningService.makeCall('getNodeInfo', [pubkey])
   },
   openChannel: function (name, pubkey, amt) {
-    return lightningPeersService.makeCall(name, 'openChannelSync', [pubkey, amt])
-  },
-  pendingChannels: function (name, pubkey, amt) {
-    return lightningPeersService.makeCall(name, 'pendingChannels')
-  },
-  listChannels: function (name, pubkey, amt) {
-    return lightningPeersService.makeCall(name, 'listChannels')
-  },
-  closedChannels: function (name, pubkey, amt) {
-    return lightningPeersService.makeCall(name, 'closedChannels')
+    return lightningService.makeCall(name, 'openChannelSync', [pubkey, amt])
   },
   /**
    * addr Lightning address of the peer, in the format host:port
    * pubkey pub_key of the node to connect to.
   **/
   connectPeer: function (name, addr, pubkey) {
-    return lightningPeersService.makeCall(name, 'connect', [addr, pubkey])
+    return lightningService.makeCall(name, 'connect', [addr, pubkey])
   },
   /**
    *  pubkey pub_key of the node to connect to.
   **/
   disconnectPeer: function (name, pubKey) {
-    return lightningPeersService.makeCall(name, 'disconnect', [pubKey])
+    return lightningService.makeCall(name, 'disconnect', [pubKey])
   },
 }
-export default lightningPeersService
+export default lightningService
