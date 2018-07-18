@@ -6,10 +6,6 @@ import {
 } from 'blockstack'
 import _ from 'lodash'
 
-const ROOT_FILE_GAIA_NAME = 'records_v01.json'
-const ROOT_FILE_LOCAL_STORAGE_NAME = 'rootFile'
-const PROVENANCE_FILE_GAIA_SUBPATH = 'record_'
-const PROVENANCE_FILE_LOCAL_STORAGE_SUBPATH = 'provenanceRecords'
 
 /**
  *  Service manages a file structure which has a root file and a set of provenance records.
@@ -19,18 +15,22 @@ const PROVENANCE_FILE_LOCAL_STORAGE_SUBPATH = 'provenanceRecords'
  *  digital artwork if one exists and documenatry evidence.
 **/
 const provenanceService = {
+  ROOT_FILE_GAIA_NAME: 'records_v01.json',
+  ROOT_FILE_LOCAL_STORAGE_NAME: 'rootFile',
+  PROVENANCE_FILE_GAIA_SUBPATH: 'record_',
+  PROVENANCE_FILE_LOCAL_STORAGE_SUBPATH: 'provenanceRecords',
   getRootFile: function () {
-    return JSON.parse(localStorage.getItem(ROOT_FILE_LOCAL_STORAGE_NAME))
+    return JSON.parse(localStorage.getItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_NAME))
   },
   setRootFile: function (file, isStringy) {
     if (!isStringy) {
-      localStorage.setItem(ROOT_FILE_LOCAL_STORAGE_NAME, JSON.stringify(file))
+      localStorage.setItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_NAME, JSON.stringify(file))
     } else {
-      localStorage.setItem(ROOT_FILE_LOCAL_STORAGE_NAME, file)
+      localStorage.setItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_NAME, file)
     }
   },
   addProvenanceRecord: function (provenanceRecord) {
-    let localRecords = JSON.parse(localStorage.getItem(PROVENANCE_FILE_LOCAL_STORAGE_SUBPATH))
+    let localRecords = JSON.parse(localStorage.getItem(provenanceService.PROVENANCE_FILE_LOCAL_STORAGE_SUBPATH))
     if (!localRecords) {
       localRecords = []
     }
@@ -43,13 +43,13 @@ const provenanceService = {
     if (!match) {
       localRecords.push(provenanceRecord)
     }
-    localStorage.setItem(PROVENANCE_FILE_LOCAL_STORAGE_SUBPATH, JSON.stringify(localRecords))
+    localStorage.setItem(provenanceService.PROVENANCE_FILE_LOCAL_STORAGE_SUBPATH, JSON.stringify(localRecords))
   },
   getProvenanceRecords: function () {
-    return JSON.parse(localStorage.getItem(PROVENANCE_FILE_LOCAL_STORAGE_SUBPATH))
+    return JSON.parse(localStorage.getItem(provenanceService.PROVENANCE_FILE_LOCAL_STORAGE_SUBPATH))
   },
   getProvenanceRecord: function (id) {
-    let localRecords = JSON.parse(localStorage.getItem(PROVENANCE_FILE_LOCAL_STORAGE_SUBPATH))
+    let localRecords = JSON.parse(localStorage.getItem(provenanceService.PROVENANCE_FILE_LOCAL_STORAGE_SUBPATH))
     let myRecord
     if (id) {
       _.forEach(localRecords, function (theRecord) {
@@ -74,7 +74,7 @@ const provenanceService = {
       records: []
     }
     return new Promise(function (resolve) {
-      putFile(ROOT_FILE_GAIA_NAME, JSON.stringify(newRootFile))
+      putFile(provenanceService.ROOT_FILE_GAIA_NAME, JSON.stringify(newRootFile))
         .then(function (file) {
           provenanceService.setRootFile(file)
           console.log('Updated root file in user and local storage: ' + file)
@@ -89,7 +89,7 @@ const provenanceService = {
     let rootFile = provenanceService.getRootFile()
     rootFile.records.push({id: provenanceRecord.id, title: provenanceRecord.title, registered: false})
     return new Promise(function (resolve) {
-      putFile(ROOT_FILE_GAIA_NAME, JSON.stringify(rootFile))
+      putFile(provenanceService.ROOT_FILE_GAIA_NAME, JSON.stringify(rootFile))
         .then(function (file) {
           provenanceService.setRootFile(file, true)
           console.log('Updated root file in user and local storage: ' + file)
@@ -101,7 +101,7 @@ const provenanceService = {
     })
   },
   getRootFileName: function () {
-    return ROOT_FILE_GAIA_NAME
+    return provenanceService.ROOT_FILE_GAIA_NAME
   },
   /**
    *  Fetch the users zone file - the blockstack zone which contains the loaction
@@ -126,7 +126,7 @@ const provenanceService = {
   **/
   fetchRootFile: function () {
     return new Promise(function (resolve) {
-      getFile(ROOT_FILE_GAIA_NAME)
+      getFile(provenanceService.ROOT_FILE_GAIA_NAME)
         .then(function (file) {
           if (!file) {
             provenanceService.makeRootFile().then(function (message) {
@@ -137,7 +137,8 @@ const provenanceService = {
           }
           let rootFile = provenanceService.getRootFile()
           _.forEach(rootFile.records, function (recordHeader) {
-            getFile(PROVENANCE_FILE_GAIA_SUBPATH + recordHeader.id + '.json').then(function (file) {
+            let fileToFetch = provenanceService.PROVENANCE_FILE_GAIA_SUBPATH + recordHeader.id + '.json'
+            getFile(fileToFetch).then(function (file) {
               provenanceService.addProvenanceRecord(JSON.parse(file))
             }).catch(function (e) {
               console.log('Unable to provenance record: ', e)
@@ -162,7 +163,7 @@ const provenanceService = {
     provenanceRecord.registered = false
     return new Promise(function (resolve) {
       provenanceService.addNewRecordToRootFile(provenanceRecord).then(function (rootFile) {
-        putFile(PROVENANCE_FILE_GAIA_SUBPATH + provenanceRecord.id + '.json', JSON.stringify(provenanceRecord))
+        putFile(provenanceService.PROVENANCE_FILE_GAIA_SUBPATH + provenanceRecord.id + '.json', JSON.stringify(provenanceRecord))
           .then(function () {
             provenanceService.addProvenanceRecord(provenanceRecord)
             resolve(provenanceRecord)
