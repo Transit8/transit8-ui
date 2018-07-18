@@ -12,7 +12,7 @@
       <div class="content">
       <p class="subtitle is-4">{{ provenanceRecord.title }}</p>
       <p>{{ provenanceRecord.inspiration }}</p>
-      <p class="subtitle is-6">
+      <p>
         <span v-if="provenanceRecord.owner && provenanceRecord.creator">
           Owned and created by: {{ userData.username }}
         </span>
@@ -36,13 +36,13 @@
         </span>
       </p>
       </div>
-      <nav class="level is-mobile">
+      <nav class="level">
         <div class="level-left">
           <a class="level-item" v-if="provenanceRecord.registered">
-            <span class="icon is-small"><i class="fas fa-reply"></i> registered on blockchain</span>
+            <span class="icon is-small"><i class="fas fa-reply"></i></span>&nbsp;&nbsp;registered on blockchain
           </a>
           <a class="level-item" v-else>
-            <span class="icon is-small"><i class="fas fa-retweet"></i> <a :href="'#/provenance/register/'+provenanceRecord.id">register on blockchain</a></span>
+            <span class="icon is-small"><i class="fas fa-retweet"></i></span>&nbsp;&nbsp;<a :href="'#/provenance/register/'+provenanceRecord.id">register on blockchain</a>
           </a>
           <a class="level-item">
             <span class="icon is-small"><i class="fas fa-heart"></i></span>
