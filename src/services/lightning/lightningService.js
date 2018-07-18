@@ -26,7 +26,11 @@ const lightningService = {
         })
         .catch(e => {
           console.log('Unable to fulfil request' + command, e)
-          resolve(e.response.data)
+          if (e.response && e.response.data) {
+            resolve(e.response.data)
+          } else {
+            resolve(e.message)
+          }
         })
     })
   },

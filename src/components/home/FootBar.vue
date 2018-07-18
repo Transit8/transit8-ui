@@ -3,8 +3,7 @@
   <div class="container">
     <div class="content has-text-centered">
       <p>
-        <strong>Brighton Blockchain</strong> is a group formed around the idea of building a fair and open internet.
-        We get together once a month via <a href="https://www.meetup.com/Brighton-Blockchain-Meetup/">meetup.com</a>
+        <strong>The Open Art Market</strong> buy and sell art work directly - no middle men in sight!
       </p>
     </div>
   </div>

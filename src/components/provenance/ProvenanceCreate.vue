@@ -1,6 +1,6 @@
 <template>
 <div class="column">
-  <h1 class="title is-1">Record of Ownership</h1>
+  <h1 class="title is-1">Upload Artwork</h1>
   <form id="create-provenance" @submit="checkForm">
 
     <p v-if="errors.length" :key="errors.length">
@@ -13,17 +13,15 @@
       </ul>
     </p>
 
-    <h2 class="title is-2">Describe Your Item</h2>
-
     <div class="field">
-      <label class="label">Name</label>
+      <label class="label">Title</label>
       <div class="control">
         <input class="input" type="text" placeholder="Title of your item" v-model="title">
       </div>
     </div>
 
     <div class="field">
-      <label class="label">Inspiration</label>
+      <label class="label">Description</label>
       <div class="control">
         <textarea class="textarea" placeholder="What inspired you to create this?" v-model="inspiration"></textarea>
       </div>
@@ -74,7 +72,7 @@
       </div>
     </div>
 
-    <h2 class="title is-2">Who owns it and who made it?</h2>
+    <h2 class="title is-4">Owner / Creator?</h2>
 
     <div class="field">
       <div class="control">
@@ -94,7 +92,7 @@
       </div>
     </div>
 
-    <h2 class="title is-2">Gallery images</h2>
+    <h2 class="title is-4">Gallery Images</h2>
     <p class="hint">Please attach some images to display your item on a gallery or market place. We crop and pad images
     in order to display them in various contexts such as listings and item display pages. These images are not required
     for registration but will be needed when you chose to sell the item.</p>
@@ -118,7 +116,7 @@
     >
     </provenance-create-images>
 
-    <h2 class="title is-2">Supporting documentation</h2>
+    <h2 class="title is-4">Supporting documentation</h2>
     <p class="hint">These can be official ownership documents, valuation and condition reports and also
     photos and videos of relevance to the items provenance</p>
 

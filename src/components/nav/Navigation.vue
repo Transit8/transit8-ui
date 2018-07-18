@@ -2,14 +2,16 @@
 <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
     <div class="navbar-item">
+      <!--
       <router-link class="fa-rotate-270" to="/" style="font-size:2.6em; color:Tomato">
-        <!-- <i class="fas fa-bicycle"></i> -->
+        <i class="fas fa-bicycle"></i>
       </router-link>
       <router-link class="fa-rotate-270" to="/" style="margin-left: 25px; margin-bottom: 0px; font-size:2.6em; color:Tomato">
         <i class="fas fa-bicycle"></i>
       </router-link>
+       -->
       <router-link to="/" style="font-size:1.6em; color:Tomato">
-        Cosmos
+        OpenArtMarket
       </router-link>
     </div>
     <div class="navbar-burger" data-target="navMenu">
@@ -22,13 +24,18 @@
     <div class="navbar-start">
     </div>
     <div class="navbar-end">
-    <!--
-      <a href="http://localhost:8888/"
-        class="navbar-item"
-        target="_blank">
-          Blockstack Browser
-      </a>
-      -->
+      <router-link to="/provenance/list" class="navbar-item" v-if="loggedIn">
+        My Art Work
+      </router-link>
+      <router-link to="/" class="navbar-item">
+        Galleries
+      </router-link>
+      <router-link to="/" class="navbar-item">
+        Artists
+      </router-link>
+      <router-link to="/" class="navbar-item">
+        Artworks
+      </router-link>
       <nav-item-blockstack v-if="debug"/>
       <nav-item-dev-tools v-if="debug"/>
       <!-- <tipe-nav-links /> -->
@@ -44,11 +51,13 @@ import NavItemBlockstack from '@/components/nav/NavItemBlockstack'
 import NavItemDevTools from '@/components/nav/NavItemDevTools'
 import bulma from '@/services/bulma'
 import TipeNavLinks from './TipeNavLinks'
+import authorization from 'bright-block-auth'
 
 export default {
   name: 'Navigation',
   data: () => {
     return {
+      loggedIn: authorization.isLoggedIn(),
       isModalActive: true,
       debug: false
     }

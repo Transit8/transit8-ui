@@ -1,17 +1,14 @@
 <template>
 <aside class="menu">
   <h3 class="menu-label">
-    Manage Provenance
+    Manage Artworks
   </h3>
   <ul class="menu-list">
     <li>
-      <a href="#/provenance/create">Create Provenance Records</a>
+      <a href="#/provenance/list">My Artworks</a>
     </li>
     <li>
-      <a href="#/provenance/list">List Provenance Records</a>
-    </li>
-    <li>
-      <a href="#" @click="clickName(name)">galleries</a>
+      <a href="#/provenance/create">Upload Artwork</a>
     </li>
   </ul>
 </aside>
@@ -27,5 +24,9 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style>
+aside {
+  margin-left: 50px;
+  margin-top: 50px;
+}
 </style>

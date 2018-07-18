@@ -1,12 +1,14 @@
 <template>
-<div class="columns">
-  <div class="column is-one-fifth">
-    <provenance-actions/>
+<section class="main-page">
+  <div class="columns">
+    <div class="column is-one-fifth" style="padding: 30px">
+      <provenance-actions/>
+    </div>
+    <div class="column">
+      <router-view></router-view>
+    </div>
   </div>
-  <div class="column">
-  <router-view></router-view>
-  </div>
-</div>
+</section>
 </template>
 
 <script>
@@ -52,5 +54,8 @@ export default {
 }
 </script>
 
-<style lang="sass" src="bulma">
+<style>
+.main-page {
+  margin: 50px 100px;
+}
 </style>
