@@ -25,22 +25,12 @@ export default {
     }
   },
   mounted () {
-    provenanceService.fetchRootFile()
-      .then((rootFile) => {
-        let counter = 0
-        this.rootFile = rootFile
-        this.userData = provenanceService.getUserData()
-        let myTimer = setInterval(function () {
-          if (counter === 4) {
-            clearInterval(myTimer)
-          }
-          this.provenanceRecords = provenanceService.getProvenanceRecords()
-          counter++
-        }, 2000)
-        console.log(this.rootFile)
+    provenanceService.initRootFile()
+      .then((result) => {
+        provenanceService.initProvenanceRecords()
       })
       .catch(e => {
-        console.log('ProvenanceVue: Unable to lookup ', e)
+        console.log(e)
       })
   },
   methods: {

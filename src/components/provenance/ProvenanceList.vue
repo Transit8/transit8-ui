@@ -4,7 +4,7 @@
   <!-- <p>Your root file was created on: {{ niceTime(rootFile.created) }} and contains;</p> -->
   <article class="media" v-for="provenanceRecord in provenanceRecords" :key="provenanceRecord.id">
     <figure class="media-left">
-      <p class="image is-128x128">
+      <p class="image is-128x128" v-if="provenanceRecord.artwork.length > 0">
         <img :src="provenanceRecord.artwork[0].dataUrl" alt="Artwork image"/>
       </p>
     </figure>
@@ -67,30 +67,13 @@ import moment from 'moment'
 export default {
   data () {
     return {
-      rootFile: {},
       userData: {},
       provenanceRecords: []
     }
   },
   mounted () {
-    provenanceService.fetchRootFile()
-      .then((rootFile) => {
-        let $selfie = this
-        this.rootFile = rootFile
-        this.userData = provenanceService.getUserData()
-        for (var key in this.rootFile.records) {
-          let recordy = this.rootFile.records[key]
-          $selfie.provenanceRecords.push(provenanceService.getProvenanceRecord(recordy.id))
-        }
-        // _.forEach(rootFile.records, function (record) {
-        //  if (record && record.id) {
-        //    $selfie.provenanceRecords.push(provenanceService.getProvenanceRecord(record.id))
-        //  }
-        // })
-      })
-      .catch(e => {
-        console.log('ProvenanceVue: Unable to lookup ', e)
-      })
+    this.provenanceRecords = provenanceService.getProvenanceRecordsInLS()
+    this.userData = provenanceService.getUserData()
   },
   methods: {
     niceTime: function (updated) {

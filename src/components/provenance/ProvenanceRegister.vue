@@ -117,6 +117,9 @@ export default {
     niceTime: function (updated) {
       return moment(updated).format('LLLL')
     },
+    register: function () {
+      return 'LLLL'
+    },
   },
   components: {
     ProvenanceActions

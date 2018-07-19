@@ -160,8 +160,8 @@ export default {
   name: 'ProvenanceCreate',
   data () {
     return {
-      title: '',
-      inspiration: '',
+      title: 'Artwork 0',
+      inspiration: 'Artwork 0 genesis testing',
       editions: 1,
       itemType: 'physart',
       artwork: [],
@@ -175,13 +175,6 @@ export default {
   validations: {
   },
   mounted () {
-    provenanceService.fetchRootFile()
-      .then((rootFile) => {
-        console.log(rootFile)
-      })
-      .catch(e => {
-        console.log('ProvenanceVue: Unable to lookup ', e)
-      })
   },
   methods: {
     checkForm: function (e) {
@@ -221,7 +214,7 @@ export default {
       provenanceService.createRecord(myData)
         .then((records) => {
           console.log(myData)
-          this.$router.push('/')
+          this.$router.push('/provenance/list')
         })
         .catch(e => {
           console.log('ProvenanceVue: Unable to lookup ', e)
