@@ -6,7 +6,6 @@ import {
 } from 'blockstack'
 import _ from 'lodash'
 
-
 /**
  *  Service manages a file structure which has a root file and a set of provenance records.
  *  The root file contains an identifier to the individual provenance records and a minimal

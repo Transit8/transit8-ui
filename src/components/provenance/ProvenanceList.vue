@@ -50,9 +50,10 @@
         </div>
       </nav>
     </div>
-    <div class="media-right">
+    <!-- <div class="media-right">
       <button class="delete"></button>
     </div>
+    -->
   </article>
 </div>
 </template>
@@ -61,7 +62,7 @@
 import provenanceService from '@/services/provenance/ProvenanceService'
 import ProvenanceActions from '@/components/provenance/ProvenanceActions'
 import moment from 'moment'
-import _ from 'lodash'
+// import _ from 'lodash'
 
 export default {
   data () {
@@ -77,11 +78,15 @@ export default {
         let $selfie = this
         this.rootFile = rootFile
         this.userData = provenanceService.getUserData()
-        _.forEach(rootFile.records, function (record) {
-          if (record && record.id) {
-            $selfie.provenanceRecords.push(provenanceService.getProvenanceRecord(record.id))
-          }
-        })
+        for (var key in this.rootFile.records) {
+          let recordy = this.rootFile.records[key]
+          $selfie.provenanceRecords.push(provenanceService.getProvenanceRecord(recordy.id))
+        }
+        // _.forEach(rootFile.records, function (record) {
+        //  if (record && record.id) {
+        //    $selfie.provenanceRecords.push(provenanceService.getProvenanceRecord(record.id))
+        //  }
+        // })
       })
       .catch(e => {
         console.log('ProvenanceVue: Unable to lookup ', e)

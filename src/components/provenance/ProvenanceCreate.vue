@@ -160,8 +160,8 @@ export default {
   name: 'ProvenanceCreate',
   data () {
     return {
-      title: 'Dreams of things to come',
-      inspiration: 'An imaginary number.',
+      title: '',
+      inspiration: '',
       editions: 1,
       itemType: 'physart',
       artwork: [],
