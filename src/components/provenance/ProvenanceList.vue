@@ -62,7 +62,6 @@
 import provenanceService from '@/services/provenance/ProvenanceService'
 import ProvenanceActions from '@/components/provenance/ProvenanceActions'
 import moment from 'moment'
-// import _ from 'lodash'
 
 export default {
   data () {
