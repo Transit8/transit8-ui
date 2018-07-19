@@ -14,12 +14,13 @@ import _ from 'lodash'
  *  digital artwork if one exists and documenatry evidence.
 **/
 const provenanceService = {
-  ROOT_FILE_GAIA_NAME: 'records_v01.json',
+  ROOT_FILE_GAIA_NAME: 'records_v02.json',
   ROOT_FILE_LOCAL_STORAGE_NAME: 'rootFile',
   PROVENANCE_FILE_GAIA_SUBPATH: 'record_',
   PROVENANCE_FILE_LOCAL_STORAGE_SUBPATH: 'provenanceRecords',
   getRootFile: function () {
-    return JSON.parse(localStorage.getItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_NAME))
+    let rootFileStringy = localStorage.getItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_NAME)
+    return JSON.parse(rootFileStringy)
   },
   setRootFile: function (file, isStringy) {
     if (!isStringy) {
@@ -63,10 +64,6 @@ const provenanceService = {
     return loadUserData()
   },
   makeRootFile: function (id) {
-    let rootFile = provenanceService.getRootFile()
-    if (rootFile) {
-      return
-    }
     var now = new Date().getTime()
     let newRootFile = {
       created: now,
@@ -146,9 +143,6 @@ const provenanceService = {
           resolve(provenanceService.getRootFile())
         }).catch(function (e) {
           console.log('Unable to fetch root file: ', e)
-          provenanceService.makeRootFile().then(function (message) {
-            resolve({error: 'Unable to fetch root file: ' + e, rootFile: provenanceService.getRootFile()})
-          })
         })
     })
   },

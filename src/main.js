@@ -8,7 +8,7 @@ import '@/styles/main.scss'
 // import Vuelidate from 'vuelidate'
 
 Vue.config.productionTip = false
-
+Vue.prototype.$eventHub = new Vue() // Global event bus
 Vue.filter('truncate', function (value) {
   return _.truncate(value, { length: 45, omission: '...' })
 })

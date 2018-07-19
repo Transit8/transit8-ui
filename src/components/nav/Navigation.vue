@@ -57,7 +57,7 @@ export default {
   name: 'Navigation',
   data: () => {
     return {
-      loggedIn: authorization.isLoggedIn(),
+      loggedIn: false,
       isModalActive: true,
       debug: false
     }
@@ -67,6 +67,16 @@ export default {
     if (this.$route.query && this.$route.query.debug) {
       this.debug = true
     }
+    let $elfie = this
+    let myTimer = setInterval(function () {
+      let newloggedInState = authorization.isLoggedIn()
+      if ($elfie.loggedIn !== newloggedInState) {
+        $elfie.loggedIn = authorization.isLoggedIn()
+        clearInterval(myTimer)
+      }
+    }, 500)
+  },
+  methods: {
   },
   components: {
     BrightBlockAuth,
