@@ -24,11 +24,14 @@
     <div class="navbar-start">
     </div>
     <div class="navbar-end">
+      <router-link to="/admin/search/art" class="navbar-item" v-if="showAdmin">
+        Admin
+      </router-link>
       <router-link to="/provenance/list" class="navbar-item" v-if="loggedIn">
         My Art Work
       </router-link>
-      <router-link to="/" class="navbar-item">
-        Galleries
+      <router-link to="/market/search" class="navbar-item">
+        Search
       </router-link>
       <router-link to="/" class="navbar-item">
         Artists
@@ -52,17 +55,24 @@ import NavItemDevTools from '@/components/nav/NavItemDevTools'
 import bulma from '@/services/bulma'
 import TipeNavLinks from './TipeNavLinks'
 import authorization from 'bright-block-auth'
+import provenanceService from '@/services/provenance/ProvenanceService'
 
 export default {
   name: 'Navigation',
   data: () => {
     return {
       loggedIn: false,
+      showAdmin: false,
       isModalActive: true,
-      debug: false
+      debug: false,
     }
   },
   mounted () {
+    let userData = provenanceService.getUserData()
+    if (userData) {
+      let username = userData.username
+      this.showAdmin = (username === 'mike.personal.id')
+    }
     bulma.initDropdowns()
     if (this.$route.query && this.$route.query.debug) {
       this.debug = true

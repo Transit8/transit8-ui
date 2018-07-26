@@ -16,33 +16,33 @@
       </div>
     </form>
     <div class="card" v-if="provenanceRecord">
-      <div class="card-image" v-if="provenanceRecord.artwork">
+      <div class="card-image" v-if="provenanceRecord.provData.artwork">
         <figure class="image">
-          <img :src="provenanceRecord.artwork[0].dataUrl" alt="Artwork image"/>
+          <img :src="provenanceRecord.provData.artwork[0].dataUrl" alt="Artwork image"/>
         </figure>
       </div>
       <div class="card-content">
         <div class="media">
           <div class="content">
-            <p class="subtitle is-1">{{ provenanceRecord.title }}</p>
-            <p class="subtitle is-4">{{ provenanceRecord.inspiration }}</p>
+            <p class="subtitle is-1">{{ provenanceRecord.indexData.title }}</p>
+            <p class="subtitle is-4">{{ provenanceRecord.indexData.description }}</p>
             <p class="subtitle is-6">
-              <span v-if="provenanceRecord.owner && provenanceRecord.creator">
+              <span v-if="provenanceRecord.provData.owner && provenanceRecord.provData.creator">
                 Owned and created by: {{ userData.username }}
               </span>
-              <span v-else-if="provenanceRecord.owner">
+              <span v-else-if="provenanceRecord.provData.owner">
                 Owned by: {{ userData.username }}
               </span>
-              <span v-else-if="provenanceRecord.creator">
+              <span v-else-if="provenanceRecord.provData.creator">
                 Created by: {{ userData.username }}
               </span>
               <span v-else>
                 Owner and creator unknown
               </span>
-              <span v-if="provenanceRecord.itemType === 'pysart'">
+              <span v-if="provenanceRecord.indexData.itemType === 'pysart'">
                 Type: <b>physical artwork</b>
               </span>
-              <span v-else-if="provenanceRecord.itemType === 'digiart'">
+              <span v-else-if="provenanceRecord.indexData.itemType === 'digiart'">
                 Type: <b>digital artwork</b>
               </span>
               <span v-else>
@@ -52,7 +52,7 @@
           </div>
         </div>
 
-        <div class="media-content" v-for="image in provenanceRecord.images" :key="image.lastModified">
+        <div class="media-content" v-for="image in provenanceRecord.provData.images" :key="image.lastModified">
           <p class="subtitle is-3">Gallery Images</p>
           <div class="media-left">
             <figure class="image is-48x48">
@@ -66,7 +66,7 @@
           </div>
         </div>
 
-        <div class="media-content" v-for="image in provenanceRecord.supportingDocuments" :key="image.lastModified">
+        <div class="media-content" v-for="image in provenanceRecord.provData.supportingDocuments" :key="image.lastModified">
           <p class="subtitle is-3">Supporting Documents</p>
           <div class="media-left" v-if="image.type.indexOf('jpg') > 0">
             <figure class="image is-48x48">
@@ -81,9 +81,9 @@
         </div>
 
         <div class="content">
-          <time datetime="2016-1-1">Created: {{ niceTime(provenanceRecord.created) }}</time>
+          <time datetime="2016-1-1">Created: {{ niceTime(provenanceRecord.provData.created) }}</time>
           <br>
-          <time datetime="2016-1-1">Last Updated: {{ niceTime(provenanceRecord.updated) }}</time>
+          <time datetime="2016-1-1">Last Updated: {{ niceTime(provenanceRecord.provData.updated) }}</time>
         </div>
       </div>
     </div>

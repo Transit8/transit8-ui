@@ -8,7 +8,7 @@
 import ProvenanceCreateOrEdit from '@/components/provenance/ProvenanceCreateOrEdit'
 
 export default {
-  name: 'ProvenanceCreate',
+  name: 'ProvenanceEdit',
   data () {
     return {
     }

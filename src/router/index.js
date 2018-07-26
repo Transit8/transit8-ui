@@ -2,17 +2,25 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import Home from '../components/home/Home'
+import Admin from '../components/admin/Admin'
+import AdminSearchNames from '../components/admin/AdminSearchNames'
+import AdminSearchArt from '../components/admin/AdminSearchArt'
+import AdminUserRecords from '../components/admin/AdminUserRecords'
 import Account from 'bright-block-auth/src/components/account/Account'
 import AccountUserData from 'bright-block-auth/src/components/account/AccountUserData'
 import AccountLookup from 'bright-block-auth/src/components/account/AccountLookup'
 import AccountDisplay from 'bright-block-auth/src/components/account/AccountDisplay'
 import AccountFiles from 'bright-block-auth/src/components/account/AccountFiles'
 
+import Market from '../components/market/Market'
+import MarketSearch from '../components/market/MarketSearch'
+
 import Iota from '../components/experimental/iota/Iota'
 import Eth from '../components/experimental/eth/Eth'
 import DataTypes from '../components/experimental/eth/DataTypes'
 
 import Provenance from '../components/provenance/Provenance'
+import ProvenanceEdit from '../components/provenance/ProvenanceEdit'
 import ProvenanceCreate from '../components/provenance/ProvenanceCreate'
 import ProvenanceRegister from '../components/provenance/ProvenanceRegister'
 import ProvenanceList from '../components/provenance/ProvenanceList'
@@ -42,6 +50,10 @@ const router = new Router({
           name: 'provenanceRegister',
           component: ProvenanceRegister
         }, {
+          path: '/provenance/edit/:provenanceId',
+          name: 'provenanceEdit',
+          component: ProvenanceEdit,
+        }, {
           path: '/provenance/create',
           name: 'provenanceCreate',
           component: ProvenanceCreate,
@@ -49,6 +61,26 @@ const router = new Router({
           path: '/provenance/list',
           name: 'provenanceList',
           component: ProvenanceList,
+        }
+      ]
+    }, {
+      path: '/admin',
+      name: 'admin',
+      meta: { requiresAuth: true },
+      component: Admin,
+      children: [
+        {
+          path: '/admin/search/names',
+          name: 'adminSearchNames',
+          component: AdminSearchNames
+        }, {
+          path: '/admin/search/art',
+          name: 'adminSearchArt',
+          component: AdminSearchArt
+        }, {
+          path: '/admin/user/records',
+          name: 'adminUserRecords',
+          component: AdminUserRecords
         }
       ]
     }, {
@@ -64,6 +96,18 @@ const router = new Router({
       //    component: LightningNodes
       //  }
       // ]
+    }, {
+      path: '/market',
+      name: 'market',
+      meta: { requiresAuth: false },
+      component: Market,
+      children: [
+        {
+          path: '/market/search',
+          name: 'marketSearch',
+          component: MarketSearch
+        }
+      ]
     }, {
       path: '/iota',
       name: 'iota',
