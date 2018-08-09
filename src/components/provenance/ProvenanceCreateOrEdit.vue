@@ -163,6 +163,7 @@ import ProvenanceActions from '@/components/provenance/ProvenanceActions'
 import ProvenanceCreateImages from '@/components/provenance/ProvenanceCreateImages'
 import provenanceService from '@/services/provenance/ProvenanceService'
 import _ from 'lodash'
+import moment from 'moment'
 
 export default {
   name: 'ProvenanceCreateOrEdit',
@@ -251,7 +252,7 @@ export default {
       let userData = provenanceService.getUserData()
 
       if (this.createMode) {
-        this.indexData.id = new Date().getTime()
+        this.indexData.id = moment({}).valueOf()
         this.provData.auditData = [{
           event: 'uploaded',
           who: userData.username,
@@ -262,7 +263,7 @@ export default {
         this.provData.auditData.push({
           event: 'edited',
           who: userData.username,
-          when: new Date().getTime()
+          when: moment({}).valueOf()
         })
       } else {
         throw new Error('Not create mode but provenance id is undefined.')

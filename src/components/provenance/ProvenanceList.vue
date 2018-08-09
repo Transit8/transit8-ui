@@ -1,90 +1,88 @@
 <template>
 <div class="column">
+  <provenance-sale-data v-if="saleDataModalActive" v-on:close-sale-data-modal="closeSaleDataModal" v-bind:recordForSaleData="recordForSaleData" v-bind:saleDataModalActive="saleDataModalActive"/>
   <h1 class="title is-1">My Artworks</h1>
-  <article class="media" v-for="provenanceRecord in provenanceRecords" :key="provenanceRecord.indexData.id">
-    <figure class="media-left">
-      <p class="image is-128x128" v-if="provenanceRecord.provData && provenanceRecord.provData.artwork && provenanceRecord.provData.artwork.length > 0">
-        <img :src="provenanceRecord.provData.artwork[0].dataUrl" alt="Artwork image"/>
-      </p>
-      <p class="image is-128x128" v-else>
-        <img src="/static/tree.jpg" alt="Missing image"/>
-      </p>
-    </figure>
-    <div class="media-content">
-      <div class="content">
-      <p class="subtitle is-4">{{ provenanceRecord.indexData.title }} (ID: {{ provenanceRecord.indexData.id }})</p>
-      <p>{{ provenanceRecord.indexData.description }}</p>
-      <p>
-        <span v-if="provenanceRecord.provData && provenanceRecord.provData.owner && provenanceRecord.provData.creator">
-          Owned and created by: {{ userData.username }}
-        </span>
-        <span v-else-if="provenanceRecord.provData && provenanceRecord.provData.owner">
-          Owned by: {{ userData.username }}
-        </span>
-        <span v-else-if="provenanceRecord.provData && provenanceRecord.provData.creator">
-          Created by: {{ userData.username }}
-        </span>
-        <span v-else>
-          Owner and creator unknown
-        </span>
-        <span v-if="provenanceRecord.indexData.itemType === 'pysart'">
-          Type: <b>physical artwork</b>
-        </span>
-        <span v-else-if="provenanceRecord.indexData.itemType === 'digiart'">
-          Type: <b>digital artwork</b>
-        </span>
-        <span v-else>
-          Type: <b>photographic artwork</b>
-        </span>
-      </p>
-      </div>
-      <nav class="level">
-        <div class="level-left">
-          <a class="level-item">
-            <span class="icon is-small"></span>&nbsp;&nbsp;{{ provenanceRecord.indexData.itemType }}
-          </a>
-          <a class="level-item" v-if="provenanceRecord.indexData.registered">
-            <span class="icon is-small"><i class="fas fa-reply"></i></span>&nbsp;&nbsp;registered on blockchain
-          </a>
-          <a class="level-item" v-else>
-            <span class="icon is-small"><i class="fas fa-retweet"></i></span>&nbsp;&nbsp;<a :href="'#/provenance/register/'+provenanceRecord.indexData.id">register on blockchain</a>
-          </a>
-          <a class="level-item">
-            <span class="icon is-small"><i class="fas fa-retweet"></i></span>&nbsp;&nbsp;<a :href="'#/provenance/edit/'+provenanceRecord.indexData.id">edit</a>
-          </a>
-        </div>
-      </nav>
-    </div>
-    <!-- <div class="media-right">
-      <button class="delete"></button>
-    </div>
-    -->
-  </article>
+  <div class="notification">
+    Found: {{ numbResults }}
+    <p class="has-text-right"><a @click="reindexRoot()">reindex</a></p>
+  </div>
+  <div v-for="provenanceRecord in provenanceRecords" :key="provenanceRecord.indexData.id">
+    <provenance-item-bar v-on:open-sale-data-modal="openSaleDataModal" v-bind:provenanceRecord="provenanceRecord" v-bind:userData="userData" v-bind:allowEdit="allowEdit"/>
+  </div>
 </div>
 </template>
 
 <script>
+import searchIndexService from '@/services/searchindex/SearchIndexService'
 import provenanceService from '@/services/provenance/ProvenanceService'
 import ProvenanceActions from '@/components/provenance/ProvenanceActions'
+import ProvenanceItemBar from '@/components/provenance/ProvenanceItemBar'
+import ProvenanceSaleData from '@/components/provenance/sales/ProvenanceSaleData'
 import moment from 'moment'
 
 export default {
   data () {
     return {
+      recordForSaleData: null,
+      saleDataModalActive: false,
+      numbResults: 0,
+      allowEdit: true,
       userData: {},
-      provenanceRecords: []
+      provenanceRecords: [],
     }
   },
   mounted () {
     this.provenanceRecords = provenanceService.getProvenanceRecordsInLS()
+    this.numbResults = this.provenanceRecords.length
+    this.userData = provenanceService.getUserData()
   },
   methods: {
     niceTime: function (updated) {
+      if (typeof updated === 'string') {
+        updated = Number(updated)
+      }
       return moment(updated).format('LLLL')
+    },
+    reindexRoot: function () {
+      let username = this.userData.username
+      searchIndexService.indexUser(username).then(function (message) {
+        console.log('Indexed new record.')
+      }).catch(function (e) {
+        console.log('Unable to index new record - it should be picked up in next sweep. ', e)
+      })
+    },
+    closeSaleDataModal: function (response) {
+      this.saleDataModalActive = false
+      if (response) {
+        this.provenanceRecords = provenanceService.getProvenanceRecordsInLS()
+      }
+    },
+    openSaleDataModal: function (id) {
+      let record = provenanceService.getProvenanceRecord(id)
+      this.recordForSaleData = {
+        id: record.indexData.id,
+        title: record.indexData.title,
+      }
+      if (record.indexData.saleData) {
+        this.recordForSaleData.saleData = record.indexData.saleData
+        this.recordForSaleData.saleData.amount = Number(record.indexData.saleData.amount)
+        this.recordForSaleData.saleData.reserve = Number(record.indexData.saleData.reserve)
+        this.recordForSaleData.saleData.increment = Number(record.indexData.saleData.increment)
+      } else {
+        this.recordForSaleData.saleData = {
+          saleOption: provenanceService.saleOptions[0],
+          title: 'Options for selling your item.',
+          amount: 0.00,
+          reserve: 0.00
+        }
+      }
+      this.saleDataModalActive = true
     },
   },
   components: {
-    ProvenanceActions
+    ProvenanceActions,
+    ProvenanceItemBar,
+    ProvenanceSaleData
   }
 }
 </script>

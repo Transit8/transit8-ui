@@ -6,6 +6,7 @@ import {
 } from 'blockstack'
 import _ from 'lodash'
 import searchIndexService from '@/services/searchindex/SearchIndexService'
+import moment from 'moment'
 
 /**
  *  Service manages a file structure which has a root file and a set of provenance records.
@@ -20,6 +21,11 @@ const provenanceService = {
   ROOT_FILE_LOCAL_STORAGE_PATH: 'rootFile',
   PROVENANCE_FILE_GAIA_SUBPATH: 'record_',
   PROVENANCE_FILE_LOCAL_STORAGE_PATH: 'provenanceRecords',
+  saleOptions: [
+    {soid: 0, label: 'Listing'},
+    {soid: 1, label: 'Buy Now'},
+    {soid: 2, label: 'Bidding'},
+  ],
   getRootFileInLS: function () {
     let rootFileStringy = localStorage.getItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_PATH)
     if (!rootFileStringy) {
@@ -52,19 +58,19 @@ const provenanceService = {
     }
   },
   makeRootFile: function () {
-    var now = new Date().getTime()
+    var now = moment({}).valueOf()
     let newRootFile = {
       created: now,
       records: []
     }
-    return putFile(provenanceService.ROOT_FILE_GAIA_NAME, JSON.stringify(newRootFile))
+    return putFile(provenanceService.ROOT_FILE_GAIA_NAME, JSON.stringify(newRootFile), {encrypt: false})
   },
   initRootFile: function () {
     return new Promise(function (resolve) {
-      getFile(provenanceService.ROOT_FILE_GAIA_NAME).then(function (file) {
+      getFile(provenanceService.ROOT_FILE_GAIA_NAME, {decrypt: false}).then(function (file) {
         if (!file) {
           provenanceService.makeRootFile().then(function (message) {
-            getFile(provenanceService.ROOT_FILE_GAIA_NAME).then(function (file) {
+            getFile(provenanceService.ROOT_FILE_GAIA_NAME, {decrypt: false}).then(function (file) {
               provenanceService.setRootFileInLS(file)
               provenanceService.state = 'ROOT_INIT'
               resolve({failed: false, message: 'Made new root file in user storage and saved it in local storage: ' + file})
@@ -76,9 +82,6 @@ const provenanceService = {
           })
         } else {
           let rootFile = JSON.parse(file)
-          _.forEach(rootFile.records, function (theRecord) {
-            console.log('id: ' + theRecord.id)
-          })
           let newData = rootFile.records
           newData = _.unionBy(rootFile.records, newData, 'id')
           rootFile.records = newData
@@ -101,7 +104,7 @@ const provenanceService = {
       _.forEach(rootFile.records, function (record) {
         if (record && record.id) {
           let fileToFetch = provenanceService.PROVENANCE_FILE_GAIA_SUBPATH + record.id + '.json'
-          getFile(fileToFetch).then(function (file) {
+          getFile(fileToFetch, {decrypt: false}).then(function (file) {
             count++
             if (file) {
               let myFile = JSON.parse(file)
@@ -123,6 +126,10 @@ const provenanceService = {
   },
   getProvenanceRecordsInLS: function () {
     let rootFile = provenanceService.getRootFileInLS()
+    if (!rootFile) {
+      provenanceService.initRootFile()
+      return []
+    }
     let results = []
     _.forEach(rootFile.records, function (theRecord) {
       results.push(provenanceService.getProvenanceRecord(theRecord.id, rootFile))
@@ -198,6 +205,19 @@ const provenanceService = {
       throw new Error('Index data is out of step with provenance data.')
     }
   },
+  updateSaleInfo: function (id, saleData) {
+    return new Promise(function (resolve) {
+      let rootFile = provenanceService.getRootFileInLS()
+      let record = _.find(rootFile.records, {id: id})
+      record.saleData = saleData
+      putFile(provenanceService.ROOT_FILE_GAIA_NAME, JSON.stringify(rootFile), {encrypt: false}).then(function (message) {
+        provenanceService.setRootFileInLS(rootFile)
+        resolve(message)
+      }).catch(function (e) {
+        throw e
+      })
+    })
+  },
   createOrUpdateRecord: function (indexData, provData) {
     return new Promise(function (resolve) {
       provenanceService.checkData(indexData, provData)
@@ -208,15 +228,17 @@ const provenanceService = {
       } else {
         rootFile.records.push(indexData)
       }
-      putFile(provenanceService.ROOT_FILE_GAIA_NAME, JSON.stringify(rootFile)).then(function (message) {
+      putFile(provenanceService.ROOT_FILE_GAIA_NAME, JSON.stringify(rootFile), {encrypt: false}).then(function (message) {
         provenanceService.setRootFileInLS(rootFile)
         console.log('Updated root file in user and local storage: ' + message)
         let fileName = provenanceService.PROVENANCE_FILE_GAIA_SUBPATH + indexData.id + '.json'
-        putFile(fileName, JSON.stringify(provData))
+        putFile(fileName, JSON.stringify(provData), {encrypt: false})
           .then(function (message) {
             provenanceService.addProvenanceRecordInLS(provData)
             console.log('Updated provenance file in user and local storage: ' + message)
-            searchIndexService.addArtToIndex(rootFile).then(function (message) {
+            indexData.gaiaUrl = message
+            indexData.appUrl = window.location.host
+            searchIndexService.reindexRecord(indexData).then(function (message) {
               console.log('Indexed new record.')
             }).catch(function (e) {
               console.log('Unable to index new record - it should be picked up in next sweep. ', e)

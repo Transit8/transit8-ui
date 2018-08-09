@@ -30,42 +30,33 @@
       </div>
     </div>
   </div>
-  <div v-for="result in results" :key="result.docIndex" style="padding: 10px; margin-bottom: 30px; border-radius: 10px; border: 1pt solid #ccc">
-    <div class="columns"><div class="column is-one-fifth">id:</div> <div class="column">{{ result.id }}</div></div>
-    <div class="columns"><div class="column is-one-fifth">created:</div> <div class="column">{{ niceTime(result.id) }}</div></div>
-    <div class="columns"><div class="column is-one-fifth">title:</div> <div class="column">{{ result.title }}</div></div>
-    <div class="columns"><div class="column is-one-fifth">description:</div> <div class="column">{{ result.description }}</div></div>
-    <div class="columns"><div class="column is-one-fifth">keywords:</div> <div class="column">{{ result.keywords }}</div></div>
-    <div class="columns"><div class="column is-one-fifth">itemType:</div> <div class="column">{{ result.itemType }}</div></div>
-    <div class="columns"><div class="column is-one-fifth">uploader:</div> <div class="column">{{ result.uploader }}</div></div>
-    <div class="columns"><div class="column is-one-fifth">registered:</div> <div class="column">{{ result.registered }}</div></div>
-    <div class="columns"><div class="column is-one-fifth">app url:</div> <div class="column">{{ result.appUrl }}</div></div>
-    <div class="columns"><div class="column is-one-fifth">gaia url:</div> <div class="column">{{ result.gaiaUrl }}</div></div>
+  <div v-for="provenanceRecord in provenanceRecords" :key="provenanceRecord.indexData.id">
+    <provenance-item-bar v-bind:provenanceRecord="provenanceRecord" v-bind:userData="userData" v-bind:allowEdit="allowEdit"/>
   </div>
-
 </div>
 </template>
 
 <script>
+import provenanceService from '@/services/provenance/ProvenanceService'
 import searchIndexService from '@/services/searchindex/SearchIndexService'
+import ProvenanceItemBar from '@/components/provenance/ProvenanceItemBar'
 import moment from 'moment'
+import _ from 'lodash'
 
 export default {
   props: ['numbResults'],
   data () {
     return {
-      results: [],
-      result: null,
-      names: null,
-      fromPage: null,
-      toPage: null,
+      userData: {},
+      allowEdit: false,
+      provenanceRecords: [],
       sizeOfIndex: null,
-      username: null,
       queryString: null,
       queryTerm: 'title'
     }
   },
   mounted () {
+    this.userData = provenanceService.getUserData()
     searchIndexService.sizeOfIndex('art')
       .then((result) => {
         this.$emit('update:numbResults', result)
@@ -77,14 +68,33 @@ export default {
   },
   methods: {
     niceTime: function (updated) {
+      if (typeof updated === 'string') {
+        updated = Number(updated)
+      }
       return moment(updated).format('LLLL')
     },
     searchIndex: function () {
       let query = (this.queryString) ? this.queryString : '*'
+      let $elfie = this
       searchIndexService.searchIndex('art', this.queryTerm, query)
         .then((results) => {
-          this.results = results
           this.$emit('update:numbResults', results.length)
+          $elfie.provenanceRecords = []
+          _.forEach(results, function (indexData) {
+            let urlLastSlash = indexData.gaiaUrl.lastIndexOf('/') + 1
+            let url = indexData.gaiaUrl.substring(0, urlLastSlash)
+            url = url + provenanceService.PROVENANCE_FILE_GAIA_SUBPATH + indexData.id + '.json'
+            searchIndexService.getByGaiaUrl(url)
+              .then((provData) => {
+                $elfie.provenanceRecords.push({
+                  indexData: indexData,
+                  provData: provData
+                })
+              })
+              .catch(e => {
+                console.log('Unable to get from: ' + indexData.gaiaUrl)
+              })
+          })
         })
         .catch(e => {
           console.log('Unable to contact search index.', e)
@@ -92,6 +102,7 @@ export default {
     },
   },
   components: {
+    ProvenanceItemBar
   }
 }
 </script>

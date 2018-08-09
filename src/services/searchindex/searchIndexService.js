@@ -8,6 +8,22 @@ const SERVER_PROT = 'http'
  *  The service is a client to the brightblock sever side grpc client.
 **/
 const searchIndexService = {
+  makeDirectCall: function (url) {
+    return new Promise(resolve => {
+      axios.get(url)
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(e => {
+          console.log('Unable to fulfil request', e)
+          if (e.response && e.response.data) {
+            resolve(e.response.data)
+          } else {
+            resolve(e.message)
+          }
+        })
+    })
+  },
   makeGetCall: function (command, args) {
     let callInfo = {
       method: 'get',
@@ -59,12 +75,12 @@ const searchIndexService = {
         })
     })
   },
-  addArtToIndex: function (rootFile) {
+  reindexRecord: function (record) {
     return new Promise(function (resolve) {
-      searchIndexService.makePostCall('/art/index/add', rootFile)
+      searchIndexService.makePostCall('/art/index/record', record)
         .then(function (result) {
           if (result.error) {
-            throw new Error({message: 'Unable to index file: ', rootFile: rootFile})
+            throw new Error({message: 'Unable to index file: ', record: record})
           }
           resolve(result)
         }).catch(function (e) {
@@ -145,6 +161,16 @@ const searchIndexService = {
   searchIndex: function (index, term, query) {
     return new Promise(function (resolve) {
       searchIndexService.makeGetCall('/' + index + '/search/' + term + '?q=' + query)
+        .then(function (result) {
+          resolve(result)
+        }).catch(function (e) {
+          resolve({error: 'Unable to create root file'})
+        })
+    })
+  },
+  getByGaiaUrl: function (url) {
+    return new Promise(function (resolve) {
+      searchIndexService.makeDirectCall(url)
         .then(function (result) {
           resolve(result)
         }).catch(function (e) {
