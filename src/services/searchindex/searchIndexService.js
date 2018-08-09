@@ -1,8 +1,6 @@
 import axios from 'axios'
 
-const SERVER_HOST = 'localhost'
-const SERVER_PORT = '8080'
-const SERVER_PROT = 'http'
+const SERVER_URL = process.env.SEARCH_INDEX_URL
 
 /**
  *  The service is a client to the brightblock sever side grpc client.
@@ -27,7 +25,7 @@ const searchIndexService = {
   makeGetCall: function (command, args) {
     let callInfo = {
       method: 'get',
-      url: SERVER_PROT + '://' + SERVER_HOST + ':' + SERVER_PORT + command,
+      url: SERVER_URL + command,
       headers: {
         'Content-Type': 'application/json'
       }
@@ -53,7 +51,7 @@ const searchIndexService = {
   makePostCall: function (command, data) {
     let callInfo = {
       method: 'post',
-      url: SERVER_PROT + '://' + SERVER_HOST + ':' + SERVER_PORT + command,
+      url: SERVER_URL + command,
       headers: {
         'Content-Type': 'application/json'
       }

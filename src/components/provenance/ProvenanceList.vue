@@ -1,7 +1,7 @@
 <template>
 <div class="column">
   <provenance-sale-data v-if="saleDataModalActive" v-on:close-sale-data-modal="closeSaleDataModal" v-bind:recordForSaleData="recordForSaleData" v-bind:saleDataModalActive="saleDataModalActive"/>
-  <h1 class="title is-1">My Artworks</h1>
+  <h1 class="title is-1">{{ environment }} - My Artworks</h1>
   <div class="notification">
     Found: {{ numbResults }}
     <p class="has-text-right"><a @click="reindexRoot()">reindex</a></p>
@@ -29,9 +29,12 @@ export default {
       allowEdit: true,
       userData: {},
       provenanceRecords: [],
+      environment: 'dfsdf'
     }
   },
   mounted () {
+    console.log('Running App version ', process.env)
+    this.environment = process.env.SEARCH_INDEX_URL
     this.provenanceRecords = provenanceService.getProvenanceRecordsInLS()
     this.numbResults = this.provenanceRecords.length
     this.userData = provenanceService.getUserData()
