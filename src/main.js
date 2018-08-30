@@ -5,15 +5,15 @@ import router from './router'
 import App from './App'
 import _ from 'lodash'
 import '@/styles/main.scss'
+import Notifications from 'vue-notification'
 // import Vuelidate from 'vuelidate'
-
 Vue.config.productionTip = false
 Vue.prototype.$eventHub = new Vue() // Global event bus
 Vue.filter('truncate', function (value) {
   return _.truncate(value, { length: 45, omission: '...' })
 })
 Vue.prototype.$appName = 'My App'
-
+Vue.use(Notifications)
 // Vue.use(Vuelidate)
 
 /* eslint-disable no-new */

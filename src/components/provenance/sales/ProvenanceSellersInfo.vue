@@ -1,9 +1,9 @@
 <template>
 <div>
   <p>Sale Information</p>
-  <p v-if="saleData.saleOption.soid === 0">Listing only</p>
-  <p v-else-if="saleData.saleOption.soid === 1">Selling this item for {{ saleData.amount }}</p>
-  <p v-else-if="saleData.saleOption.soid === 2">Selling by auction with reserve price {{ saleData.reserve }} and increment {{ saleData.increment }}</p>
+  <p v-if="saleData.soid === 0">Listing only</p>
+  <p v-else-if="saleData.soid === 1">Selling this item for {{ saleData.amount }}</p>
+  <p v-else-if="saleData.soid === 2">Selling by auction with reserve price {{ saleData.reserve }} and increment {{ saleData.increment }}</p>
 </div>
 </template>
 

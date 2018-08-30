@@ -1,5 +1,6 @@
 <template>
     <div>
+      <notifications group="foo" />
       <div class="main">
         <navigation/>
         <login />

@@ -7,6 +7,7 @@ import {
 import _ from 'lodash'
 import searchIndexService from '@/services/searchindex/SearchIndexService'
 import moment from 'moment'
+import cacheService from '@/services/cacheService'
 
 /**
  *  Service manages a file structure which has a root file and a set of provenance records.
@@ -29,7 +30,7 @@ const provenanceService = {
   getRootFileInLS: function () {
     let rootFileStringy = localStorage.getItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_PATH)
     if (!rootFileStringy) {
-
+      provenanceService.initRootFile()
     } else {
       return JSON.parse(rootFileStringy)
     }
@@ -56,6 +57,26 @@ const provenanceService = {
     } else {
       localStorage.setItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_PATH, file)
     }
+  },
+  parseAppUrl: function (appUrl) {
+    if (!appUrl || appUrl.length === 0) {
+      return ''
+    }
+    let showUrl = 'App Url: '
+    if (appUrl.startsWith(':')) {
+      showUrl += appUrl.substring(3)
+    } else if (appUrl.startsWith('http:')) {
+      showUrl += appUrl.substring(7)
+    } else if (appUrl.startsWith('https:')) {
+      showUrl += appUrl.substring(8)
+    } else if (appUrl.startsWith('s:')) {
+      showUrl += appUrl.substring(4)
+    } else if (appUrl.startsWith('p:')) {
+      showUrl += appUrl.substring(4)
+    } else {
+      showUrl += appUrl
+    }
+    return showUrl
   },
   makeRootFile: function () {
     var now = moment({}).valueOf()
@@ -205,19 +226,6 @@ const provenanceService = {
       throw new Error('Index data is out of step with provenance data.')
     }
   },
-  updateSaleInfo: function (id, saleData) {
-    return new Promise(function (resolve) {
-      let rootFile = provenanceService.getRootFileInLS()
-      let record = _.find(rootFile.records, {id: id})
-      record.saleData = saleData
-      putFile(provenanceService.ROOT_FILE_GAIA_NAME, JSON.stringify(rootFile), {encrypt: false}).then(function (message) {
-        provenanceService.setRootFileInLS(rootFile)
-        resolve(message)
-      }).catch(function (e) {
-        throw e
-      })
-    })
-  },
   createOrUpdateRecord: function (indexData, provData) {
     return new Promise(function (resolve) {
       provenanceService.checkData(indexData, provData)
@@ -239,6 +247,7 @@ const provenanceService = {
             indexData.gaiaUrl = message
             indexData.appUrl = window.location.host
             searchIndexService.reindexRecord(indexData).then(function (message) {
+              cacheService.updateIndexDataInCache(indexData)
               console.log('Indexed new record.')
             }).catch(function (e) {
               console.log('Unable to index new record - it should be picked up in next sweep. ', e)

@@ -1,13 +1,13 @@
 <template>
 <div class="column">
   <provenance-sale-data v-if="saleDataModalActive" v-on:close-sale-data-modal="closeSaleDataModal" v-bind:recordForSaleData="recordForSaleData" v-bind:saleDataModalActive="saleDataModalActive"/>
-  <h1 class="title is-1">{{ environment }} - My Artworks</h1>
+  <h1 class="title is-1">My Artworks</h1>
   <div class="notification">
     Found: {{ numbResults }}
     <p class="has-text-right"><a @click="reindexRoot()">reindex</a></p>
   </div>
   <div v-for="provenanceRecord in provenanceRecords" :key="provenanceRecord.indexData.id">
-    <provenance-item-bar v-on:open-sale-data-modal="openSaleDataModal" v-bind:provenanceRecord="provenanceRecord" v-bind:userData="userData" v-bind:allowEdit="allowEdit"/>
+    <provenance-item-bar v-on:open-sale-data-modal="openSaleDataModal" v-bind:provenanceRecord="provenanceRecord" v-bind:userData="userData"/>
   </div>
 </div>
 </template>
@@ -26,15 +26,12 @@ export default {
       recordForSaleData: null,
       saleDataModalActive: false,
       numbResults: 0,
-      allowEdit: true,
       userData: {},
-      provenanceRecords: [],
-      environment: 'dfsdf'
+      provenanceRecords: []
     }
   },
   mounted () {
     console.log('Running App version ', process.env)
-    this.environment = process.env.SEARCH_INDEX_URL
     this.provenanceRecords = provenanceService.getProvenanceRecordsInLS()
     this.numbResults = this.provenanceRecords.length
     this.userData = provenanceService.getUserData()
@@ -62,23 +59,7 @@ export default {
     },
     openSaleDataModal: function (id) {
       let record = provenanceService.getProvenanceRecord(id)
-      this.recordForSaleData = {
-        id: record.indexData.id,
-        title: record.indexData.title,
-      }
-      if (record.indexData.saleData) {
-        this.recordForSaleData.saleData = record.indexData.saleData
-        this.recordForSaleData.saleData.amount = Number(record.indexData.saleData.amount)
-        this.recordForSaleData.saleData.reserve = Number(record.indexData.saleData.reserve)
-        this.recordForSaleData.saleData.increment = Number(record.indexData.saleData.increment)
-      } else {
-        this.recordForSaleData.saleData = {
-          saleOption: provenanceService.saleOptions[0],
-          title: 'Options for selling your item.',
-          amount: 0.00,
-          reserve: 0.00
-        }
-      }
+      this.recordForSaleData = record
       this.saleDataModalActive = true
     },
   },

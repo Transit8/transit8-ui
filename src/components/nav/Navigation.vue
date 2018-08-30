@@ -22,6 +22,14 @@
   </div>
   <div id="navMenu" class="navbar-menu">
     <div class="navbar-start">
+      <div v-if="loggedIn" class="navbar-item has-dropdown"  v-bind:class="{ 'is-active': isActive }" @click="isActive = ! isActive">
+        <div class="navbar-link">
+          Session Users
+        </div>
+        <div class="navbar-dropdown is-right">
+          <a class="navbar-item" v-for="peer in peers" :key="peer.username">{{ peer.username }}</a>
+        </div>
+      </div>
     </div>
     <div class="navbar-end">
       <router-link to="/admin/search/art" class="navbar-item" v-if="showAdmin">
@@ -56,15 +64,18 @@ import bulma from '@/services/bulma'
 import TipeNavLinks from './TipeNavLinks'
 import authorization from 'bright-block-auth'
 import provenanceService from '@/services/provenance/ProvenanceService'
+import messagingService from '@/services/webrtc/messagingService'
 
 export default {
   name: 'Navigation',
   data: () => {
     return {
+      isActive: false,
       loggedIn: false,
       showAdmin: false,
       isModalActive: true,
       debug: false,
+      peers: messagingService.peers,
     }
   },
   mounted () {

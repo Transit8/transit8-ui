@@ -24,6 +24,7 @@ import ProvenanceEdit from '../components/provenance/ProvenanceEdit'
 import ProvenanceCreate from '../components/provenance/ProvenanceCreate'
 import ProvenanceRegister from '../components/provenance/ProvenanceRegister'
 import ProvenanceList from '../components/provenance/ProvenanceList'
+import ProvenanceItem from '../components/provenance/ProvenanceItem'
 
 import Lightning from '@/components/lightning/Lightning'
 // import LightningNodes from '@/components/lightning/LightningNodes'
@@ -42,19 +43,25 @@ const router = new Router({
     }, {
       path: '/provenance',
       name: 'provenance',
-      meta: { requiresAuth: true },
       component: Provenance,
       children: [
         {
           path: '/provenance/register/:provenanceId',
+          meta: { requiresAuth: true },
           name: 'provenanceRegister',
           component: ProvenanceRegister
         }, {
+          path: '/provenance/item/:provenanceId',
+          name: 'provenanceItem',
+          component: ProvenanceItem
+        }, {
           path: '/provenance/edit/:provenanceId',
+          meta: { requiresAuth: true },
           name: 'provenanceEdit',
           component: ProvenanceEdit,
         }, {
           path: '/provenance/create',
+          meta: { requiresAuth: true },
           name: 'provenanceCreate',
           component: ProvenanceCreate,
         }, {

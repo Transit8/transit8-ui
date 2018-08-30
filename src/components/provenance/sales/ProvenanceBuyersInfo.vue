@@ -1,7 +1,12 @@
 <template>
 <div>
-  <p>Sale Information</p>
-  <p>Buy this item for {{ saleData.amount }}</p>
+  <p v-if="saleData.soid === 0">Listing</p>
+  <p v-else-if="saleData.soid === 1">
+    <button class="button"><a :href="'#/provenance/item/'+recordId">Buy Now: {{ saleData.amount }}</a></button>
+  </p>
+  <p v-else-if="saleData.soid === 2">
+    <button class="button"><a :href="'#/provenance/item/'+recordId">Place Bid: {{ saleData.reserve + saleData.increment }}</a></button>
+  </p>
 </div>
 </template>
 
@@ -9,7 +14,7 @@
 import moment from 'moment'
 
 export default {
-  props: ['saleData'],
+  props: ['saleData', 'recordId'],
   data () {
     return {
     }

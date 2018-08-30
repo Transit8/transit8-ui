@@ -8,20 +8,21 @@
       <img src="/static/tree.jpg" alt="Missing image"/>
     </p>
   </figure>
-  <div class="media-content">
+  <div class="media-content" v-if="provenanceRecord.indexData">
     <div class="content">
-      <p class="subtitle is-4">{{ provenanceRecord.indexData.title }}</p>
+      <p class="subtitle is-4" v-if="searching"><a :href="'#/provenance/item/'+provenanceRecord.indexData.id">{{ provenanceRecord.indexData.title }}</a></p>
+      <p class="subtitle is-4" v-else><a :href="'#/provenance/edit/'+provenanceRecord.indexData.id">{{ provenanceRecord.indexData.title }}</a></p>
       <p>{{ provenanceRecord.indexData.description }}</p>
-      <p>Uploaded by: <b>{{ provenanceRecord.indexData.uploader }}</b> on {{ niceTime(provenanceRecord.indexData.id) }}</p>
+      <p>Uploaded by: <b>{{ provenanceRecord.indexData.uploader }}</b> on {{ niceTime(provenanceRecord.indexData.id) }} {{ parseAppUrl(provenanceRecord.indexData.appUrl) }}</p>
       <p v-if="provenanceRecord.provData">
         <span v-if="provenanceRecord.provData.owner && provenanceRecord.provData.creator">
-          Owned and created by: {{ userData.username }}
+          Owned and created by: {{ provenanceRecord.indexData.uploader }}
         </span>
         <span v-else-if="provenanceRecord.provData.owner">
-          Owned by: {{ userData.username }}
+          Owned by: {{ provenanceRecord.indexData.uploader }}
         </span>
         <span v-else-if="provenanceRecord.provData.creator">
-          Created by: {{ userData.username }}
+          Created by: {{ provenanceRecord.indexData.uploader }}
         </span>
         <span v-else>
           Owner and creator unknown
@@ -48,7 +49,7 @@
         <a v-else :href="'#/provenance/register/'+provenanceRecord.indexData.id">register on blockchain</a>
     </nav>
   </div>
-  <div class="media-right" v-if="allowEdit">
+  <div class="media-right" v-if="allowEdit && !searching">
     <div v-if="provenanceRecord.indexData.saleData">
       <provenance-sellers-info v-bind:saleData="provenanceRecord.indexData.saleData"/>
       <p class="has-text-right"><button class="button is-outlined" v-on:click="openSaleDataModal">Change Sale Data</button></p>
@@ -59,7 +60,7 @@
   </div>
   <div class="media-right" v-else>
     <div v-if="provenanceRecord.indexData.saleData">
-      <provenance-buyers-info v-bind:saleData="provenanceRecord.indexData.saleData"/>
+      <provenance-buyers-info v-bind:saleData="provenanceRecord.indexData.saleData" v-bind:recordId="provenanceRecord.indexData.id"/>
     </div>
   </div>
 </article>
@@ -71,16 +72,42 @@ import ProvenanceSellersInfo from '@/components/provenance/sales/ProvenanceSelle
 import moment from 'moment'
 
 export default {
-  props: ['provenanceRecord', 'userData', 'allowEdit'],
+  props: ['provenanceRecord', 'userData'],
   data () {
     return {
+      allowEdit: false,
+      searching: true
     }
   },
   mounted () {
+    this.searching = (this.$route.name === 'marketSearch')
+    if (this.userData) {
+      this.allowEdit = this.userData.username === this.provenanceRecord.indexData.uploader
+    }
   },
   events: {
   },
   methods: {
+    parseAppUrl (appUrl) {
+      if (!appUrl || appUrl.length === 0) {
+        return ''
+      }
+      let showUrl = 'App Url: '
+      if (appUrl.startsWith(':')) {
+        showUrl += appUrl.substring(3)
+      } else if (appUrl.startsWith('http:')) {
+        showUrl += appUrl.substring(7)
+      } else if (appUrl.startsWith('https:')) {
+        showUrl += appUrl.substring(8)
+      } else if (appUrl.startsWith('s:')) {
+        showUrl += appUrl.substring(4)
+      } else if (appUrl.startsWith('p:')) {
+        showUrl += appUrl.substring(4)
+      } else {
+        showUrl += appUrl
+      }
+      return showUrl
+    },
     openSaleDataModal () {
       this.$emit('open-sale-data-modal', this.provenanceRecord.indexData.id)
       // this.mySaleDataModalActive = !mySaleDataModalActive

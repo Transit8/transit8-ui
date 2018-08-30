@@ -1,84 +1,17 @@
-import axios from 'axios'
-
-const SERVER_URL = process.env.SEARCH_INDEX_URL
+import xhrService from '@/services/xhrService'
+import cacheService from '@/services/cacheService'
 
 /**
  *  The service is a client to the brightblock sever side grpc client.
 **/
 const searchIndexService = {
-  makeDirectCall: function (url) {
-    return new Promise(resolve => {
-      axios.get(url)
-        .then(response => {
-          resolve(response.data)
-        })
-        .catch(e => {
-          console.log('Unable to fulfil request', e)
-          if (e.response && e.response.data) {
-            resolve(e.response.data)
-          } else {
-            resolve(e.message)
-          }
-        })
-    })
-  },
-  makeGetCall: function (command, args) {
-    let callInfo = {
-      method: 'get',
-      url: SERVER_URL + command,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-    for (var key in args) {
-      callInfo.url += '/' + args[key]
-    }
-    return new Promise(resolve => {
-      axios.get(callInfo.url, { headers: callInfo.headers })
-        .then(response => {
-          resolve(response.data.details)
-        })
-        .catch(e => {
-          console.log('Unable to fulfil request' + command, e)
-          if (e.response && e.response.data) {
-            resolve(e.response.data)
-          } else {
-            resolve(e.message)
-          }
-        })
-    })
-  },
-  makePostCall: function (command, data) {
-    let callInfo = {
-      method: 'post',
-      url: SERVER_URL + command,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-    return new Promise(resolve => {
-      //      axios.post(callInfo.url, { headers: callInfo.headers, body: data })
-      axios.post(callInfo.url, data)
-        .then(response => {
-          resolve(response.data.details)
-        })
-        .catch(e => {
-          console.log('Unable to fulfil request' + command, e)
-          throw e
-          // if (e.response && e.response.data) {
-          //  resolve(e.response.data)
-          // } else {
-          //  resolve(e.message)
-          // }
-        })
-    })
-  },
-  reindexRecord: function (record) {
+  PROVENANCE_FILE_GAIA_SUBPATH: 'record_',
+  reindexRecord: function (indexData) {
     return new Promise(function (resolve) {
-      searchIndexService.makePostCall('/art/index/record', record)
+      xhrService.makePostCall('/art/index/indexData', indexData)
         .then(function (result) {
           if (result.error) {
-            throw new Error({message: 'Unable to index file: ', record: record})
+            throw new Error({message: 'Unable to index file: ', indexData: indexData})
           }
           resolve(result)
         }).catch(function (e) {
@@ -88,7 +21,7 @@ const searchIndexService = {
   },
   indexUser: function (username) {
     return new Promise(function (resolve) {
-      searchIndexService.makeGetCall('/art/index/user/' + username)
+      xhrService.makeGetCall('/art/index/user/' + username)
         .then(function (result) {
           resolve(result)
         }).catch(function (e) {
@@ -98,7 +31,7 @@ const searchIndexService = {
   },
   buildArtIndex: function () {
     return new Promise(function (resolve) {
-      searchIndexService.makeGetCall('/art/index/build')
+      xhrService.makeGetCall('/art/index/build')
         .then(function (result) {
           resolve(result)
         }).catch(function (e) {
@@ -108,7 +41,7 @@ const searchIndexService = {
   },
   buildIndexByNames: function (names) {
     return new Promise(function (resolve) {
-      searchIndexService.makeGetCall('/names/index/build', [names])
+      xhrService.makeGetCall('/names/index/build', [names])
         .then(function (result) {
           resolve(result)
         }).catch(function (e) {
@@ -118,7 +51,7 @@ const searchIndexService = {
   },
   buildIndexByPages: function (from, to) {
     return new Promise(function (resolve) {
-      searchIndexService.makeGetCall('/names/index/build', [from, to])
+      xhrService.makeGetCall('/names/index/build', [from, to])
         .then(function (result) {
           resolve(result)
         }).catch(function (e) {
@@ -128,7 +61,7 @@ const searchIndexService = {
   },
   fetchAll: function () {
     return new Promise(function (resolve) {
-      searchIndexService.makeGetCall('/art/fetch')
+      xhrService.makeGetCall('/art/fetch')
         .then(function (result) {
           resolve(result)
         }).catch(function (e) {
@@ -138,7 +71,7 @@ const searchIndexService = {
   },
   clearAll: function () {
     return new Promise(function (resolve) {
-      searchIndexService.makeGetCall('/art/index/clear')
+      xhrService.makeGetCall('/art/index/clear')
         .then(function (result) {
           resolve(result)
         }).catch(function (e) {
@@ -148,7 +81,7 @@ const searchIndexService = {
   },
   sizeOfIndex: function (index) {
     return new Promise(function (resolve) {
-      searchIndexService.makeGetCall('/' + index + '/index/size')
+      xhrService.makeGetCall('/' + index + '/index/size')
         .then(function (result) {
           resolve(result)
         }).catch(function (e) {
@@ -158,22 +91,35 @@ const searchIndexService = {
   },
   searchIndex: function (index, term, query) {
     return new Promise(function (resolve) {
-      searchIndexService.makeGetCall('/' + index + '/search/' + term + '?q=' + query)
+      xhrService.makeGetCall('/' + index + '/search/' + term + '?q=' + query)
         .then(function (result) {
           resolve(result)
         }).catch(function (e) {
-          resolve({error: 'Unable to create root file'})
+          resolve({error: 'Error searching index for query: ' + query})
         })
     })
   },
-  getByGaiaUrl: function (url) {
+  getRecord: function (indexData) {
     return new Promise(function (resolve) {
-      searchIndexService.makeDirectCall(url)
-        .then(function (result) {
-          resolve(result)
-        }).catch(function (e) {
-          resolve({error: 'Unable to create root file'})
-        })
+      let record = cacheService.getFromCache(indexData.id)
+      if (record && record.title === indexData.title && record.description === indexData.description) {
+        resolve(record)
+      } else {
+        let urlLastSlash = indexData.gaiaUrl.lastIndexOf('/') + 1
+        let url = indexData.gaiaUrl.substring(0, urlLastSlash)
+        url = url + searchIndexService.PROVENANCE_FILE_GAIA_SUBPATH + indexData.id + '.json'
+        xhrService.makeDirectCall(url)
+          .then(function (provData) {
+            let record = {
+              indexData: indexData,
+              provData: provData
+            }
+            cacheService.addToCache(record)
+            resolve(record)
+          }).catch(function (e) {
+            console.log('Unable to add record: ' + record.indexData.id, e)
+          })
+      }
     })
   },
 }

@@ -31,7 +31,7 @@
     </div>
   </div>
   <div v-for="provenanceRecord in provenanceRecords" :key="provenanceRecord.indexData.id">
-    <provenance-item-bar v-bind:provenanceRecord="provenanceRecord" v-bind:userData="userData" v-bind:allowEdit="allowEdit"/>
+    <provenance-item-bar v-bind:provenanceRecord="provenanceRecord" v-bind:userData="userData"/>
   </div>
 </div>
 </template>
@@ -48,7 +48,6 @@ export default {
   data () {
     return {
       userData: {},
-      allowEdit: false,
       provenanceRecords: [],
       sizeOfIndex: null,
       queryString: null,
@@ -78,21 +77,19 @@ export default {
       let $elfie = this
       searchIndexService.searchIndex('art', this.queryTerm, query)
         .then((results) => {
-          this.$emit('update:numbResults', results.length)
           $elfie.provenanceRecords = []
+          console.log('Total records found in search (may differ from number fetched from gaia storage): ' + results.length)
           _.forEach(results, function (indexData) {
-            let urlLastSlash = indexData.gaiaUrl.lastIndexOf('/') + 1
-            let url = indexData.gaiaUrl.substring(0, urlLastSlash)
-            url = url + provenanceService.PROVENANCE_FILE_GAIA_SUBPATH + indexData.id + '.json'
-            searchIndexService.getByGaiaUrl(url)
-              .then((provData) => {
-                $elfie.provenanceRecords.push({
-                  indexData: indexData,
-                  provData: provData
-                })
+            searchIndexService.getRecord(indexData)
+              .then((record) => {
+                console.log('Record: ' + record)
+                if (record && record.indexData && record.indexData.id) {
+                  $elfie.provenanceRecords.push(record)
+                  $elfie.$emit('update:numbResults', $elfie.provenanceRecords.length)
+                }
               })
               .catch(e => {
-                console.log('Unable to get from: ' + indexData.gaiaUrl)
+                console.log('Unable to get from: ', indexData)
               })
           })
         })
