@@ -231,6 +231,14 @@ const provenanceService = {
       provenanceService.checkData(indexData, provData)
       let rootFile = provenanceService.getRootFileInLS()
       var index = _.findIndex(rootFile.records, {id: indexData.id})
+      if (!indexData.saleData) {
+        indexData.saleData = {
+          soid: 0,
+          amount: 0,
+          reserve: 0,
+          increment: 0
+        }
+      }
       if (index > -1) {
         rootFile.records.splice(index, 1, indexData)
       } else {
