@@ -101,8 +101,9 @@ const searchIndexService = {
   },
   getRecord: function (indexData) {
     return new Promise(function (resolve) {
+      let useCache = false
       let record = cacheService.getFromCache(indexData.id)
-      if (record && record.title === indexData.title && record.description === indexData.description) {
+      if (useCache && record && record.title === indexData.title && record.description === indexData.description) {
         resolve(record)
       } else {
         let urlLastSlash = indexData.gaiaUrl.lastIndexOf('/') + 1

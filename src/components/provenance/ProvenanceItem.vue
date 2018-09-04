@@ -89,7 +89,11 @@ export default {
       this.loggedIn = true
       this.username = userData.username
     }
-    this.provenanceRecord = cacheService.getFromCache(this.provenanceId)
+    let useCache = false
+    if (useCahce) {
+      this.provenanceRecord = cacheService.getFromCache(this.provenanceId)
+    }
+    // if useCache false or the item missing from cache!
     if (!this.provenanceRecord) {
       this.provenanceRecord = provenanceService.getProvenanceRecord(this.provenanceId)
     }
