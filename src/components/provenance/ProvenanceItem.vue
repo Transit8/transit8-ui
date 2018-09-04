@@ -17,27 +17,34 @@
       </div>
     </div>
   </article>
-  <div class="media-right" v-if="provenanceRecord.indexData.saleData">
-    <provenance-buyers-info v-bind:saleData="provenanceRecord.indexData.saleData" v-bind:recordId="provenanceRecord.indexData.id"/>
-  </div>
-  <div id="messages" v-for="userMessage in userMessages" :key="userMessage.username">
-    <p>{{ userMessage.who }} : {{ niceTime(userMessage.when) }}</p>
-    <p>{{ userMessage.message }}</p>
-  </div>
-  <div class="field" v-if="webrtcState === 1">
-    <label class="label">Comment:</label>
-    <div class="control">
-      <textarea class="textarea" placeholder="send a message" v-model="messageSignal.message"></textarea>
-    </div>
-  </div>
-  <div class="field is-grouped" v-if="webrtcState === 1">
-    <div class="control">
-      <button class="button is-link" v-on:click="sendMessageSignal">Send</button>
-    </div>
-  </div>
   <div class="columns">
-    <div id="publisher" class="column"></div>
-    <div id="subscriber" class="column"></div>
+    <div class="column">
+      <div class="media-right" v-if="provenanceRecord.indexData.saleData">
+        <provenance-sellers-info v-if="owner" v-bind:saleData="provenanceRecord.indexData.saleData" v-bind:recordId="provenanceRecord.indexData.id"/>
+        <provenance-buyers-info v-else v-bind:saleData="provenanceRecord.indexData.saleData" v-bind:recordId="provenanceRecord.indexData.id"/>
+      </div>
+    </div>
+    <div class="column">
+      <div id="messages" v-for="userMessage in userMessages" :key="userMessage.username">
+        <p>{{ userMessage.who }} : {{ niceTime(userMessage.when) }}</p>
+        <p>{{ userMessage.message }}</p>
+      </div>
+      <div class="field" v-if="webrtcState === 1">
+        <label class="label">Comment:</label>
+        <div class="control">
+          <textarea class="textarea" placeholder="send a message" v-model="messageSignal.message"></textarea>
+        </div>
+      </div>
+      <div class="field is-grouped" v-if="webrtcState === 1">
+        <div class="control">
+          <button class="button is-link" v-on:click="sendMessageSignal">Send</button>
+        </div>
+      </div>
+      <div class="columns">
+        <div id="publisher" class="column"></div>
+        <div id="subscriber" class="column"></div>
+      </div>
+    </div>
   </div>
 </section>
 </template>
@@ -61,6 +68,7 @@ export default {
       username: 'anon',
       loggedIn: false,
       webrtcState: 0,
+      owner: false,
       provenanceRecord: {
         indexData: {},
         provData: {}
@@ -85,6 +93,7 @@ export default {
     if (!this.provenanceRecord) {
       this.provenanceRecord = provenanceService.getProvenanceRecord(this.provenanceId)
     }
+    this.owner = this.provenanceRecord.indexData.uploader === this.username
     let $elfie = this
     // eventBus.$on('signal-in-message', function (payLoad) {
     //  $elfie.userMessages.push(payLoad)

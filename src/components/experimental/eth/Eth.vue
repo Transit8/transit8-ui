@@ -5,12 +5,13 @@
         <eth-api-side-bar  v-on:make-call="onMakeCall"/>
     </div>
     <div class="column">
-      <h2>Accounts {{ mainAccount.number }} {{ mainAccount.balance }}</h2>
+      <h2>Accounts</h2>
       <ul>
         <li
            v-for="account in accounts"
            :key="account.balance">
-            {{ account.number }} :  <a>{{ account.balance }}</a>
+            Account: {{ account.number }}
+            <br>Balance: {{ account.balance }}
         </li>
       </ul>
       <vue-json-pretty
@@ -30,6 +31,8 @@
         <img src="http://cdn.recolor.com/u/2EJlWjZPOOcfaGnCNoO2xEOBafS2/p/LjgUX0G1lZHh?w=500">
       </figure>
     </div>
+  </div>
+  <div class="columns">
     <div class="column">
       <figure class="image is-128x128">
         <img src="http://cdn.recolor.com/u/nYsE9N7TbOOO1vtGGb1KE225Kdo1/p/LjfGuMwjZFFC?w=500">

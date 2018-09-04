@@ -61,8 +61,9 @@
               <div class="field">
                 <input class="input is-info" type="number" step="50" placeholder="Title the cost value" v-model="recordForSaleData.indexData.saleData.amount">
                 <p class="help is-danger">
-                  Value in Bitcoin: {{ getValueInBitcoin(recordForSaleData.indexData.saleData.amount) }}
-                </p>             </div>
+                  {{ getValueInBitcoin(recordForSaleData.indexData.saleData.amount) }} Btc / {{ getValueInEther(recordForSaleData.indexData.saleData.amount) }} Eth
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -78,7 +79,7 @@
                   This item will not sell if the bidding does not meet or exceed this amount
                 </p>
                 <p class="help is-danger">
-                  Value in Bitcoin: {{ getValueInBitcoin(recordForSaleData.indexData.saleData.reserve) }}
+                  {{ getValueInBitcoin(recordForSaleData.indexData.saleData.reserve) }} Btc / {{ getValueInEther(recordForSaleData.indexData.saleData.reserve) }} Eth
                 </p>
               </div>
             </div>
@@ -94,8 +95,8 @@
                   This is the amount the bidding will increase by with each bid (coming soon increment tables).
                 </p>
                 <p class="help is-danger">
-                  Value in Bitcoin: {{ getValueInBitcoin('reserve', recordForSaleData.indexData.saleData.increment) }}
-                </p>
+                  {{ getValueInBitcoin(recordForSaleData.indexData.saleData.increment) }} Btc / {{ getValueInEther(recordForSaleData.indexData.saleData.increment) }} Eth
+              </p>
               </div>
             </div>
           </div>
@@ -113,12 +114,11 @@
 
 <script>
 import provenanceService from '@/services/provenance/ProvenanceService'
-import exchangeRatesService from '@/services/exchangeRatesService'
 import ConversionRates from '@/components/rates/ConversionRates'
 
 export default {
   name: 'ProvenanceSaleData',
-  props: ['recordForSaleData', 'saleDataModalActive'],
+  props: ['recordForSaleData', 'saleDataModalActive', 'fiatRates', 'ethToBtc'],
   data () {
     return {
       errors: [],
@@ -126,7 +126,6 @@ export default {
       reserve: 0,
       increment: 0,
       currency: 'EUR',
-      fiatRates: {},
       saleOptionSoid: 0,
       username: null,
       saleOptions: provenanceService.saleOptions,
@@ -135,12 +134,6 @@ export default {
   created () {
     this.username = provenanceService.getUserData().username
     this.saleOptionSoid = this.recordForSaleData.indexData.saleData.soid
-    exchangeRatesService.fetchFiatRates().then((fiatRates) => {
-      this.fiatRates = fiatRates
-      console.log(fiatRates)
-      this.$nextTick(() => this.getValueInBitcoin(2))
-      this.$nextTick(() => this.currentSymbol())
-    })
   },
   computed: {
   },
@@ -151,19 +144,28 @@ export default {
     updateCurrency (currency) {
       this.currency = currency
     },
+    getValueInEther (amount) {
+      let currentCurrency = this.fiatRates[this.currency]
+      let conversion = currentCurrency['15m']
+      conversion = conversion * this.ethToBtc.rate
+      return this.convert(amount, conversion, 100000000)
+    },
     getValueInBitcoin (amount) {
-      exchangeRatesService.fetchFiatRates().then((fiatRates) => {
-        this.fiatRates = fiatRates
-        let currentCurrency = this.fiatRates[this.currency]
-        let val = currentCurrency['15m']
-        if (typeof amount === 'string') {
-          amount = Number(amount)
-        }
-        if (typeof amount === 'number') {
-          val = amount / val
-        }
-        return Math.round(val * 100000000) / 100000000
-      })
+      // exchangeRatesService.fetchFiatRates().then((fiatRates) => {
+      // })
+      // this.fiatRates = fiatRates
+      let currentCurrency = this.fiatRates[this.currency]
+      let conversion = currentCurrency['15m']
+      return this.convert(amount, conversion, 100000000)
+    },
+    convert (amount, conversion, precision) {
+      if (typeof amount === 'string') {
+        amount = Number(amount)
+      }
+      if (typeof amount === 'number') {
+        conversion = amount / conversion
+      }
+      return Math.round(conversion * precision) / precision
     },
     currentSymbol () {
       if (this.fiatRates && this.currency && this.fiatRates[this.currency]) {

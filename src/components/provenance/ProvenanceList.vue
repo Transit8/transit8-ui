@@ -1,6 +1,6 @@
 <template>
 <div class="column">
-  <provenance-sale-data v-if="saleDataModalActive" v-on:close-sale-data-modal="closeSaleDataModal" v-bind:recordForSaleData="recordForSaleData" v-bind:saleDataModalActive="saleDataModalActive"/>
+  <provenance-sale-data v-if="saleDataModalActive" v-on:close-sale-data-modal="closeSaleDataModal" v-bind:ethToBtc="ethToBtc" v-bind:fiatRates="fiatRates" v-bind:recordForSaleData="recordForSaleData" v-bind:saleDataModalActive="saleDataModalActive"/>
   <h1 class="title is-1">My Artworks</h1>
   <div class="notification">
     Found: {{ numbResults }}
@@ -19,6 +19,7 @@ import ProvenanceActions from '@/components/provenance/ProvenanceActions'
 import ProvenanceItemBar from '@/components/provenance/ProvenanceItemBar'
 import ProvenanceSaleData from '@/components/provenance/sales/ProvenanceSaleData'
 import moment from 'moment'
+import exchangeRatesService from '@/services/exchangeRatesService'
 
 export default {
   data () {
@@ -27,6 +28,8 @@ export default {
       saleDataModalActive: false,
       numbResults: 0,
       userData: {},
+      fiatRates: {},
+      ethToBtc: {},
       provenanceRecords: []
     }
   },
@@ -35,6 +38,12 @@ export default {
     this.provenanceRecords = provenanceService.getProvenanceRecordsInLS()
     this.numbResults = this.provenanceRecords.length
     this.userData = provenanceService.getUserData()
+    exchangeRatesService.fetchFiatRates().then((fiatRates) => {
+      this.fiatRates = fiatRates
+    })
+    exchangeRatesService.fetchCoinPair('eth_btc').then((ethToBtc) => {
+      this.ethToBtc = ethToBtc
+    })
   },
   methods: {
     niceTime: function (updated) {

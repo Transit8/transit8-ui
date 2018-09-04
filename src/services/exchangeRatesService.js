@@ -8,6 +8,19 @@ const SHAPE_SHIFT_URL = process.env.SHAPE_SHIFT_URL
 
 const exchangeRatesService = {
   pairs: [],
+  generateInvoice: function (invoiceData) {
+    return new Promise(function (resolve) {
+      xhrService.makeGetCall('/lnd/getInvoice/2500')
+        .then(function (result) {
+          if (result.error) {
+            throw new Error({message: 'Unable to generate invoice: ', invoiceData: invoiceData})
+          }
+          resolve(JSON.parse(result))
+        }).catch(function (e) {
+          throw e
+        })
+    })
+  },
   fetchCoinPairs: function () {
     return new Promise(function (resolve) {
       if (exchangeRatesService.coinPairs) {
@@ -83,20 +96,6 @@ const exchangeRatesService = {
       }
     }
     stompClient.connect({}, connectSuccess, connectError)
-  },
-  getValueInBitcoin (currency, amount) {
-    return new Promise(function (resolve) {
-      exchangeRatesService.fetchFiatRate(currency).then(function (fiatRate) {
-        let val = fiatRate['15m']
-        if (typeof amount === 'string') {
-          amount = Number(amount)
-        }
-        if (typeof amount === 'number') {
-          val = amount / val
-        }
-        resolve(Math.round(val * 100000000) / 100000000)
-      })
-    })
   },
   getFiatToEther (currency) {
     return new Promise(function (resolve) {

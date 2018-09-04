@@ -3,7 +3,10 @@ import Web3 from 'web3'
 
 const Eth = require('ethjs')
 // const eth = new Eth(new Eth.HttpProvider('https://ropsten.infura.io'));
-const eth = new Eth(new Eth.HttpProvider('http://localhost:8545'))
+// Ganache (7545)
+const eth = new Eth(new Eth.HttpProvider('http://localhost:7545'))
+// Truffle develop (9545)
+// const eth = new Eth(new Eth.HttpProvider('http://localhost:9545'))
 
 /*
 * 1. Check for injected web3 (mist/metamask)
