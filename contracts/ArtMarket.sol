@@ -1,6 +1,69 @@
-pragma solidity ^0.4.24;
+/**
+ * @title SafeMath
+ * @dev Math operations with safety checks that revert on error
+ */
+library SafeMath {
 
-  contract ArtMarket {
+  /**
+  * @dev Multiplies two numbers, reverts on overflow.
+  */
+  function mul(uint256 _a, uint256 _b) internal pure returns (uint256) {
+    // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
+    // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
+    if (_a == 0) {
+      return 0;
+    }
+
+    uint256 c = _a * _b;
+    require(c / _a == _b);
+
+    return c;
+  }
+
+  /**
+  * @dev Integer division of two numbers truncating the quotient, reverts on division by zero.
+  */
+  function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
+    require(_b > 0); // Solidity only automatically asserts when dividing by 0
+    uint256 c = _a / _b;
+    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
+
+    return c;
+  }
+
+  /**
+  * @dev Subtracts two numbers, reverts on overflow (i.e. if subtrahend is greater than minuend).
+  */
+  function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
+    require(_b <= _a);
+    uint256 c = _a - _b;
+
+    return c;
+  }
+
+  /**
+  * @dev Adds two numbers, reverts on overflow.
+  */
+  function add(uint256 _a, uint256 _b) internal pure returns (uint256) {
+    uint256 c = _a + _b;
+    require(c >= _a);
+
+    return c;
+  }
+
+  /**
+  * @dev Divides two numbers and returns the remainder (unsigned integer modulo),
+  * reverts when dividing by zero.
+  */
+  function mod(uint256 a, uint256 b) internal pure returns (uint256) {
+    require(b != 0);
+    return a % b;
+  }
+}
+
+
+contract ArtMarket {
   address public owner;
 
   struct Item {
@@ -17,22 +80,31 @@ pragma solidity ^0.4.24;
   mapping(bytes32 => bool) public itemExists;
 
   struct Auction {
-    uint itemID;
-    uint created;
-    uint duration;
-    uint reserve;
-    uint increment;
-    address curator;
-    uint highestBid;
-    address highestBidder;
-    mapping(address => uint) bids;
-    bool closed;
+      uint itemID;
+      uint created;
+      uint duration;
+      uint reserve;
+      uint increment;
+      address curator;
+      uint highestBid;
+      address highestBidder;
+      mapping(address => uint) bids;
+      bool closed;
   }
   mapping (uint => Auction) public auctions;
   int public auctionIndex = -1;
 
+  mapping (address => string) public profiles;
+
+
+
   constructor() public {
     owner = msg.sender;
+  }
+
+
+  function registerProfile(string url) public {
+      profiles[msg.sender] = url;
   }
 
   //blockstackUrl is empty if the item is stored on IPFS
@@ -47,42 +119,56 @@ pragma solidity ^0.4.24;
     itemExists[hash] = true;
   }
 
+  /* set price to 0 to cancel sale */
+  function sell(uint itemID, uint price) public {
+      require(items[itemID].owners[items[itemID].ownerIndex] == msg.sender);
+      items[itemID].price = price;
+  }
+
   function buy(uint itemID) payable public {
-    if(msg.value == items[itemID].price) {
-     items[itemID].owners[items[itemID].ownerIndex].transfer(msg.value);
-     items[itemID].ownerIndex++;
-     items[itemID].owners[items[itemID].ownerIndex] = msg.sender;
+    if(items[itemID].price > 0 && msg.value == items[itemID].price) {
+      items[itemID].owners[items[itemID].ownerIndex].transfer(msg.value);
+      items[itemID].ownerIndex++;
+      items[itemID].owners[items[itemID].ownerIndex] = msg.sender;
     }
   }
 
-  function startAuction(uint itemID, uint duration) public {
+  function startAuction(uint itemID, uint duration, uint reserve, uint increment) public {
     require(msg.sender == items[itemID].owners[items[itemID].ownerIndex]);  //only possible to auction items you own
     auctionIndex++;
     auctions[uint(auctionIndex)].itemID = itemID;
     auctions[uint(auctionIndex)].duration = duration;
+    auctions[uint(auctionIndex)].reserve = reserve;
+    auctions[uint(auctionIndex)].increment = increment;
     auctions[uint(auctionIndex)].curator = msg.sender;
     auctions[uint(auctionIndex)].created = now;
   }
 
   function closeAuction(uint auctionID) public {
     if(now - auctions[auctionID].created > auctions[auctionID].duration) {
-     items[auctions[auctionID].itemID].owners[items[auctions[auctionID].itemID].ownerIndex].transfer(auctions[auctionID].highestBid);
-     items[auctions[auctionID].itemID].ownerIndex++;
-     items[auctions[auctionID].itemID].owners[items[auctions[auctionID].itemID].ownerIndex]= auctions[auctionID].highestBidder;
-     auctions[auctionID].closed = true;
+      items[auctions[auctionID].itemID].owners[items[auctions[auctionID].itemID].ownerIndex].transfer(auctions[auctionID].highestBid);
+      items[auctions[auctionID].itemID].ownerIndex++;
+      items[auctions[auctionID].itemID].owners[items[auctions[auctionID].itemID].ownerIndex]= auctions[auctionID].highestBidder;
+      auctions[auctionID].closed = true;
     }
   }
 
   function reclaimEscrow(uint auctionID) public {
-   require(auctions[auctionID].closed && auctions[auctionID].highestBidder != msg.sender);
-   msg.sender.transfer(auctions[auctionID].bids[msg.sender]);
-   auctions[auctionID].bids[msg.sender] = 0;
+    require(auctions[auctionID].closed && auctions[auctionID].highestBidder != msg.sender);
+    msg.sender.transfer(auctions[auctionID].bids[msg.sender]);
+    auctions[auctionID].bids[msg.sender] = 0;
   }
 
   function placeBid(uint auctionID) payable public {
-    require(msg.value > auctions[auctionID].highestBid);
-    auctions[auctionID].highestBidder = msg.sender;
-    auctions[auctionID].highestBid = msg.value;
-    auctions[auctionID].bids[msg.sender] = msg.value;
+     require(msg.value > auctions[auctionID].reserve && msg.value > SafeMath.add(auctions[auctionID].highestBid, auctions[auctionID].increment));
+     auctions[auctionID].highestBidder = msg.sender;
+     auctions[auctionID].highestBid = msg.value;
+     auctions[auctionID].bids[msg.sender] = msg.value;
   }
+
+
+  function getItemOwner(uint itemID, uint ownerIndex) public constant returns(address) {
+      return items[itemID].owners[ownerIndex];
+  }
+
 }

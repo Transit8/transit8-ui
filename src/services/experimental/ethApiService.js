@@ -1,10 +1,10 @@
 // import axios from 'axios'
 import Web3 from 'web3'
 
-const Eth = require('ethjs')
+// const Eth = require('ethjs')
 // const eth = new Eth(new Eth.HttpProvider('https://ropsten.infura.io'));
 // Ganache (7545)
-const eth = new Eth(new Eth.HttpProvider('http://localhost:7545'))
+// const eth = new Eth(new Eth.HttpProvider('http://localhost:7545'))
 // Truffle develop (9545)
 // const eth = new Eth(new Eth.HttpProvider('http://localhost:9545'))
 
@@ -20,119 +20,94 @@ const ethereumUri = 'http://localhost:8545'
 // ganache 0x73b5657373dfc685ed8a2a4bebdd39d7b3677def
 
 const ETHEREUM_ABI = process.env.ETHEREUM_ABI
-const ETHEREUM_CONTRACT_ADDRESS = '0x73b5657373dfc685ed8a2a4bebdd39d7b3677def' //process.env.ETHEREUM_CONTRACT_ADDRESS
+const ETHEREUM_CONTRACT_ADDRESS = '0xE8632a1139352c568AD0e38E30b025A364804a29'
+// process.env.ETHEREUM_CONTRACT_ADDRESS
 
 // const ethereumUri = 'https://api.blockcypher.com/v1/eth/main'
 
 const ethApiService = {
   getWeb3: function () {
-    let web3
     if (typeof window.web3 !== 'undefined') {
-      web3 = new Web3(window.web3.currentProvider)
+      ethApiService.web3 = new Web3(window.web3.currentProvider)
     } else {
       // set the  provider you want from Web3.providers
-      web3 = new Web3(new Web3.providers.HttpProvider(ethereumUri))
+      ethApiService.web3 = new Web3(new Web3.providers.HttpProvider(ethereumUri))
     }
-    if (web3.isConnected()) {
-      return web3
+    if (ethApiService.web3.isConnected()) {
+      return ethApiService.web3
     }
     throw new Error('No connection!')
   },
-  getEthAccounts: function () {
-    return eth.accounts()
-  },
   getAccounts: function () {
-    let web3 = this.getWeb3()
-    return new Promise(resolve => {
-      web3.eth.getAccounts(function (error, result) {
-        if (error) {
-          resolve(false)
-          console.log(error)
-        }
-        resolve(result)
-      })
-    })
-  },
-  register: function (title, artHash, blockstackId) {
-    let web3 = this.getWeb3()
-    return new Promise(resolve => {
-      web3.eth.getAccounts(function (error, result) {
-        if (error) {
-          resolve(false)
-        }
-        console.log(result)
-        web3.eth.defaultAccount = result[0]
-        var artmarketContract = web3.eth.contract(ETHEREUM_ABI)
-        let myContract = artmarketContract.at(ETHEREUM_CONTRACT_ADDRESS)
-        artHash = '0x' + artHash
-        console.log('title: ' + title)
-        console.log('artHash: ' + artHash)
-        console.log('blockstackId: ' + blockstackId)
-        myContract.addItem(title, artHash, blockstackId, function (err, res) {
-          if (err) {
-            console.log(err)
-          }
-          resolve(res)
-        })
-      })
-    })
-  },
-  fetchRegistration: function (index) {
-    let web3 = this.getWeb3()
+    let web3 = ethApiService.getWeb3()
     return new Promise(resolve => {
       web3.eth.getAccounts(function (error, result) {
         if (error) {
           resolve(error)
+          console.log(error)
         }
-        console.log(result)
         web3.eth.defaultAccount = result[0]
-        var artmarketContract = web3.eth.contract(ETHEREUM_ABI)
-        let myContract = artmarketContract.at(ETHEREUM_CONTRACT_ADDRESS)
-        myContract.items(index, function (err, res) {
-          if (err) {
-            console.log(err)
-          }
-          resolve(res)
-        })
+        ethApiService.artmarketContract = web3.eth.contract(ETHEREUM_ABI)
+        ethApiService.myContract = ethApiService.artmarketContract.at(ETHEREUM_CONTRACT_ADDRESS)
+        resolve(result)
+      })
+    })
+  },
+  isRegistered: function (artHash) {
+    return new Promise(resolve => {
+      ethApiService.myContract.itemExists(artHash, function (err, res) {
+        if (err) {
+          console.log(err)
+          resolve(err)
+        }
+        if (res) {
+          resolve({registered: true})
+        } else {
+          resolve({registered: false})
+        }
+      })
+    })
+  },
+  register: function (title, artHash, blockstackId) {
+    return new Promise(resolve => {
+      artHash = '0x' + artHash
+      ethApiService.myContract.addItem(title, artHash, blockstackId, function (err, res) {
+        if (err) {
+          console.log(err)
+        }
+        resolve({tx_id: res})
+      })
+    })
+  },
+  fetchRegistration: function (index) {
+    return new Promise(resolve => {
+      ethApiService.myContract.items(index, function (err, res) {
+        if (err) {
+          console.log(err)
+        }
+        resolve(res)
       })
     })
   },
   fetchNumbRegistrations: function () {
-    let web3 = this.getWeb3()
     return new Promise(resolve => {
-      web3.eth.getAccounts(function (error, result) {
-        if (error) {
-          resolve(false)
+      ethApiService.myContract.itemIndex(function (err, numbItems) {
+        if (err) {
+          console.log(err)
         }
-        console.log(result)
-        web3.eth.defaultAccount = result[0]
-        var artmarketContract = web3.eth.contract(ETHEREUM_ABI)
-        let myContract = artmarketContract.at(ETHEREUM_CONTRACT_ADDRESS)
-        myContract.itemIndex(function (err, numbItems) {
-          if (err) {
-            console.log(err)
-          }
-          resolve(numbItems.c[0])
-        })
+        resolve(numbItems.c[0])
       })
-      // var myContract = new web3.eth.Contract(0xf89d7325a62e981e58397745c6289dbe52f4ac3bbb49be64715d2c3c55af5c4e)
-      // myContract.methods.addItem('new artwork', artHash, blockstackId)
-      // suppose you want to call a function named myFunction of myContract
-      // var getData = myContract.myFunction.getData(function parameters);
-      // finally paas this data parameter to send Transaction
-      // web3.eth.sendTransaction({to:ETHEREUM_CONTRACT_ADDRESS, from:Accountaddress, data: getData});
     })
   },
   getBalance: function (account0) {
-    let web3 = this.getWeb3()
     return new Promise(resolve => {
-      web3.eth.getBalance(account0, function (error, result) {
+      ethApiService.web3.eth.getBalance(account0, function (error, result) {
         if (error) {
           console.log(error)
           resolve(0)
         } else {
           // console.log(result)
-          resolve(web3.fromWei(result.toNumber(), 'ether'))
+          resolve(ethApiService.web3.fromWei(result.toNumber(), 'ether'))
         }
       })
     })
@@ -143,3 +118,4 @@ const ethApiService = {
 }
 
 export default ethApiService
+ethApiService.getAccounts()

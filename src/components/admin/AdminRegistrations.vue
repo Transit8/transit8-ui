@@ -15,7 +15,7 @@
       </div>
     </div>
   </div>
-  <div v-for="registration in registrations" :key="registration">
+  <div v-for="registration in registrations" :key="registration.title">
     <div>{{ registration }}</div>
   </div>
 </div>

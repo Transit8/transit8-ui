@@ -21,6 +21,9 @@
         </div>
       </div>
     </form>
+    <div v-else-if="isRegistered">
+      {{ timestamp }}
+    </div>
     <div v-else>
       {{ timestamp }}
     </div>
@@ -39,6 +42,7 @@ export default {
   name: 'ProvenanceRegister',
   data () {
     return {
+      isRegistered: false,
       canRegister: false,
       allowEdit: false,
       dataUrl: null,
@@ -53,11 +57,18 @@ export default {
   },
   created () {
     this.userData = provenanceService.getUserData()
+    this.isRegistered = ethService.isRegistered()
     let result = provenanceService.canRegister(this.userData.username, this.provenanceId)
     this.provenanceRecord = result.provenanceRecord
     this.canRegister = result.canRegister
     this.timestamp = result.timestamp
     this.dataUrl = result.dataUrl
+    ethService.isRegistered(this.timestamp.toString()).then((result) => {
+      this.isRegistered = result.isRegistered
+    })
+    ethService.register(this.provenanceRecord.indexData.title, this.timestamp.toString(), this.userData.username).then((result) => {
+      this.result = result
+    })
   },
   methods: {
     niceTime: function (updated) {
@@ -70,7 +81,6 @@ export default {
       e.preventDefault()
       ethService.register(this.provenanceRecord.indexData.title, this.timestamp.toString(), this.userData.username).then((result) => {
         this.result = result
-        provenanceService.canRegister(this.userData.username, this.provenanceId)
       })
     },
   },
