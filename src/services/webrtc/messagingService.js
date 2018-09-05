@@ -27,7 +27,8 @@ const messagingService = {
   },
   receiveSessionJoinedSignal: function (event) {
     console.log(event)
-    let index = _.findIndex(messagingService.peers, {username: event.data.username})
+    let data = JSON.parse(event.data)
+    let index = _.findIndex(messagingService.peers, {username: data.username})
     if (index === -1) {
       messagingService.peers.push(JSON.parse(event.data))
     }

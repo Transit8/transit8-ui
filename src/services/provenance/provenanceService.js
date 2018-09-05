@@ -8,6 +8,7 @@ import _ from 'lodash'
 import searchIndexService from '@/services/searchindex/SearchIndexService'
 import moment from 'moment'
 import cacheService from '@/services/cacheService'
+import SHA256 from 'crypto-js/sha256'
 
 /**
  *  Service manages a file structure which has a root file and a set of provenance records.
@@ -270,6 +271,24 @@ const provenanceService = {
         resolve({error: 'Unable to update root file: ' + e, rootFile: provenanceService.getRootFileInLS()})
       })
     })
-  }
+  },
+  canRegister: function (username, provenanceId) {
+    let result = {
+      provenanceRecord: provenanceService.getProvenanceRecord(provenanceId),
+      timestamp: '',
+      canRegister: false,
+    }
+    if (result.provenanceRecord.indexData.itemType === 'digiart') {
+      if (result.provenanceRecord.provData.artwork[0] && result.provenanceRecord.provData.artwork[0].dataUrl.length > 0) {
+        result.timestamp = SHA256(username + '::' + result.provenanceRecord.provData.artwork[0].dataUrl).toString()
+        result.canRegister = true
+      } else {
+        result.timestamp = 'Please upload your artwork.'
+      }
+    } else {
+      result.timestamp = 'Not applicable for this type of item.'
+    }
+    return result
+  },
 }
 export default provenanceService

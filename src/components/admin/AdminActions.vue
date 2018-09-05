@@ -16,6 +16,9 @@
     <li>
       <a href="#/lightning">Lightning Settings</a>
     </li>
+    <li>
+      <a href="#/admin/registrations">Fetch Registrations</a>
+    </li>
   </ul>
 </aside>
 </template>

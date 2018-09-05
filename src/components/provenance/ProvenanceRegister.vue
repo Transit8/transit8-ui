@@ -1,11 +1,15 @@
 <template>
   <div class="">
     <h1 class="title is-1">Register Your Ownership on Chain</h1>
-    <form id="create-provenance">
+    <form id="create-provenance" v-if="canRegister">
       <div class="field">
         <label class="label">Timestamp Proofs</label>
         <div class="control">
-          <textarea readonly class="textarea" placeholder="Click 'submit' and your" v-model="timestamp"></textarea>
+          <p>
+          The following string uniquely identifies your digital artwork and will be stored in the block chain as
+          proof of your ownership of this item.
+          </p>
+          <p>{{ timestamp }}</p>
         </div>
       </div>
       <p class="help is-danger">
@@ -17,38 +21,43 @@
         </div>
       </div>
     </form>
-    <provenance-item-bar v-bind:provenanceRecord="provenanceRecord" v-bind:userData="userData" v-bind:allowEdit="allowEdit"/>
+    <div v-else>
+      {{ timestamp }}
+    </div>
+    <provenance-reg-bar v-bind:provenanceRecord="provenanceRecord" v-bind:userData="userData" v-bind:allowEdit="allowEdit"/>
   </div>
 </template>
 
 <script>
-import ProvenanceItemBar from '@/components/provenance/ProvenanceItemBar'
+import ethService from '@/services/experimental/ethApiService'
+import ProvenanceRegBar from '@/components/provenance/ProvenanceRegBar'
 import ProvenanceActions from '@/components/provenance/ProvenanceActions'
 import provenanceService from '@/services/provenance/ProvenanceService'
 import moment from 'moment'
-import SHA256 from 'crypto-js/sha256'
 
 export default {
   name: 'ProvenanceRegister',
   data () {
     return {
+      canRegister: false,
       allowEdit: false,
       dataUrl: null,
       timestamp: null,
       provenanceId: (this.$route && this.$route.params.provenanceId) ? parseInt(this.$route.params.provenanceId) : undefined,
       provenanceRecord: null,
+      result: {},
       userData: null
     }
   },
   validations: {
   },
   created () {
-    this.provenanceRecord = provenanceService.getProvenanceRecord(this.provenanceId)
     this.userData = provenanceService.getUserData()
-    if (this.provenanceRecord.provData.artwork[0] && this.provenanceRecord.provData.artwork[0].dataUrl.length > 0) {
-      this.dataUrl = this.provenanceRecord.provData.artwork[0].dataUrl
-      this.timestamp = SHA256(this.userData.username + '::' + this.provenanceRecord.provData.artwork[0].dataUrl)
-    }
+    let result = provenanceService.canRegister(this.userData.username, this.provenanceId)
+    this.provenanceRecord = result.provenanceRecord
+    this.canRegister = result.canRegister
+    this.timestamp = result.timestamp
+    this.dataUrl = result.dataUrl
   },
   methods: {
     niceTime: function (updated) {
@@ -57,13 +66,17 @@ export default {
       }
       return moment(updated).format('LLLL')
     },
-    register: function () {
-      return 'LLLL'
+    register: function (e) {
+      e.preventDefault()
+      ethService.register(this.provenanceRecord.indexData.title, this.timestamp.toString(), this.userData.username).then((result) => {
+        this.result = result
+        provenanceService.canRegister(this.userData.username, this.provenanceId)
+      })
     },
   },
   components: {
     ProvenanceActions,
-    ProvenanceItemBar
+    ProvenanceRegBar
   }
 }
 </script>

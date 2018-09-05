@@ -3,6 +3,7 @@ import Router from 'vue-router'
 
 import Home from '../components/home/Home'
 import Admin from '../components/admin/Admin'
+import AdminRegistrations from '../components/admin/AdminRegistrations'
 import AdminSearchNames from '../components/admin/AdminSearchNames'
 import AdminSearchArt from '../components/admin/AdminSearchArt'
 import AdminUserRecords from '../components/admin/AdminUserRecords'
@@ -80,6 +81,10 @@ const router = new Router({
           path: '/admin/search/names',
           name: 'adminSearchNames',
           component: AdminSearchNames
+        }, {
+          path: '/admin/registrations',
+          name: 'adminRegistrations',
+          component: AdminRegistrations
         }, {
           path: '/admin/search/art',
           name: 'adminSearchArt',

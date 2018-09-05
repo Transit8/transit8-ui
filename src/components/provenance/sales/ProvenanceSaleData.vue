@@ -1,7 +1,7 @@
 <template>
 <div class="modal" v-bind:class="{ 'is-active': saleDataModalActive }">
   <div class="modal-background" v-on:click="close"></div>
-  <div class="modal-card">
+  <div class="modal-card" v-if="!spinner">
     <header class="modal-card-head">
       <p class="modal-card-title" v-if="recordForSaleData">{{ recordForSaleData.indexData.title }}</p>
       <button class="delete" v-on:click="close" aria-label="close"></button>
@@ -109,6 +109,12 @@
       </form>
     </section>
   </div>
+  <div class="modal-card" v-else>
+    <header class="modal-card-head">
+      <p class="modal-card-title" v-if="recordForSaleData"><i class="fa fa-snowflake fa-spin fa-3x fa-fw"></i> nearly done - hang on in there.</p>
+      <button class="delete" v-on:click="close" aria-label="close"></button>
+    </header>
+  </div>
 </div>
 </template>
 
@@ -122,6 +128,7 @@ export default {
   data () {
     return {
       errors: [],
+      spinner: false,
       amount: 0,
       reserve: 0,
       increment: 0,
@@ -218,8 +225,10 @@ export default {
         saleData.increment = 0
       }
       this.recordForSaleData.indexData.saleData = saleData
+      this.spinner = true
       provenanceService.createOrUpdateRecord(this.recordForSaleData.indexData, this.recordForSaleData.provData)
         .then((records) => {
+          this.spinner = true
           console.log(records)
           this.$emit('close-sale-data-modal', {id: this.recordForSaleData.id, saleData: saleData})
         })

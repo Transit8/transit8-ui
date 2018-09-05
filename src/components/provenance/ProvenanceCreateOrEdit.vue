@@ -1,5 +1,8 @@
 <template>
-<div class="column">
+<div class="column" v-if="spinner">
+  <p class="modal-card-title"><i class="fa fa-snowflake fa-spin fa-3x fa-fw"></i> nearly done - hang on in there.</p>
+</div>
+<div class="column" v-else>
   <h1 class="title is-1">{{ formTitle }}</h1>
   <form id="create-provenance" @submit="checkForm">
 
@@ -169,6 +172,7 @@ export default {
   name: 'ProvenanceCreateOrEdit',
   data () {
     return {
+      spinner: false,
       provData: {
         artwork: [],
         owner: true,
@@ -271,6 +275,7 @@ export default {
       if (!this.provData.id || this.provData.id !== this.indexData.id) {
         this.provData.id = this.indexData.id
       }
+      this.spinner = true
       provenanceService.createOrUpdateRecord(this.indexData, this.provData)
         .then((records) => {
           console.log(records)

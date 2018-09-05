@@ -55,7 +55,7 @@ import provenanceService from '@/services/provenance/ProvenanceService'
 import ProvenanceBuyersInfo from '@/components/provenance/sales/ProvenanceBuyersInfo'
 import ProvenanceSellersInfo from '@/components/provenance/sales/ProvenanceSellersInfo'
 import moment from 'moment'
-// import cacheService from '@/services/cacheService'
+import cacheService from '@/services/cacheService'
 import messagingService from '@/services/webrtc/messagingService'
 import eventBus from '@/services/eventBus'
 
@@ -91,10 +91,10 @@ export default {
     }
     // let useCache = false
     // if (useCahce) {
-    //  this.provenanceRecord = cacheService.getFromCache(this.provenanceId)
+    this.provenanceRecord = cacheService.getFromCache(this.provenanceId)
     // }
     // if usecache false or the item missing from cache
-    if (!this.provenanceRecord) {
+    if (!this.provenanceRecord || !this.provenanceRecord.indexData.id) {
       this.provenanceRecord = provenanceService.getProvenanceRecord(this.provenanceId)
     }
     this.owner = this.provenanceRecord.indexData.uploader === this.username
