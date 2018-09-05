@@ -14,7 +14,7 @@ pragma solidity ^0.4.24;
   mapping (uint => Item) public items;
   int public itemIndex = -1;
 
-  mapping(bytes32 => bool) itemExists;
+  mapping(bytes32 => bool) public itemExists;
 
   struct Auction {
     uint itemID;

@@ -17,11 +17,10 @@ const eth = new Eth(new Eth.HttpProvider('http://localhost:7545'))
 */
 const ethereumUri = 'http://localhost:8545'
 // ropstein const contractAddress = '0xD224A5487F6FD3B62DACf3f31B110a3eCA6BCdC2'
-// ganache
-const contractAddress = '0x73b5657373dfc685ed8a2a4bebdd39d7b3677def'
+// ganache 0x73b5657373dfc685ed8a2a4bebdd39d7b3677def
 
-
-const abi = [{"constant":false,"inputs":[{"name":"title","type":"string"},{"name":"hash","type":"bytes32"},{"name":"blockstackUrl","type":"string"}],"name":"addItem","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"auctionID","type":"uint256"}],"name":"reclaimEscrow","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"auctionID","type":"uint256"}],"name":"closeAuction","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"itemID","type":"uint256"},{"name":"duration","type":"uint256"}],"name":"startAuction","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"auctions","outputs":[{"name":"itemID","type":"uint256"},{"name":"created","type":"uint256"},{"name":"duration","type":"uint256"},{"name":"reserve","type":"uint256"},{"name":"increment","type":"uint256"},{"name":"curator","type":"address"},{"name":"highestBid","type":"uint256"},{"name":"highestBidder","type":"address"},{"name":"closed","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"auctionID","type":"uint256"}],"name":"placeBid","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"items","outputs":[{"name":"title","type":"string"},{"name":"blockstackUrl","type":"string"},{"name":"hash","type":"bytes32"},{"name":"ownerIndex","type":"uint256"},{"name":"price","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"itemID","type":"uint256"}],"name":"buy","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+const ETHEREUM_ABI = process.env.ETHEREUM_ABI
+const ETHEREUM_CONTRACT_ADDRESS = '0x73b5657373dfc685ed8a2a4bebdd39d7b3677def' //process.env.ETHEREUM_CONTRACT_ADDRESS
 
 // const ethereumUri = 'https://api.blockcypher.com/v1/eth/main'
 
@@ -63,9 +62,8 @@ const ethApiService = {
         }
         console.log(result)
         web3.eth.defaultAccount = result[0]
-        var artmarketContract = web3.eth.contract(abi)
-        let myContract = artmarketContract.at(contractAddress)
-        let now = new Date().getTime()
+        var artmarketContract = web3.eth.contract(ETHEREUM_ABI)
+        let myContract = artmarketContract.at(ETHEREUM_CONTRACT_ADDRESS)
         artHash = '0x' + artHash
         console.log('title: ' + title)
         console.log('artHash: ' + artHash)
@@ -88,8 +86,8 @@ const ethApiService = {
         }
         console.log(result)
         web3.eth.defaultAccount = result[0]
-        var artmarketContract = web3.eth.contract(abi)
-        let myContract = artmarketContract.at(contractAddress)
+        var artmarketContract = web3.eth.contract(ETHEREUM_ABI)
+        let myContract = artmarketContract.at(ETHEREUM_CONTRACT_ADDRESS)
         myContract.items(index, function (err, res) {
           if (err) {
             console.log(err)
@@ -108,8 +106,8 @@ const ethApiService = {
         }
         console.log(result)
         web3.eth.defaultAccount = result[0]
-        var artmarketContract = web3.eth.contract(abi)
-        let myContract = artmarketContract.at(contractAddress)
+        var artmarketContract = web3.eth.contract(ETHEREUM_ABI)
+        let myContract = artmarketContract.at(ETHEREUM_CONTRACT_ADDRESS)
         myContract.itemIndex(function (err, numbItems) {
           if (err) {
             console.log(err)
@@ -122,7 +120,7 @@ const ethApiService = {
       // suppose you want to call a function named myFunction of myContract
       // var getData = myContract.myFunction.getData(function parameters);
       // finally paas this data parameter to send Transaction
-      // web3.eth.sendTransaction({to:Contractaddress, from:Accountaddress, data: getData});
+      // web3.eth.sendTransaction({to:ETHEREUM_CONTRACT_ADDRESS, from:Accountaddress, data: getData});
     })
   },
   getBalance: function (account0) {
