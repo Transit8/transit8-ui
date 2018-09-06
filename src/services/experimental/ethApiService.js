@@ -41,41 +41,49 @@ const ethApiService = {
   getAccounts: function () {
     let web3 = ethApiService.getWeb3()
     return new Promise(resolve => {
+      if (ethApiService.accounts && ethApiService.artmarketContract && ethApiService.myContract) {
+        resolve(ethApiService.accounts)
+      }
       web3.eth.getAccounts(function (error, result) {
         if (error) {
           resolve(error)
           console.log(error)
         }
         web3.eth.defaultAccount = result[0]
+        ethApiService.accounts = result
         ethApiService.artmarketContract = web3.eth.contract(ETHEREUM_ABI)
         ethApiService.myContract = ethApiService.artmarketContract.at(ETHEREUM_CONTRACT_ADDRESS)
-        resolve(result)
+        resolve(ethApiService.accounts)
       })
     })
   },
   isRegistered: function (artHash) {
     return new Promise(resolve => {
-      ethApiService.myContract.itemExists(artHash, function (err, res) {
-        if (err) {
-          console.log(err)
-          resolve(err)
-        }
-        if (res) {
-          resolve({registered: true})
-        } else {
-          resolve({registered: false})
-        }
+      ethApiService.getAccounts().then(function (result) {
+        ethApiService.myContract.itemExists(artHash, function (err, res) {
+          if (err) {
+            console.log(err)
+            resolve({registered: false, failed: true, reason: err})
+          }
+          if (res) {
+            resolve({registered: true})
+          } else {
+            resolve({registered: false})
+          }
+        })
+      }).catch(function (e) {
+        console.log('Unable to provenance record: ', e)
       })
     })
   },
   register: function (title, artHash, blockstackId) {
     return new Promise(resolve => {
-      artHash = '0x' + artHash
       ethApiService.myContract.addItem(title, artHash, blockstackId, function (err, res) {
         if (err) {
           console.log(err)
+          resolve({failed: true, reason: err})
         }
-        resolve({tx_id: res})
+        resolve({txId: res})
       })
     })
   },

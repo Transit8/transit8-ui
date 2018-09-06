@@ -1,11 +1,9 @@
 import xhrService from '@/services/xhrService'
-import cacheService from '@/services/cacheService'
 
 /**
  *  The service is a client to the brightblock sever side grpc client.
 **/
 const searchIndexService = {
-  PROVENANCE_FILE_GAIA_SUBPATH: 'record_',
   reindexRecord: function (indexData) {
     return new Promise(function (resolve) {
       xhrService.makePostCall('/art/index/indexData', indexData)
@@ -97,30 +95,6 @@ const searchIndexService = {
         }).catch(function (e) {
           resolve({error: 'Error searching index for query: ' + query})
         })
-    })
-  },
-  getRecord: function (indexData) {
-    return new Promise(function (resolve) {
-      let useCache = false
-      let record = cacheService.getFromCache(indexData.id)
-      if (useCache && record && record.title === indexData.title && record.description === indexData.description) {
-        resolve(record)
-      } else {
-        let urlLastSlash = indexData.gaiaUrl.lastIndexOf('/') + 1
-        let url = indexData.gaiaUrl.substring(0, urlLastSlash)
-        url = url + searchIndexService.PROVENANCE_FILE_GAIA_SUBPATH + indexData.id + '.json'
-        xhrService.makeDirectCall(url)
-          .then(function (provData) {
-            let record = {
-              indexData: indexData,
-              provData: provData
-            }
-            cacheService.addToCache(record)
-            resolve(record)
-          }).catch(function (e) {
-            console.log('Unable to add record: ' + record.indexData.id, e)
-          })
-      }
     })
   },
 }

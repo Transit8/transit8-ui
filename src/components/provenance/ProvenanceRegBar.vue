@@ -45,14 +45,13 @@
     </div>
     <nav class="has-text-right" v-if="allowEdit">
         <a :href="'#/provenance/edit/'+provenanceRecord.indexData.id">edit</a> |
-        <span v-if="provenanceRecord.indexData.registered">registered on blockchain</span>
-        <span v-else>register on blockchain</span>
     </nav>
   </div>
 </article>
 </template>
 
 <script>
+import provenanceService from '@/services/provenance/ProvenanceService'
 import ProvenanceBuyersInfo from '@/components/provenance/sales/ProvenanceBuyersInfo'
 import ProvenanceSellersInfo from '@/components/provenance/sales/ProvenanceSellersInfo'
 import moment from 'moment'
@@ -75,24 +74,7 @@ export default {
   },
   methods: {
     parseAppUrl (appUrl) {
-      if (!appUrl || appUrl.length === 0) {
-        return ''
-      }
-      let showUrl = 'App Url: '
-      if (appUrl.startsWith(':')) {
-        showUrl += appUrl.substring(3)
-      } else if (appUrl.startsWith('http:')) {
-        showUrl += appUrl.substring(7)
-      } else if (appUrl.startsWith('https:')) {
-        showUrl += appUrl.substring(8)
-      } else if (appUrl.startsWith('s:')) {
-        showUrl += appUrl.substring(4)
-      } else if (appUrl.startsWith('p:')) {
-        showUrl += appUrl.substring(4)
-      } else {
-        showUrl += appUrl
-      }
-      return showUrl
+      return provenanceService.parseAppUrl(appUrl)
     },
     openSaleDataModal () {
       this.$emit('open-sale-data-modal', this.provenanceRecord.indexData.id)

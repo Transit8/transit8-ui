@@ -7,8 +7,10 @@ import {
 import _ from 'lodash'
 import searchIndexService from '@/services/searchindex/SearchIndexService'
 import moment from 'moment'
+import xhrService from '@/services/xhrService'
 import cacheService from '@/services/cacheService'
 import SHA256 from 'crypto-js/sha256'
+import ethService from '@/services/experimental/ethApiService'
 
 /**
  *  Service manages a file structure which has a root file and a set of provenance records.
@@ -123,21 +125,26 @@ const provenanceService = {
     if (rootFile && rootFile.records) {
       let count = 0
       let total = rootFile.records.length
-      _.forEach(rootFile.records, function (record) {
-        if (record && record.id) {
-          let fileToFetch = provenanceService.PROVENANCE_FILE_GAIA_SUBPATH + record.id + '.json'
+      _.forEach(rootFile.records, function (indexData) {
+        if (indexData && indexData.id) {
+          let fileToFetch = provenanceService.PROVENANCE_FILE_GAIA_SUBPATH + indexData.id + '.json'
           getFile(fileToFetch, {decrypt: false}).then(function (file) {
             count++
             if (file) {
-              let myFile = JSON.parse(file)
-              myFile.id = record.id
-              provenanceService.addProvenanceRecordInLS(myFile)
+              let provData = JSON.parse(file)
+              provData.id = indexData.id
+              let record = {
+                indexData: indexData,
+                provData: provData,
+              }
+              provenanceService.setRegData(record)
+              provenanceService.addProvenanceRecordInLS(provData)
             }
             if (count === total) {
               provenanceService.state = 'ROOT_PROV_FINISHED'
             }
           }).catch(function (e) {
-            console.log('Unable to provenance record: ', e)
+            console.log('Unable to initialise provenance record: ', e)
           })
         }
       })
@@ -177,10 +184,12 @@ const provenanceService = {
         }
       })
     }
-    return {
+    let record = {
       indexData: indexData,
       provData: provData,
     }
+    provenanceService.setRegData(record)
+    return record
   },
   getUserData: function () {
     return loadUserData()
@@ -240,6 +249,11 @@ const provenanceService = {
           increment: 0
         }
       }
+      let record = {
+        indexData: indexData,
+        provData: provData,
+      }
+      provenanceService.setRegData(record)
       if (index > -1) {
         rootFile.records.splice(index, 1, indexData)
       } else {
@@ -272,23 +286,55 @@ const provenanceService = {
       })
     })
   },
-  canRegister: function (username, provenanceId) {
-    let result = {
-      provenanceRecord: provenanceService.getProvenanceRecord(provenanceId),
-      timestamp: '',
-      canRegister: false,
-    }
-    if (result.provenanceRecord.indexData.itemType === 'digiart') {
-      if (result.provenanceRecord.provData.artwork[0] && result.provenanceRecord.provData.artwork[0].dataUrl.length > 0) {
-        result.timestamp = SHA256(username + '::' + result.provenanceRecord.provData.artwork[0].dataUrl).toString()
-        result.canRegister = true
+  getRecordForSearch: function (indexData) {
+    return new Promise(function (resolve) {
+      let useCache = false
+      let record = cacheService.getFromCache(indexData.id)
+      if (useCache && record && record.title === indexData.title && record.description === indexData.description) {
+        resolve(record)
       } else {
-        result.timestamp = 'Please upload your artwork.'
+        let urlLastSlash = indexData.gaiaUrl.lastIndexOf('/') + 1
+        let url = indexData.gaiaUrl.substring(0, urlLastSlash)
+        url = url + provenanceService.PROVENANCE_FILE_GAIA_SUBPATH + indexData.id + '.json'
+        xhrService.makeDirectCall(url)
+          .then(function (provData) {
+            let record = {
+              indexData: indexData,
+              provData: provData
+            }
+            provenanceService.setRegData(record)
+            // cacheService.addToCache(record)
+            resolve(record)
+          }).catch(function (e) {
+            console.log('Unable to add record: ' + record.indexData.id, e)
+          })
       }
-    } else {
-      result.timestamp = 'Not applicable for this type of item.'
+    })
+  },
+  setRegData: function (record) {
+    if (record.indexData.regData && record.indexData.regData.txId) {
+      return
     }
-    return result
+    let tempRegData = {
+      timestamp: '',
+      state: 100,
+      label: 'not registerable'
+    }
+    if (record.indexData.itemType === 'digiart') {
+      if (record.provData.artwork[0] && record.provData.artwork[0].dataUrl.length > 0) {
+        tempRegData.timestamp = '0x' + SHA256(record.indexData.uploader + '::' + record.provData.artwork[0].dataUrl).toString()
+        tempRegData.state = 110
+        tempRegData.label = 'registerable'
+        ethService.isRegistered(tempRegData.timestamp).then((result) => {
+          if (result.registered) {
+            tempRegData.state = 120
+            tempRegData.label = 'registered'
+            record.indexData.regData = tempRegData
+          }
+        })
+      }
+    }
+    record.indexData.regData = tempRegData
   },
 }
 export default provenanceService

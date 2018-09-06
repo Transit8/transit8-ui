@@ -80,7 +80,7 @@ export default {
           $elfie.provenanceRecords = []
           console.log('Total records found in search (may differ from number fetched from gaia storage): ' + results.length)
           _.forEach(results, function (indexData) {
-            searchIndexService.getRecord(indexData)
+            provenanceService.getRecordForSearch(indexData)
               .then((record) => {
                 console.log('Record: ' + record)
                 if (record && record.indexData && record.indexData.id) {

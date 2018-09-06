@@ -83,7 +83,6 @@ const exchangeRatesService = {
     let socket = new SockJS(SERVER_URL + '/exchanges')
     let stompClient = Stomp.over(socket)
     let connectSuccess = function (frame) {
-      console.log('Connected: ' + frame)
       stompClient.subscribe('/topic/exchanges', function (response) {
         exchangeRatesService.fiatRates = JSON.parse(response.body)
       })

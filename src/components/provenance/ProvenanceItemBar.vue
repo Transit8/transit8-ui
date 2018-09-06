@@ -44,29 +44,32 @@
       </p>
     </div>
     <nav class="has-text-right" v-if="allowEdit">
-        <a :href="'#/provenance/edit/'+provenanceRecord.indexData.id">edit</a> |
-        <a v-if="provenanceRecord.indexData.registered">registered on blockchain</a>
-        <a v-else :href="'#/provenance/register/'+provenanceRecord.indexData.id">register on blockchain</a>
+      <a :href="'#/provenance/edit/'+provenanceRecord.indexData.id">edit</a>
+      <a v-if="allowEdit && provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.state === 110" :href="'#/provenance/register/'+provenanceRecord.indexData.id">register on blockchain</a>
+      <span v-if="allowEdit && provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.state === 120">registered on blockchain</span>
     </nav>
   </div>
-  <div class="media-right" v-if="allowEdit && !searching">
-    <div v-if="provenanceRecord.indexData.saleData">
-      <provenance-sellers-info v-bind:saleData="provenanceRecord.indexData.saleData"/>
-      <p class="has-text-right"><button class="button is-outlined" v-on:click="openSaleDataModal">Change Sale Data</button></p>
+  <div v-if=" provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.state === 120">
+    <div class="media-right" v-if="allowEdit && !searching">
+      <div v-if="provenanceRecord.indexData.saleData">
+        <provenance-sellers-info v-bind:saleData="provenanceRecord.indexData.saleData"/>
+        <p class="has-text-right"><button class="button is-outlined" v-on:click="openSaleDataModal">Change Sale Data</button></p>
+      </div>
+      <div v-else>
+        <p class="has-text-right"><button class="button is-outlined" v-on:click="openSaleDataModal">Set Sale Data</button></p>
+      </div>
     </div>
-    <div v-else>
-      <p class="has-text-right"><button class="button is-outlined" v-on:click="openSaleDataModal">Set Sale Data</button></p>
-    </div>
-  </div>
-  <div class="media-right" v-else>
-    <div v-if="provenanceRecord.indexData.saleData">
-      <provenance-buyers-info v-bind:saleData="provenanceRecord.indexData.saleData" v-bind:recordId="provenanceRecord.indexData.id"/>
+    <div class="media-right" v-else>
+      <div v-if="provenanceRecord.indexData.saleData">
+        <provenance-buyers-info v-bind:saleData="provenanceRecord.indexData.saleData" v-bind:recordId="provenanceRecord.indexData.id"/>
+      </div>
     </div>
   </div>
 </article>
 </template>
 
 <script>
+import provenanceService from '@/services/provenance/ProvenanceService'
 import ProvenanceBuyersInfo from '@/components/provenance/sales/ProvenanceBuyersInfo'
 import ProvenanceSellersInfo from '@/components/provenance/sales/ProvenanceSellersInfo'
 import moment from 'moment'
@@ -80,6 +83,7 @@ export default {
     }
   },
   mounted () {
+    provenanceService.setRegData(this.provenanceRecord)
     this.searching = (this.$route.name === 'marketSearch')
     if (this.userData) {
       this.allowEdit = this.userData.username === this.provenanceRecord.indexData.uploader
@@ -89,24 +93,7 @@ export default {
   },
   methods: {
     parseAppUrl (appUrl) {
-      if (!appUrl || appUrl.length === 0) {
-        return ''
-      }
-      let showUrl = 'App Url: '
-      if (appUrl.startsWith(':')) {
-        showUrl += appUrl.substring(3)
-      } else if (appUrl.startsWith('http:')) {
-        showUrl += appUrl.substring(7)
-      } else if (appUrl.startsWith('https:')) {
-        showUrl += appUrl.substring(8)
-      } else if (appUrl.startsWith('s:')) {
-        showUrl += appUrl.substring(4)
-      } else if (appUrl.startsWith('p:')) {
-        showUrl += appUrl.substring(4)
-      } else {
-        showUrl += appUrl
-      }
-      return showUrl
+      return provenanceService.parseAppUrl(appUrl)
     },
     openSaleDataModal () {
       this.$emit('open-sale-data-modal', this.provenanceRecord.indexData.id)

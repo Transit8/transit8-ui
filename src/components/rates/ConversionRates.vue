@@ -37,7 +37,6 @@ export default {
   mounted () {
     exchangeRatesService.fetchFiatRates().then((fiatRates) => {
       this.fiatRates = fiatRates
-      console.log(fiatRates)
     })
     this.conversionMessage = this.currentRateValue()
   },

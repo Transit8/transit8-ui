@@ -218,13 +218,6 @@ export default {
         when: this.indexData.id
       })
     }
-
-    // if (!this.indexData.itemType) {
-    //  this.indexData.itemType = 'physart'
-    //  if (this.provData.artwork && this.provData.artwork.length > 0) {
-    //    this.indexData.itemType = 'digiart'
-    //  }
-    // }
   },
   validations: {
   },
