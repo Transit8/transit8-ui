@@ -62,7 +62,7 @@ export default {
   },
   mounted () {
     let mystate = this
-    ethService.getAccounts().then((accounts) => {
+    ethService.connect().then((accounts) => {
       mystate.nodeInfo.accounts = accounts
       mystate.mainAccount.number = accounts[0]
       mystate.accounts[0] = {

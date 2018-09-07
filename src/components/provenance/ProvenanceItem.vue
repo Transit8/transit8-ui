@@ -17,7 +17,7 @@
       </div>
     </div>
   </article>
-  <div class="columns">
+  <div class="columns" style="margin-top: 70px;">
     <div class="column">
       <div class="media-right" v-if="provenanceRecord.indexData.saleData">
         <provenance-sellers-info v-if="owner" v-bind:saleData="provenanceRecord.indexData.saleData" v-bind:recordId="provenanceRecord.indexData.id"/>
@@ -55,9 +55,9 @@ import provenanceService from '@/services/provenance/ProvenanceService'
 import ProvenanceBuyersInfo from '@/components/provenance/sales/ProvenanceBuyersInfo'
 import ProvenanceSellersInfo from '@/components/provenance/sales/ProvenanceSellersInfo'
 import moment from 'moment'
-import cacheService from '@/services/cacheService'
 import messagingService from '@/services/webrtc/messagingService'
 import eventBus from '@/services/eventBus'
+import cacheService from '@/services/cacheService'
 
 export default {
   data () {
@@ -90,7 +90,7 @@ export default {
       this.username = userData.username
     }
     this.provenanceRecord = cacheService.getFromCache(this.provenanceId)
-    if (!this.provenanceRecord || !this.provenanceRecord.indexData.id) {
+    if (!this.provenanceRecord) {
       this.provenanceRecord = provenanceService.getProvenanceRecord(this.provenanceId)
     }
     this.owner = this.provenanceRecord.indexData.uploader === this.username

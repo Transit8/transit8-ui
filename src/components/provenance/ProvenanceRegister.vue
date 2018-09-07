@@ -1,9 +1,12 @@
 <template>
   <div class="column" v-if="spinner">
+    <h1 class="title is-1">{{ provenanceRecord.indexData.title }}</h1>
+    <h2 class="title is-3">Register Your Ownership on Chain</h2>
     <p class="modal-card-title"><i class="fa fa-snowflake fa-spin fa-3x fa-fw"></i> nearly done - hang on in there.</p>
   </div>
   <div class="column" v-else>
-    <h1 class="title is-1">Register Your Ownership on Chain</h1>
+    <h1 class="title is-1">{{ provenanceRecord.indexData.title }}</h1>
+    <h2 class="title is-3">Register Your Ownership on Chain</h2>
     <div v-if="error">
       <p>{{ error }}</p>
     </div>
@@ -33,7 +36,13 @@
         <p>Only support registering digital artworks on the block chain right now - this will change soon so stay tuned!</p>
       </div>
       <provenance-reg-bar v-bind:provenanceRecord="provenanceRecord" v-bind:userData="userData" v-bind:allowEdit="allowEdit"/>
-      <p>Registered in transaction: {{ provenanceRecord.indexData.regData.txId }}</p>
+      <p v-if="provenanceRecord.indexData.regData.txId">Registered in transaction: {{ provenanceRecord.indexData.regData.txId }}</p>
+    </div>
+    <provenance-sale-data v-if="saleDataModalActive" v-on:close-sale-data-modal="closeSaleDataModal" v-bind:ethToBtc="ethToBtc" v-bind:fiatRates="fiatRates" v-bind:recordForSaleData="recordForSaleData" v-bind:saleDataModalActive="saleDataModalActive"/>
+    <div class="field is-grouped">
+      <div class="control">
+        <button class="button is-link" v-on:click="openSaleDataModal">Set Price</button>
+      </div>
     </div>
   </div>
 </template>
@@ -44,16 +53,21 @@ import ProvenanceRegBar from '@/components/provenance/ProvenanceRegBar'
 import ProvenanceActions from '@/components/provenance/ProvenanceActions'
 import provenanceService from '@/services/provenance/ProvenanceService'
 import moment from 'moment'
+import exchangeRatesService from '@/services/exchangeRatesService'
+import ProvenanceSaleData from '@/components/provenance/sales/ProvenanceSaleData'
 
 export default {
   name: 'ProvenanceRegister',
   data () {
     return {
       error: null,
+      saleDataModalActive: false,
       spinner: false,
       allowEdit: false,
       provenanceId: (this.$route && this.$route.params.provenanceId) ? parseInt(this.$route.params.provenanceId) : undefined,
       provenanceRecord: null,
+      fiatRates: {},
+      ethToBtc: {},
       userData: null
     }
   },
@@ -62,6 +76,12 @@ export default {
   created () {
     this.provenanceRecord = provenanceService.getProvenanceRecord(this.provenanceId)
     this.userData = provenanceService.getUserData()
+    exchangeRatesService.fetchFiatRates().then((fiatRates) => {
+      this.fiatRates = fiatRates
+    })
+    exchangeRatesService.fetchCoinPair('eth_btc').then((ethToBtc) => {
+      this.ethToBtc = ethToBtc
+    })
   },
   methods: {
     niceTime: function (updated) {
@@ -83,6 +103,9 @@ export default {
             .then((record) => {
               this.error = 'Record has been successfully registered on the block chain. Tx=' + this.provenanceRecord.indexData.regData.txId
               this.spinner = false
+              // ethService.sell(5000000000).then((result) => {
+              //  console.log(result)
+              // })
             })
             .catch(e => {
               this.spinner = false
@@ -91,10 +114,18 @@ export default {
         }
       })
     },
+    closeSaleDataModal: function (response) {
+      this.saleDataModalActive = false
+    },
+    openSaleDataModal: function (id) {
+      this.recordForSaleData = this.provenanceRecord
+      this.saleDataModalActive = true
+    },
   },
   components: {
     ProvenanceActions,
-    ProvenanceRegBar
+    ProvenanceRegBar,
+    ProvenanceSaleData
   }
 }
 </script>

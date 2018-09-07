@@ -20,7 +20,7 @@ const ethereumUri = 'http://localhost:8545'
 // ganache 0x73b5657373dfc685ed8a2a4bebdd39d7b3677def
 
 const ETHEREUM_ABI = process.env.ETHEREUM_ABI
-const ETHEREUM_CONTRACT_ADDRESS = '0xE8632a1139352c568AD0e38E30b025A364804a29'
+const ETHEREUM_CONTRACT_ADDRESS = '0x48C41e8Ecfb9fb8AB599056115ba977d5CD77fA0'
 // process.env.ETHEREUM_CONTRACT_ADDRESS
 
 // const ethereumUri = 'https://api.blockcypher.com/v1/eth/main'
@@ -36,9 +36,9 @@ const ethApiService = {
     if (ethApiService.web3.isConnected()) {
       return ethApiService.web3
     }
-    throw new Error('No connection!')
+    console.log('No connection to ethereum!')
   },
-  getAccounts: function () {
+  connectToBlockChain: function () {
     let web3 = ethApiService.getWeb3()
     return new Promise(resolve => {
       if (ethApiService.accounts && ethApiService.artmarketContract && ethApiService.myContract) {
@@ -46,20 +46,19 @@ const ethApiService = {
       }
       web3.eth.getAccounts(function (error, result) {
         if (error) {
-          resolve(error)
-          console.log(error)
+          resolve({failed: true, reason: error})
         }
         web3.eth.defaultAccount = result[0]
         ethApiService.accounts = result
         ethApiService.artmarketContract = web3.eth.contract(ETHEREUM_ABI)
         ethApiService.myContract = ethApiService.artmarketContract.at(ETHEREUM_CONTRACT_ADDRESS)
-        resolve(ethApiService.accounts)
+        resolve({failed: false, accounts: ethApiService.accounts})
       })
     })
   },
   isRegistered: function (artHash) {
     return new Promise(resolve => {
-      ethApiService.getAccounts().then(function (result) {
+      ethApiService.connectToBlockChain().then(function (result) {
         ethApiService.myContract.itemExists(artHash, function (err, res) {
           if (err) {
             console.log(err)
@@ -84,6 +83,23 @@ const ethApiService = {
           resolve({failed: true, reason: err})
         }
         resolve({txId: res})
+      })
+    })
+  },
+  sell: function (price) {
+    return new Promise(resolve => {
+      ethApiService.myContract.itemIndex(function (err, numbItems) {
+        if (err) {
+          console.log(err)
+        }
+        let currentHeight = numbItems.c[0] - 1
+        ethApiService.myContract.sell(currentHeight, price, function (err, res) {
+          if (err) {
+            console.log(err)
+            resolve({failed: true, reason: err})
+          }
+          resolve({txId: res})
+        })
       })
     })
   },
@@ -126,4 +142,3 @@ const ethApiService = {
 }
 
 export default ethApiService
-ethApiService.getAccounts()

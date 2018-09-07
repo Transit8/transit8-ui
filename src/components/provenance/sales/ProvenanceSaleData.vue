@@ -121,6 +121,7 @@
 <script>
 import provenanceService from '@/services/provenance/ProvenanceService'
 import ConversionRates from '@/components/rates/ConversionRates'
+import ethService from '@/services/experimental/ethApiService'
 
 export default {
   name: 'ProvenanceSaleData',
@@ -224,13 +225,20 @@ export default {
         saleData.reserve = 0
         saleData.increment = 0
       }
+      saleData.fiatCurrency = this.currency
+      saleData.initialRateBtc = this.fiatRates[this.currency]
+      saleData.initialRateEth = this.ethToBtc
       this.recordForSaleData.indexData.saleData = saleData
       this.spinner = true
+      let $elfist = this
       provenanceService.createOrUpdateRecord(this.recordForSaleData.indexData, this.recordForSaleData.provData)
         .then((records) => {
-          this.spinner = true
-          console.log(records)
-          this.$emit('close-sale-data-modal', {id: this.recordForSaleData.id, saleData: saleData})
+          let amountInEther = this.getValueInEther(saleData.amount)
+          amountInEther = Math.trunc(amountInEther * 1000000000000000000)
+          ethService.sell(amountInEther).then((result) => {
+            console.log(amountInEther)
+          })
+          $elfist.$emit('close-sale-data-modal', {id: this.recordForSaleData.id, saleData: saleData})
         })
         .catch(e => {
           console.log('ProvenanceVue: Unable to lookup ', e)

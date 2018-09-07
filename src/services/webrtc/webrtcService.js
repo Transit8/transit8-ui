@@ -22,7 +22,9 @@ const webrtcService = {
   },
   unpublish: function (username, recordId) {
     // webrtcService.session.unpublish(webrtcService.publisher)
-    webrtcService.session.disconnect()
+    if (webrtcService.session) {
+      webrtcService.session.disconnect()
+    }
   },
   streamCreated: function (event) {
     // called when another client starts publishing a stream
