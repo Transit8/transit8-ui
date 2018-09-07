@@ -112,7 +112,7 @@ contract ArtMarket {
   }
  
   //blockstackUrl is empty if the item is stored on IPFS
-  function addItem(string title, bytes32 hash, string blockstackUrl) public returns(int) {
+  function addItem(string title, bytes32 hash, string blockstackUrl) public {
     require(!itemExists[hash]);
     itemIndex++;
     items[uint(itemIndex)].title = title;
@@ -121,7 +121,6 @@ contract ArtMarket {
     items[uint(itemIndex)].ownerIndex = 0;
     items[uint(itemIndex)].owners[0] = msg.sender;
     itemExists[hash] = true;
-    return itemIndex;
   }
   
   /* set price to 0 to cancel sale */
