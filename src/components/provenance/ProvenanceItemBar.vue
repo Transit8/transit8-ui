@@ -46,10 +46,10 @@
     <nav class="has-text-right" v-if="allowEdit">
       <a :href="'#/provenance/edit/'+provenanceRecord.indexData.id">edit</a>
       <a v-if="allowEdit && provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.state === 110" :href="'#/provenance/register/'+provenanceRecord.indexData.id">register on blockchain</a>
-      <span v-if="allowEdit && provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.state === 120">registered on blockchain</span>
+      <a v-if="allowEdit && provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.state === 120" :href="'#/provenance/register/'+provenanceRecord.indexData.id">registered on blockchain</a>
     </nav>
   </div>
-  <div v-if=" provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.state === 120">
+  <div>
     <div class="media-right" v-if="allowEdit && !searching">
       <div v-if="provenanceRecord.indexData.saleData">
         <provenance-sellers-info v-bind:saleData="provenanceRecord.indexData.saleData"/>
@@ -59,11 +59,13 @@
         <p class="has-text-right"><button class="button is-outlined" v-on:click="openSaleDataModal">Set Sale Data</button></p>
       </div>
     </div>
+    <!--
     <div class="media-right" v-else>
       <div v-if="provenanceRecord.indexData.saleData">
         <provenance-buyers-info v-bind:saleData="provenanceRecord.indexData.saleData" v-bind:recordId="provenanceRecord.indexData.id"/>
       </div>
     </div>
+    -->
   </div>
 </article>
 </template>

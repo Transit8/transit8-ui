@@ -86,24 +86,69 @@ const ethApiService = {
       })
     })
   },
-  sell: function (price) {
+  /*
+  sell: function (index, price) {
     return new Promise(resolve => {
-      ethApiService.myContract.itemIndex(function (err, numbItems) {
+      ethApiService.myContract.sell(index, price, function (err, res) {
         if (err) {
           console.log(err)
+          resolve({failed: true, reason: err})
         }
-        let currentHeight = numbItems.c[0] - 1
-        ethApiService.myContract.sell(currentHeight, price, function (err, res) {
-          if (err) {
-            console.log(err)
-            resolve({failed: true, reason: err})
-          }
-          resolve({txId: res})
-        })
+        resolve({txId: res})
       })
     })
   },
-  fetchRegistration: function (index) {
+  */
+  sell: function (title, username, amountInWei) {
+    return new Promise(resolve => {
+      ethApiService.fetchNumbRegistrations().then((numbRegistrations) => {
+        let $elfist = this
+        for (let index = 0; index < numbRegistrations; index++) {
+          $elfist.index = -1
+          setTimeout(function timer () {
+            $elfist.index++
+            ethApiService.fetchItemByIndex($elfist.index).then((item) => {
+              if (item[0] === title && item[1] === username) {
+                ethApiService.myContract.sell(index, amountInWei, function (err, res) {
+                  if (err) {
+                    console.log(err)
+                    resolve({failed: true, reason: err})
+                  }
+                  resolve({txId: res})
+                })
+              }
+            })
+          }, 500)
+        }
+      })
+    })
+  },
+  buy: function (title, username) {
+    return new Promise(resolve => {
+      ethApiService.fetchNumbRegistrations().then((numbRegistrations) => {
+        let $elfist = this
+        for (let index = 0; index < numbRegistrations; index++) {
+          $elfist.index = -1
+          setTimeout(function timer () {
+            $elfist.index++
+            ethApiService.fetchItemByIndex($elfist.index).then((item) => {
+              if (item[0] === title && item[1] === username) {
+                console.log('index: ' + $elfist.index + ' item: ', item)
+                ethApiService.myContract.buy(index, function (err, res) {
+                  if (err) {
+                    console.log(err)
+                    resolve({failed: true, reason: err})
+                  }
+                  resolve({txId: res})
+                })
+              }
+            })
+          }, 500)
+        }
+      })
+    })
+  },
+  fetchItemByIndex: function (index) {
     return new Promise(resolve => {
       ethApiService.myContract.items(index, function (err, res) {
         if (err) {
@@ -113,13 +158,36 @@ const ethApiService = {
       })
     })
   },
+  fetchItemByData: function (title, username) {
+    return new Promise(resolve => {
+      ethApiService.fetchNumbRegistrations().then((numbRegistrations) => {
+        let $elfist = this
+        for (let index = 0; index < numbRegistrations; index++) {
+          $elfist.index = -1
+          setTimeout(function timer () {
+            $elfist.index++
+            ethApiService.fetchItemByIndex($elfist.index).then((item) => {
+              console.log('index: ' + $elfist.index + ' item: ', item)
+              if (item[0] === title && item[1] === username) {
+                resolve(item)
+              }
+            })
+          }, 500)
+        }
+      })
+    })
+  },
   fetchNumbRegistrations: function () {
     return new Promise(resolve => {
-      ethApiService.myContract.itemIndex(function (err, numbItems) {
-        if (err) {
-          console.log(err)
-        }
-        resolve(numbItems.c[0])
+      ethApiService.connectToBlockChain().then(function (result) {
+        ethApiService.myContract.itemIndex(function (err, numbItems) {
+          if (err) {
+            console.log(err)
+          }
+          resolve(numbItems.c[0])
+        })
+      }).catch(function (e) {
+        console.log('Unable to provenance record: ', e)
       })
     })
   },

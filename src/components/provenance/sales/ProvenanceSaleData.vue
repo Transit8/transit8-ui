@@ -228,21 +228,20 @@ export default {
       saleData.fiatCurrency = this.currency
       saleData.initialRateBtc = this.fiatRates[this.currency]
       saleData.initialRateEth = this.ethToBtc
+      saleData.amountInEther = this.getValueInEther(saleData.amount)
       this.recordForSaleData.indexData.saleData = saleData
       this.spinner = true
       let $elfist = this
-      provenanceService.createOrUpdateRecord(this.recordForSaleData.indexData, this.recordForSaleData.provData)
-        .then((records) => {
-          let amountInEther = this.getValueInEther(saleData.amount)
-          amountInEther = Math.trunc(amountInEther * 1000000000000000000)
-          ethService.sell(amountInEther).then((result) => {
-            console.log(amountInEther)
-          })
-          $elfist.$emit('close-sale-data-modal', {id: this.recordForSaleData.id, saleData: saleData})
+      provenanceService.createOrUpdateRecord(this.recordForSaleData.indexData, this.recordForSaleData.provData).then((records) => {
+        let amountInWei = Math.trunc(saleData.amountInEther * 1000000000000000000)
+        $elfist.$emit('close-sale-data-modal', {id: $elfist.recordForSaleData.id, saleData: saleData})
+        ethService.sell(this.recordForSaleData.indexData.title, this.username, amountInWei).then((item) => {
+          console.log(' amountInWei: ' + amountInWei + ' item: ', item)
+          $elfist.$emit('close-sale-data-modal', {id: $elfist.recordForSaleData.id, saleData: saleData})
         })
-        .catch(e => {
-          console.log('ProvenanceVue: Unable to lookup ', e)
-        })
+      }).catch(e => {
+        console.log('ProvenanceVue: Unable to lookup ', e)
+      })
     }
   },
   components: {

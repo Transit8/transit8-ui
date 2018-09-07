@@ -70,6 +70,7 @@ export default {
   name: 'Navigation',
   data: () => {
     return {
+      username: '',
       isActive: false,
       loggedIn: false,
       showAdmin: false,
@@ -81,8 +82,8 @@ export default {
   mounted () {
     let userData = provenanceService.getUserData()
     if (userData) {
-      let username = userData.username
-      this.showAdmin = (username === 'mike.personal.id')
+      this.username = userData.username
+      this.showAdmin = true
     }
     bulma.initDropdowns()
     if (this.$route.query && this.$route.query.debug) {

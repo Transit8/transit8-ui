@@ -1,46 +1,50 @@
 <template>
 <div>
-  <p v-if="saleData.soid === 0">Listing</p>
-  <p v-else-if="saleData.soid === 1">
-    <button class="button"><a :href="'#/provenance/item/'+recordId" @click="buyNow">Buy Now: {{ saleData.amount }}</a></button>
-  </p>
-  <p v-else-if="saleData.soid === 2">
+  <div v-if="provenanceRecord.indexData.saleData.soid === 0">Listing</div>
+  <div v-else-if="provenanceRecord.indexData.saleData.soid === 1">
+  <button class="button">Price: {{ provenanceRecord.indexData.saleData.fiatCurrency }} {{ provenanceRecord.indexData.saleData.amount }} ({{ priceInEther }} Eth)</button>
+    <div class="field is-grouped">
+      <div class="control">
+        <button class="button is-link" v-on:click="buyNow">Buy Now</button>
+      </div>
+    </div>
+  </div>
+  <div v-else-if="provenanceRecord.indexData.saleData.soid === 2">
     <button class="button"><a :href="'#/provenance/item/'+recordId">Place Bid: {{ saleData.reserve + saleData.increment }}</a></button>
-  </p>
+  </div>
 </div>
 </template>
 
 <script>
 import moment from 'moment'
-import exchangeRatesService from '@/services/exchangeRatesService'
+import ethService from '@/services/experimental/ethApiService'
+import provenanceService from '@/services/provenance/ProvenanceService'
 
 export default {
-  props: ['saleData', 'recordId'],
+  props: ['provenanceRecord', 'recordId'],
   data () {
     return {
       descriptionHash: 'description hash',
+      username: 0,
+      priceInEther: 0,
+      ethItem: {},
       memo: 'memo'
     }
   },
   mounted () {
+    let $elfist = this
+    this.username = provenanceService.getUserData().username
+    ethService.fetchItemByData(this.provenanceRecord.indexData.title, this.provenanceRecord.indexData.uploader).then((item) => {
+      console.log('item: ', item)
+      $elfist.ethItem = item
+      let price = item[4].c[1]
+      $elfist.priceInEther = price / 1000000000000000000
+    })
   },
   methods: {
-    niceTime: function (updated) {
-      if (typeof updated === 'string') {
-        updated = Number(updated)
-      }
-      return moment(updated).format('LLLL')
-    },
     buyNow: function () {
-      let invoiceData = {
-        amount: this.saleData.amount,
-        memo: this.memo,
-        descriptionHash: this.descriptionHash
-      }
-      exchangeRatesService.generateInvoice(invoiceData).then(function (message) {
-        console.log('Indexed new record.')
-      }).catch(function (e) {
-        console.log('Unable to index new record - it should be picked up in next sweep. ', e)
+      ethService.buy(this.provenanceRecord.indexData.title, this.provenanceRecord.indexData.uploader).then((item) => {
+        console.log(' item: ', item)
       })
     },
   },

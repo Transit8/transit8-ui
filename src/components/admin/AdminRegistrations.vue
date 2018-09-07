@@ -3,7 +3,7 @@
   <h1 class="title is-2">On Chain Registrations</h1>
   <div class="field is-horizontal">
     <div class="field-label is-normal">
-      <label class="label">Find By User</label>
+      <label class="label">{{ numbRegistrations }}</label>
     </div>
     <div class="field-body">
       <div class="field">
@@ -35,14 +35,19 @@ export default {
   },
   methods: {
     findAll: function () {
-      this.registrations = []
+      let $elfie = this
+      $elfie.registrations = []
       ethService.fetchNumbRegistrations().then((numbRegistrations) => {
         this.numbRegistrations = numbRegistrations
-        for (var index = 0; index <= numbRegistrations; index++) {
-          ethService.fetchRegistration(index).then((registration) => {
-            registration.index = index
-            this.registrations.push(registration)
-          })
+        for (let index = 0; index < numbRegistrations; index++) {
+          $elfie = this
+          setTimeout(function timer () {
+            // alert('hello world')
+            ethService.fetchItemByIndex(index).then((item) => {
+              item.index = index
+              $elfie.registrations.push(item)
+            })
+          }, index * 3000)
         }
       })
     },

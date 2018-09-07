@@ -44,7 +44,7 @@ export default {
       }
     }).catch(e => {
       $elfie.spinner = false
-      $elfie.error = 'Record has been successfully registered on the block chain - but an error was thrown saving to user storage. Tx=' + this.provenanceRecord.indexData.regData.txId
+      $elfie.error = 'Record has been successfully registered on the block chain - but an error was thrown saving to user storage. Tx=' + this.provenanceRecord.indexData.regData.result
     })
   },
   methods: {

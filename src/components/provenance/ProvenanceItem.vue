@@ -21,7 +21,7 @@
     <div class="column">
       <div class="media-right" v-if="provenanceRecord.indexData.saleData">
         <provenance-sellers-info v-if="owner" v-bind:saleData="provenanceRecord.indexData.saleData" v-bind:recordId="provenanceRecord.indexData.id"/>
-        <provenance-buyers-info v-else v-bind:saleData="provenanceRecord.indexData.saleData" v-bind:recordId="provenanceRecord.indexData.id"/>
+        <provenance-buyers-info v-else v-bind:provenanceRecord="provenanceRecord" v-bind:recordId="provenanceRecord.indexData.id"/>
       </div>
     </div>
     <div class="column">
@@ -76,14 +76,12 @@ export default {
       provenanceId: (this.$route && this.$route.params.provenanceId) ? parseInt(this.$route.params.provenanceId) : undefined,
     }
   },
-  created () {
-    window.addEventListener('beforeunload', this.stopPublishing)
-  },
   beforeDestroy () {
     webrtcService.unpublish()
     eventBus.$off('signal-in-message')
   },
-  mounted () {
+  created () {
+    window.addEventListener('beforeunload', this.stopPublishing)
     let userData = provenanceService.getUserData()
     if (userData && userData.username) {
       this.loggedIn = true

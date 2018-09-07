@@ -36,7 +36,7 @@
         <p>Only support registering digital artworks on the block chain right now - this will change soon so stay tuned!</p>
       </div>
       <provenance-reg-bar v-bind:provenanceRecord="provenanceRecord" v-bind:userData="userData" v-bind:allowEdit="allowEdit"/>
-      <p v-if="provenanceRecord.indexData.regData.txId">Registered in transaction: {{ provenanceRecord.indexData.regData.txId }}</p>
+      <p v-if="provenanceRecord.indexData.regData.result">Registered in transaction: {{ provenanceRecord.indexData.regData.result }}</p>
     </div>
     <provenance-sale-data v-if="saleDataModalActive" v-on:close-sale-data-modal="closeSaleDataModal" v-bind:ethToBtc="ethToBtc" v-bind:fiatRates="fiatRates" v-bind:recordForSaleData="recordForSaleData" v-bind:saleDataModalActive="saleDataModalActive"/>
     <div class="field is-grouped">
@@ -94,22 +94,19 @@ export default {
       e.preventDefault()
       this.spinner = true
       ethService.register(this.provenanceRecord.indexData.title, this.provenanceRecord.indexData.regData.timestamp, this.userData.username).then((result) => {
-        if (result.failed) {
-          this.error = result.reason
+        if (result.failed && result.reason) {
+          this.error = result.reason.message
           this.spinner = false
         } else {
-          this.provenanceRecord.indexData.regData.txId = result.txId
+          this.provenanceRecord.indexData.regData.result = result
           provenanceService.createOrUpdateRecord(this.provenanceRecord.indexData, this.provenanceRecord.provData)
             .then((record) => {
-              this.error = 'Record has been successfully registered on the block chain. Tx=' + this.provenanceRecord.indexData.regData.txId
+              this.error = 'Record has been successfully registered on the block chain. Tx=' + this.provenanceRecord.indexData.regData.result
               this.spinner = false
-              // ethService.sell(5000000000).then((result) => {
-              //  console.log(result)
-              // })
             })
             .catch(e => {
               this.spinner = false
-              this.error = 'Record has been successfully registered on the block chain - but an error was thrown saving to user storage. Tx=' + this.provenanceRecord.indexData.regData.txId
+              this.error = 'Record has been successfully registered on the block chain - but an error was thrown saving to user storage. Tx=' + this.provenanceRecord.indexData.regData.result
             })
         }
       })

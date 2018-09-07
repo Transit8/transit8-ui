@@ -56,13 +56,21 @@ const provenanceService = {
     }
   },
   setProvenanceRecordInLS: function (o) {
-    localStorage.setItem(provenanceService.PROVENANCE_FILE_LOCAL_STORAGE_PATH, JSON.stringify(o))
+    try {
+      localStorage.setItem(provenanceService.PROVENANCE_FILE_LOCAL_STORAGE_PATH, JSON.stringify(o))
+    } catch (e) {
+      console.log('No room in local storage for record: ' + o)
+    }
   },
   setRootFileInLS: function (file) {
-    if (typeof file !== 'string') {
-      localStorage.setItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_PATH, JSON.stringify(file))
-    } else {
-      localStorage.setItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_PATH, file)
+    try {
+      if (typeof file !== 'string') {
+        localStorage.setItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_PATH, JSON.stringify(file))
+      } else {
+        localStorage.setItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_PATH, file)
+      }
+    } catch (e) {
+      console.log('No room in local storage for record: ' + file)
     }
   },
   parseAppUrl: function (appUrl) {
@@ -316,7 +324,7 @@ const provenanceService = {
     })
   },
   setRegData: function (record) {
-    // if (record.indexData.regData && record.indexData.regData.txId) {
+    // if (record.indexData.regData && record.indexData.regData.result) {
     //  return
     // }
     let tempRegData = {
