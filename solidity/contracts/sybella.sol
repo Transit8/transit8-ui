@@ -152,6 +152,7 @@ contract ArtMarket {
   }
  
   function closeAuction(uint auctionID) public {
+    require(!auctions[auctionID].closed && auctions[auctionID].created > 0);
     if(now - auctions[auctionID].created > auctions[auctionID].duration) {
       if(auctions[auctionID].highestBid > 0) {
         items[auctions[auctionID].itemID].owners[items[auctions[auctionID].itemID].ownerIndex].transfer(auctions[auctionID].highestBid);
@@ -170,7 +171,7 @@ contract ArtMarket {
   }
  
   function placeBid(uint auctionID) payable public {
-     require(msg.value + auctions[auctionID].bids[msg.sender] > auctions[auctionID].reserve && msg.value + auctions[auctionID].bids[msg.sender] > SafeMath.add(auctions[auctionID].highestBid, auctions[auctionID].increment));
+     require(!auctions[auctionID].closed && auctions[auctionID].created > 0 && msg.value + auctions[auctionID].bids[msg.sender] > auctions[auctionID].reserve && msg.value + auctions[auctionID].bids[msg.sender] > SafeMath.add(auctions[auctionID].highestBid, auctions[auctionID].increment));
      auctions[auctionID].highestBidder = msg.sender;
      auctions[auctionID].highestBid = auctions[auctionID].bids[msg.sender] + msg.value;
      auctions[auctionID].bids[msg.sender] = auctions[auctionID].bids[msg.sender] + msg.value;
