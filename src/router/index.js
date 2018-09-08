@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Home from '../components/home/Home'
+import Home from '../pages/Home'
 import Admin from '../components/admin/Admin'
 import AdminRegistrations from '../components/admin/AdminRegistrations'
 import AdminSearchNames from '../components/admin/AdminSearchNames'
@@ -166,7 +166,7 @@ const router = new Router({
       component: Login
     }, {
       path: '/getBrowser',
-      name: 'login',
+      name: 'getBrowser',
       component: Login
     }
   ]

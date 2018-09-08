@@ -2,16 +2,16 @@
 <!-- Navbar -->
 <nav class="navbar navbar-default">
     <div class="navbar-header col-md-4 col-xs-12">
-        <button id="menu-toggle" type="button" class="navbar-toggle" onclick="toggleNav()"><!-- data-toggle="collapse" data-target="#menu"  -->
+        <button id="menu-toggle" type="button" class="navbar-toggle" @click="toggleNavigation()"><!-- data-toggle="collapse" data-target="#menu"  -->
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-menu"></span>
         </button>
-        <a class="logo" href="index.html">sybella</a>
+        <router-link class="logo" to="/">sybella</router-link>
     </div>
     <div class="navbar-right col-md-8 col-xs-12">
             <div class="search-form col-md-6 col-md-offset-2 col-xs-12 col-xs-offset-0">
                 <input type="text" class="form-control" placeholder="Search">
-                <span class="icon-search" (click)="onSearch();"></span>
+                <span class="icon-search"></span>
             </div>
             <ul class="list-inline language-menu col-md-4 col-xs-12">
                 <li><a href="#">English</a></li>
@@ -22,13 +22,13 @@
                 </router-link>
             </ul>
     </div>
-    <div id="menu" class="menu">
+    <div id="menu" class="menu" :class="{'open': showNavigation}">
         <ul>
              <li><a href="#">Artworks</a></li>
              <li><a href="#">Artists</a></li>
              <li><a href="#">Competitions</a></li>
              <li><a href="#">About</a></li>
-             <li><a href="#">Login</a></li>
+             <li><router-link to="/login" @click="toggleNavigation()">Login</router-link></li>
         </ul>
     </div>
 </nav>
@@ -105,6 +105,7 @@ export default {
       isModalActive: true,
       debug: false,
       peers: messagingService.peers,
+      showNavigation: false,
     }
   },
   mounted () {
@@ -127,6 +128,9 @@ export default {
     }, 500)
   },
   methods: {
+    toggleNavigation () {
+      this.showNavigation = !this.showNavigation
+    },
   },
   components: {
     BrightBlockAuth,
