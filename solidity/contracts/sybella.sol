@@ -129,11 +129,12 @@ contract ArtMarket {
       items[itemID].price = price;
   }
   
-  function buy(uint itemID) payable public {
+  function buy(uint itemID, string blockstackUrl) payable public {
     if(items[itemID].price > 0 && msg.value == items[itemID].price) {
       items[itemID].owners[items[itemID].ownerIndex].transfer(msg.value);
       items[itemID].ownerIndex++;
       items[itemID].owners[items[itemID].ownerIndex] = msg.sender; 
+      items[itemID].blockstackUrl = blockstackUrl;
       items[itemID].price = 0;
     }
   }
