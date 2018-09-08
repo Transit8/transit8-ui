@@ -1,15 +1,43 @@
 <template>
+<!-- Navbar -->
+<nav class="navbar navbar-default">
+    <div class="navbar-header col-md-4 col-xs-12">
+        <button id="menu-toggle" type="button" class="navbar-toggle" @click="toggleNavigation()"><!-- data-toggle="collapse" data-target="#menu"  -->
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-menu"></span>
+        </button>
+        <router-link class="logo" to="/">sybella</router-link>
+    </div>
+    <div class="navbar-right col-md-8 col-xs-12">
+            <div class="search-form col-md-6 col-md-offset-2 col-xs-12 col-xs-offset-0">
+                <input type="text" class="form-control" placeholder="Search">
+                <span class="icon-search"></span>
+            </div>
+            <ul class="list-inline language-menu col-md-4 col-xs-12">
+                <li><a href="#">English</a></li>
+                <li><a href="#">Korean</a></li>
+                <li><a href="#">Arabic</a></li>
+                <router-link to="/admin/search/art" class="navbar-item" v-if="showAdmin">
+                  Admin
+                </router-link>
+            </ul>
+    </div>
+    <div id="menu" class="menu" :class="{'open': showNavigation}">
+        <ul>
+             <li><a href="#">Artworks</a></li>
+             <li><a href="#">Artists</a></li>
+             <li><a href="#">Competitions</a></li>
+             <li><a href="#">About</a></li>
+             <li><router-link to="/login" @click="toggleNavigation()">Login</router-link></li>
+        </ul>
+    </div>
+</nav>
+<!-- End navbar -->
+
+<!--
 <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
     <div class="navbar-item">
-      <!--
-      <router-link class="fa-rotate-270" to="/" style="font-size:2.6em; color:Tomato">
-        <i class="fas fa-bicycle"></i>
-      </router-link>
-      <router-link class="fa-rotate-270" to="/" style="margin-left: 25px; margin-bottom: 0px; font-size:2.6em; color:Tomato">
-        <i class="fas fa-bicycle"></i>
-      </router-link>
-       -->
       <router-link to="/" style="font-size:1.6em; color:Tomato">
         OpenArtMarket
       </router-link>
@@ -49,11 +77,11 @@
       </router-link>
       <nav-item-blockstack v-if="debug"/>
       <nav-item-dev-tools v-if="debug"/>
-      <!-- <tipe-nav-links /> -->
       <bright-block-auth showAccountLink="true"/>
     </div>
   </div>
 </nav>
+-->
 </template>
 
 <script>
@@ -77,6 +105,7 @@ export default {
       isModalActive: true,
       debug: false,
       peers: messagingService.peers,
+      showNavigation: false,
     }
   },
   mounted () {
@@ -99,6 +128,9 @@ export default {
     }, 500)
   },
   methods: {
+    toggleNavigation () {
+      this.showNavigation = !this.showNavigation
+    },
   },
   components: {
     BrightBlockAuth,

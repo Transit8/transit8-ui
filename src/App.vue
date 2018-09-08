@@ -7,7 +7,7 @@
     <settings-blockchain v-if="error" v-on:continue-onward="continueOnward" v-bind:metamask="metamask"></settings-blockchain>
     <router-view v-else></router-view>
   </div>
-  <footBar/>
+  <app-footer/>
 </div>
 </template>
 
@@ -15,8 +15,8 @@
 import SettingsBlockchain from '@/components/settings/SettingsBlockchain'
 import Navigation from '@/components/nav/Navigation'
 import Login from 'bright-block-auth/src/components/auth/Login'
-import FootBar from '@/components/home/FootBar'
 import ethService from '@/services/experimental/ethApiService'
+import AppFooter from './components/common/AppFooter'
 
 export default {
   name: 'App',
@@ -53,28 +53,10 @@ export default {
     },
   },
   components: {
+    AppFooter,
     Navigation,
     Login,
     SettingsBlockchain,
-    FootBar
   }
 }
 </script>
-
-<style lang="scss">
-@import "../node_modules/bulma/bulma.sass";
-</style>
-<style lang="css">
-p {
-  margin-bottom: 15px;
-}
-.container {
-  padding-top: 20px;
-}
-.main {
-  min-height: calc(100vh - 90px);
-}
-.footer {
-  height: 50px;
-}
-</style>
