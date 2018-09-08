@@ -1,0 +1,608 @@
+/* Variables - colors */
+/* Variables - paddings */
+/**/
+@import url("https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono");
+.navbar.navbar-default {
+  background: #000;
+  color: #fff;
+  padding: 0;
+  margin-bottom: 0;
+  border: none;
+  border-bottom: 1px solid #707070;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  height: 72px; }
+  .navbar.navbar-default .navbar-header {
+    float: left;
+    height: 100%; }
+  .navbar.navbar-default .navbar-brand {
+    margin-top: 10px; }
+  .navbar.navbar-default .navbar-toggle {
+    display: block;
+    float: left;
+    border: none;
+    height: 72px;
+    padding: 25px;
+    margin: 0; }
+    .navbar.navbar-default .navbar-toggle:hover, .navbar.navbar-default .navbar-toggle:focus, .navbar.navbar-default .navbar-toggle:active {
+      background: initial; }
+    .navbar.navbar-default .navbar-toggle .icon-bar {
+      background-color: #fff;
+      width: 28px;
+      height: 2px; }
+    .navbar.navbar-default .navbar-toggle .icon-bar + .icon-bar {
+      margin-top: 5px; }
+  .navbar.navbar-default .logo {
+    float: left; }
+  .navbar.navbar-default .navbar-nav {
+    float: right;
+    height: 100%; }
+    .navbar.navbar-default .navbar-nav li {
+      border-left: 1px solid #707070;
+      border-right: 1px solid #707070;
+      height: inherit;
+      padding: 8px 17px;
+      display: inline-block; }
+      .navbar.navbar-default .navbar-nav li a img {
+        height: 20px; }
+
+.menu {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #000;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+  text-align: center; }
+  .menu .closebtn {
+    position: absolute;
+    top: 0;
+    left: 25px;
+    font-size: 55px;
+    line-height: 1; }
+  .menu ul {
+    list-style-type: none;
+    height: 85px;
+    overflow: hidden;
+    position: absolute;
+    top: calc(50% - 42px);
+    left: 0;
+    right: 0;
+    padding-left: 0; }
+    .menu ul li {
+      display: inline-block; }
+      .menu ul li a {
+        padding: 0 25px;
+        color: #fff;
+        display: block;
+        transition: 0.8s;
+        text-transform: uppercase;
+        font-family: 'Tungsten';
+        font-weight: normal;
+        font-size: 48px;
+        letter-spacing: 5px; }
+        .menu ul li a:hover, .menu ul li a:active, .menu ul li a:focus {
+          color: #eeb71d; }
+
+@media (max-width: 992px) {
+  .menu
+  ul {
+    height: auto;
+    position: relative;
+    top: 82px;
+    display: block; }
+    .menu
+    ul li {
+      display: block;
+      text-align: left;
+      padding: 25px 0 25px 50px;
+      max-height: 94px;
+      overflow: hidden; }
+      .menu
+      ul li a {
+        font-size: 55px; } }
+/*@media screen and (max-height: 480px) {
+    .menu {padding-top: 15px;}
+    .menu ul li a {font-size: 30px;}
+}*/
+/* Fonts */
+@font-face {
+  font-family: 'Tungsten';
+  src: url("../fonts/Tungsten-Medium.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal; }
+@font-face {
+  font-family: 'Tungsten';
+  src: url("../fonts/Tungsten-Semibold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal; }
+@font-face {
+  font-family: 'cacao';
+  src: url("../fonts/cacao.eot?jsujv8");
+  src: url("../fonts/cacao.eot?jsujv8#iefix") format("embedded-opentype"), url("../fonts/cacao.ttf?jsujv8") format("truetype"), url("../fonts/cacao.woff?jsujv8") format("woff"), url("../fonts/cacao.svg?jsujv8#cacao") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'cacao' !important;
+  /* speak: none; */
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+.icon-arrow-right:before {
+  content: "\e900";
+  vertical-align: middle; }
+
+.icon-arrow-left:before {
+  content: "\e901";
+  vertical-align: middle; }
+
+.icon-arrow-down:before {
+  content: "\e902"; }
+
+.icon-arrow-up:before {
+  content: "\e903"; }
+
+.container {
+  max-width: 1024px;
+  padding-left: 94px;
+  padding-right: 94px; }
+
+html {
+  background: #fff;
+  font-family: 'Roboto', sans-serif; }
+
+h1, h2, h3, h4,
+.h1, .h2, .h3, .h4 {
+  font-family: 'Tungsten', Helvetica, sans-serif;
+  font-weight: normal;
+  text-transform: uppercase; }
+
+h1 {
+  font-size: 60px;
+  line-height: 1;
+  letter-spacing: 6px;
+  margin-bottom: 50px; }
+
+h2, .h2 {
+  font-size: 55px;
+  letter-spacing: 5.5px;
+  line-height: 1;
+  margin-top: 0;
+  margin-bottom: 0; }
+
+h3, .h3 {
+  font-size: 40px;
+  letter-spacing: 4px; }
+
+h4, .h4 {
+  font-size: 36px;
+  letter-spacing: 3px; }
+
+p, .p {
+  font-size: 20px;
+  letter-spacing: 2px;
+  font-family: 'Roboto', sans-serif; }
+
+.subtext {
+  font-size: 24px;
+  margin-bottom: 45px; }
+
+a {
+  color: inherit; }
+  a:hover, a:focus, a:active {
+    color: #ffc600;
+    text-decoration: inherit; }
+
+.mono {
+  font-family: 'Roboto-Mono', monospace; }
+
+/* Color classes */
+.black-bg {
+  background-color: #000; }
+
+.black {
+  color: #000; }
+
+.white {
+  color: #fff; }
+
+.grey {
+  color: #999; }
+
+.grey-medium {
+  color: #707070; }
+
+.yellow {
+  color: #eeb71d; }
+
+.red {
+  color: #c21a35; }
+
+.green {
+  color: #1fa782; }
+
+.mint {
+  color: #009899; }
+
+section {
+  padding-bottom: 75px; }
+
+.divider {
+  border-bottom: 1px solid #707070;
+  width: 100%; }
+
+.spacer {
+  height: 75px; }
+
+.spacer-xsmall {
+  height: 20px; }
+
+.spacer-small {
+  height: 60px; }
+
+.spacer-medium-big {
+  height: 110px; }
+
+.spacer-big {
+  height: 140px; }
+
+.cta {
+  font-family: 'Tungsten', Helvetica, sans-serif;
+  font-weight: normal;
+  text-transform: uppercase;
+  margin-top: 45px;
+  font-size: 30px; }
+  .cta p {
+    font-family: inherit;
+    font-size: inherit; }
+
+button, .button {
+  font-family: 'Roboto';
+  font-size: 15px;
+  letter-spacing: 2px;
+  color: #eeb71d;
+  border: 2px solid #eeb71d;
+  background: transparent;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  text-transform: uppercase;
+  padding: 20px 35px;
+  letter-spacing: 2px;
+  margin-top: 75px;
+  display: inline-block; }
+  button:hover, button:focus, button:active, .button:hover, .button:focus, .button:active {
+    color: #ffc600; }
+
+.img-responsive {
+  width: 100%; }
+
+.underline {
+  border-bottom: 2px solid;
+  padding-bottom: 20px;
+  margin-bottom: 15px; }
+
+.list {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 60px; }
+  .list li {
+    font-size: 24px;
+    line-height: 2;
+    letter-spacing: 1px; }
+
+.caption {
+  font-size: 15px;
+  letter-spacing: 2px;
+  font-family: 'Roboto-Mono', monospace;
+  text-transform: uppercase;
+  color: #999;
+  font-weight: 600;
+  margin-top: 10px;
+  margin-bottom: 25px; }
+
+.border-list {
+  list-style: none;
+  padding-left: 0; }
+  .border-list li {
+    border-bottom: 2px solid;
+    padding-top: 20px;
+    padding-bottom: 30px;
+    margin-bottom: 30px; }
+
+.testimonial-author {
+  padding-top: 20px; }
+
+.frame-row {
+  position: relative; }
+
+/****** Homepage news grid *******/
+.news-grid-row {
+  margin-left: 0;
+  margin-right: 0; }
+
+.border-box {
+  border: 1px solid #999;
+  border-left: 0;
+  padding: 20px;
+  position: relative; }
+
+.heading-small {
+  font-size: 15px;
+  text-transform: uppercase; }
+
+.num-big {
+  font-family: Tungsten;
+  font-weight: 600;
+  font-size: 224px;
+  text-align: left;
+  line-height: 1;
+  letter-spacing: 12px; }
+
+.date {
+  font-family: 'Roboto-Mono', monospace;
+  font-weight: normal;
+  font-size: 12px;
+  margin-top: 30px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  position: absolute;
+  bottom: 20px;
+  left: 20px; }
+
+/********************************/
+.medium {
+  font-size: 36px;
+  line-height: 1;
+  text-transform: uppercase; }
+
+.jobs-list p {
+  font-family: 'Roboto-Mono', monospace;
+  font-size: 19px; }
+.jobs-list h2 {
+  margin-bottom: 50px; }
+.jobs-list a {
+  display: block;
+  margin-top: 30px; }
+
+.job-item {
+  border-top: 1px solid #707070;
+  border-bottom: 1px solid #707070;
+  padding-top: 75px;
+  padding-bottom: 75px; }
+
+.work-item {
+  border-bottom: 1px solid #707070;
+  padding-top: 55px;
+  padding-bottom: 55px; }
+
+.work-list p {
+  font-family: 'Roboto-Mono', monospace;
+  font-size: 19px; }
+
+.good-match-list {
+  list-style-type: none;
+  text-transform: uppercase;
+  font-size: 20px;
+  font-family: Roboto-Mono, monospace;
+  padding-left: 0;
+  margin-top: 15px; }
+  .good-match-list li {
+    padding-left: 0; }
+
+.sign {
+  font-size: 80px;
+  line-height: 1; }
+
+.video {
+  margin-bottom: 10px; }
+
+.path {
+  padding-top: 30px; }
+  .path p, .path ul li {
+    font-size: 20px;
+    font-family: "Roboto-Mono", monospace;
+    margin-bottom: 20px; }
+  .path ul {
+    padding-left: 15px;
+    list-style-type: none; }
+    .path ul li:before {
+      content: '\00b7';
+      font-size: 25px;
+      left: 10px;
+      position: absolute;
+      line-height: 1.2; }
+
+/* About us frame row */
+.heading_health {
+  font-size: 25px;
+  position: absolute;
+  top: 20px;
+  left: 35px; }
+
+.health_percent {
+  font-size: 25px;
+  position: absolute;
+  top: calc(50% - 80px);
+  left: 35px; }
+
+.areas-list {
+  list-style-type: none;
+  padding-left: 0;
+  font-family: "Tungsten";
+  font-weight: normal;
+  margin-top: 40px; }
+  .areas-list li {
+    font-size: 36px;
+    letter-spacing: 3px;
+    padding-left: 0;
+    line-height: 2; }
+
+.plus {
+  font-size: 24px;
+  line-height: 2; }
+
+.code {
+  margin-top: 15px; }
+
+/* Contact */
+#contact.contact {
+  min-height: calc(100vh - 400px); }
+
+/* Footer */
+footer {
+  padding-top: 90px;
+  padding-bottom: 140px; }
+  footer p {
+    font-size: 15px;
+    letter-spacing: 2px;
+    line-height: 2; }
+    footer p a {
+      color: inherit;
+      text-decoration: underline; }
+      footer p a:hover {
+        color: inherit; }
+  footer .footer-soc {
+    list-style: none;
+    padding-left: 0; }
+    footer .footer-soc li {
+      display: inline-block;
+      padding: 20px; }
+
+@media (max-width: 992px) {
+  .border-box:nth-last-child(1):nth-child(odd) .date {
+    position: relative;
+    bottom: initial;
+    left: initial; } }
+@media (max-width: 768px) {
+  .date {
+    position: relative;
+    bottom: initial;
+    left: initial; }
+
+  .container {
+    padding-left: 40px;
+    padding-right: 40px; }
+
+  section {
+    padding-bottom: 45px; }
+
+  /* spacer adjustment */
+  .spacer {
+    height: 45px; }
+
+  .spacer-xsmall {
+    height: 10px; }
+
+  .spacer-small {
+    height: 30px; }
+
+  .spacer-medium-big {
+    height: 50px; }
+
+  .spacer-big {
+    height: 60px; }
+
+  button, .button {
+    margin-top: 45px; }
+
+  /* menu */
+  .menu ul {
+    top: 25px; }
+    .menu ul li {
+      padding: 15px 0 15px 50px;
+      max-height: 65px; }
+      .menu ul li a {
+        font-size: 30px;
+        letter-spacing: 3px; }
+
+  /* typography */
+  h1 {
+    font-size: 40px;
+    line-height: 1;
+    letter-spacing: 4px;
+    margin-bottom: 35px; }
+
+  h2, .h2 {
+    font-size: 35px;
+    letter-spacing: 3.5px;
+    line-height: 1.1;
+    margin-top: 0;
+    margin-bottom: 0; }
+
+  h3, .h3 {
+    font-size: 28px;
+    letter-spacing: 3px; }
+
+  h4, .h4 {
+    font-size: 24px;
+    letter-spacing: 2px; }
+
+  .subtext {
+    font-size: 18px;
+    margin-bottom: 30px; }
+
+  .medium {
+    font-size: 28px;
+    line-height: 1.2; }
+
+  p, .p {
+    font-size: 16px; }
+
+  /* lists */
+  .list {
+    margin-top: 30px; }
+    .list li {
+      font-size: 18px; }
+
+  .jobs-list p, .work-list p {
+    font-size: 18px; }
+
+  .work-item {
+    padding-top: 30px;
+    padding-bottom: 30px; }
+
+  .areas-list {
+    margin-top: 20px; }
+    .areas-list li {
+      font-size: 24px;
+      letter-spacing: 4px;
+      line-height: 2; }
+
+  .plus {
+    font-size: 20px;
+    line-height: 1.6; }
+
+  .num-big {
+    font-size: 160px; }
+
+  footer {
+    padding-top: 50px;
+    padding-bottom: 80px; } }
+@media (max-height: 375px) {
+  /* menu */
+  .menu ul {
+    top: 0; }
+    .menu ul li {
+      padding: 5px 0 5px 50px;
+      max-height: 55px; }
+      .menu ul li a {
+        font-size: 30px;
+        letter-spacing: 3px; } }
+@media (max-width: 330px) {
+  .copy {
+    display: block; } }
+
+/*# sourceMappingURL=style.css.map */
