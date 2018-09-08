@@ -133,8 +133,9 @@ const ethApiService = {
             $elfist.index++
             ethApiService.fetchItemByIndex($elfist.index).then((item) => {
               if (item[0] === title && item[1] === username) {
-                console.log('index: ' + $elfist.index + ' item: ', item)
-                ethApiService.myContract.buy(index, function (err, res) {
+                let value = item[4].toString()
+                console.log('index: ' + $elfist.index + ' item: ', item + ' value=' + value)
+                ethApiService.myContract.buy(index, {value: value}, function (err, res) {
                   if (err) {
                     console.log(err)
                     resolve({failed: true, reason: err})
