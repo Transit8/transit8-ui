@@ -3,6 +3,9 @@ import Router from 'vue-router'
 
 import Home from '../pages/Home'
 import About from '../pages/About'
+import Artworks from '../pages/Artworks'
+import Artists from '../pages/Artists'
+import Artist from '../pages/Artist'
 import Admin from '../components/admin/Admin'
 import AdminRegistrations from '../components/admin/AdminRegistrations'
 import AdminSearchNames from '../components/admin/AdminSearchNames'
@@ -174,6 +177,24 @@ const router = new Router({
       path: '/about',
       name: 'about',
       component: About,
+    },
+    {
+      path: '/artworks',
+      name: 'artworks',
+      component: Artworks,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/artists',
+      name: 'artists',
+      component: Artists,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/artists/:artistId',
+      name: 'artistDetails',
+      component: Artist,
+      meta: { requiresAuth: true },
     }
   ]
 })

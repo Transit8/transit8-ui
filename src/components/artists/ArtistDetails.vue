@@ -1,0 +1,35 @@
+<template>
+  <div class="container-fluid footer-bottom">
+    <div class="col-md-6">
+      <h1 class="font-size-48 m-0">{{artist.name}}</h1>
+    </div>
+    <div class="col-md-6">
+      <div class="row" id="artist-description">
+        <div class="col-xs-12">
+          <img :src="artist.image" :alt="artist.name" class="mb-50"/>
+        </div>
+        <div class="col-xs-12">
+          <p>{{artist.description}}</p>
+          <p class="mt-50">
+            <a href="#" class="inline-block">Read more</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+// noinspection JSUnusedGlobalSymbols
+export default {
+  name: 'ArtistDetails',
+  props: {
+    artist: {
+      type: Object,
+      default () {
+        return {}
+      }
+    }
+  }
+}
+</script>
