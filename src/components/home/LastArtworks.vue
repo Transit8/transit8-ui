@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import chunk from 'lodash/chunk';
+import chunk from 'lodash/chunk'
 import LastArtwork from './LastArtwork'
 
 // noinspection JSUnusedGlobalSymbols

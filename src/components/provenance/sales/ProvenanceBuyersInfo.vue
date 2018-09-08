@@ -32,13 +32,17 @@ export default {
   },
   mounted () {
     let $elfist = this
-    this.username = provenanceService.getUserData().username
-    ethService.fetchItemByData(this.provenanceRecord.indexData.title, this.provenanceRecord.indexData.uploader).then((item) => {
-      console.log('item: ', item)
-      $elfist.ethItem = item
-      let price = item[4].toString()
-      $elfist.priceInEther = price / 1000000000000000000
-    })
+    try {
+      this.username = provenanceService.getUserData().username
+      ethService.fetchItemByData(this.provenanceRecord.indexData.title, this.provenanceRecord.indexData.uploader).then((item) => {
+        console.log('item: ', item)
+        $elfist.ethItem = item
+        let price = item[4].toString()
+        $elfist.priceInEther = price / 1000000000000000000
+      })
+    } catch (err) {
+      this.username = 'anon'
+    }
   },
   methods: {
     buyNow: function () {

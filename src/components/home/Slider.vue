@@ -29,12 +29,12 @@ export default {
   props: {
     slides: {
       type: Array,
-      default() {
+      default () {
         return []
       }
     }
   },
-  data() {
+  data () {
     return {
       slide: 0,
     }
