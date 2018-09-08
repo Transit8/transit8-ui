@@ -16,7 +16,6 @@
 </template>
 
 <script>
-import moment from 'moment'
 import ethService from '@/services/experimental/ethApiService'
 import provenanceService from '@/services/provenance/ProvenanceService'
 

@@ -209,6 +209,7 @@ export default {
     if (!this.indexData.uploader) {
       this.indexData.uploader = provenanceService.getUserData().username
     }
+    provenanceService.setRegData(this.provenanceRecord)
     _.merge(this.provData, provenanceRecord.provData)
     if (!this.provData.auditData) {
       this.provData.auditData = []
@@ -222,6 +223,15 @@ export default {
   validations: {
   },
   methods: {
+    deleteImages(): function (e) {
+      this.provData.images = []
+    },
+    deleteArtwork(): function (e) {
+      this.provData.artwork = []
+    },
+    deleteDocuments(): function (e) {
+      this.provData.supportingDocuments = []
+    },
     checkForm: function (e) {
       this.errors = []
       if (this.indexData.title && this.indexData.description && this.provData.editions > 0 && this.provData.editions < 11) {
