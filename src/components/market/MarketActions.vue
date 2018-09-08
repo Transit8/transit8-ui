@@ -1,9 +1,6 @@
 <template>
-<aside class="menu">
-  <h3 class="menu-label">
-    Open Market
-  </h3>
-  <ul class="menu-list">
+<aside class="">
+  <ul class="">
     <li>
       Found: {{ numbResults }}
     </li>

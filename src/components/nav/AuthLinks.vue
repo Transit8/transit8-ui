@@ -2,6 +2,21 @@
   <div class="auth-links">
     <ul v-if="loggedIn">
       <li>
+        <router-link to="/provenance/list" class="navbar-item" v-if="loggedIn">
+          My Art Work
+        </router-link>
+      </li>
+      <li>
+        <router-link to="/market/search" class="navbar-item">
+          Search
+        </router-link>
+      </li>
+      <li>
+        <router-link to="/admin/search/art" class="navbar-item" v-if="showAdmin">
+          Admin
+        </router-link>
+      </li>
+      <li>
         <router-link to="/account/userData">
           My Account
         </router-link>
@@ -89,6 +104,7 @@ export default {
   data () {
     return {
       loggedIn: false,
+      showAdmin: false,
       cantLogIn: false,
       name: null,
       username: null,
@@ -123,6 +139,7 @@ export default {
           this.name = account.username
         }
         this.username = account.username
+        this.showAdmin = true
         this.loggedIn = true
       })
     },

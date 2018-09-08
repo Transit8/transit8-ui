@@ -11,16 +11,13 @@
     </div>
     <div class="navbar-right col-md-8 col-xs-12">
       <div class="search-form col-md-6 col-md-offset-2 col-xs-12 col-xs-offset-0">
-        <input type="text" class="form-control" placeholder="Search">
-        <span class="icon-search"></span>
+        <input type="text" class="form-control" placeholder="Search" v-model="queryString">
+        <span class="icon-search"  @click="searchIndex()"></span>
       </div>
       <ul class="list-inline language-menu col-md-4 col-xs-12">
         <li><a href="#">English</a></li>
         <li><a href="#">Korean</a></li>
         <li><a href="#">Arabic</a></li>
-        <router-link to="/admin/search/art" class="navbar-item" v-if="showAdmin">
-          Admin
-        </router-link>
       </ul>
     </div>
     <div id="menu" class="menu" :class="{'open': showNavigation}">
@@ -109,6 +106,7 @@ export default {
       debug: false,
       peers: messagingService.peers,
       showNavigation: false,
+      queryString: null,
     }
   },
   mounted () {
@@ -138,6 +136,9 @@ export default {
   methods: {
     toggleNavigation () {
       this.showNavigation = !this.showNavigation
+    },
+    searchIndex (query) {
+      this.$router.push({path: '/market/search', query: {title: this.queryString}})
     },
   },
   components: {

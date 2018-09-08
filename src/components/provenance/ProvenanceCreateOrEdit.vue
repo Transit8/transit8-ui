@@ -209,7 +209,6 @@ export default {
     if (!this.indexData.uploader) {
       this.indexData.uploader = provenanceService.getUserData().username
     }
-    provenanceService.setRegData(this.provenanceRecord)
     _.merge(this.provData, provenanceRecord.provData)
     if (!this.provData.auditData) {
       this.provData.auditData = []
@@ -219,6 +218,7 @@ export default {
         when: this.indexData.id
       })
     }
+    provenanceService.setRegData({indexData: this.indexData, provData: this.provData})
   },
   validations: {
   },

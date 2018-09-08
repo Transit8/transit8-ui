@@ -1,9 +1,9 @@
 <template>
-<aside class="menu">
+<aside class="">
   <h3 class="menu-label">
     Admin Actions
   </h3>
-  <ul class="menu-list">
+  <ul class="">
     <li>
       <a href="#/admin/search/names">Names Index</a>
     </li>

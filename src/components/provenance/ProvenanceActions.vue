@@ -1,9 +1,9 @@
 <template>
-<aside class="menu">
+<aside class="">
   <h3 class="menu-label">
     Manage Artworks
   </h3>
-  <ul class="menu-list">
+  <ul class="">
     <li>
       <a href="#/provenance/list">My Artworks</a>
     </li>
