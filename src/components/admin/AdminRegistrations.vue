@@ -43,8 +43,10 @@ export default {
           $elfie = this
           setTimeout(function timer () {
             // alert('hello world')
-            ethService.fetchItemByIndex(index).then((item) => {
+            ethService.fetchItemByIndex(index, 1).then((item) => {
               item.index = index
+              let value = item[4].toString()
+              console.log('item: ', item + ' value=' + value)
               $elfie.registrations.push(item)
             })
           }, index * 3000)

@@ -36,7 +36,7 @@ export default {
     ethService.fetchItemByData(this.provenanceRecord.indexData.title, this.provenanceRecord.indexData.uploader).then((item) => {
       console.log('item: ', item)
       $elfist.ethItem = item
-      let price = item[4].c[1]
+      let price = item[4].toString()
       $elfist.priceInEther = price / 1000000000000000000
     })
   },

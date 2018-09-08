@@ -149,13 +149,19 @@ const ethApiService = {
       })
     })
   },
-  fetchItemByIndex: function (index) {
+  fetchItemByIndex: function (index, ownerIndex) {
     return new Promise(resolve => {
-      ethApiService.myContract.items(index, function (err, res) {
+      ethApiService.myContract.items(index, function (err, item) {
         if (err) {
-          console.log(err)
+          resolve(err)
         }
-        resolve(res)
+        ethApiService.myContract.getItemOwner(index, ownerIndex, function (err, owner) {
+          if (err) {
+            resolve(err)
+          }
+          console.log(owner)
+          resolve(item)
+        })
       })
     })
   },
