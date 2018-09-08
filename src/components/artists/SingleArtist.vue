@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="url" class="grid-item">
+  <router-link :to="url" class="col-sm-2 col-xs-1 grid-item">
     <img :src="artist.image" :alt="artist.title">
     <p class="artwork-caption mt-30">{{artist.title}}</p>
   </router-link>
