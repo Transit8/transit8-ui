@@ -17,18 +17,72 @@
 
 <script>
 import TipeContent from '@/components/home/TipeContent'
+import ethService from '@/services/experimental/ethApiService'
+import provenanceService from '@/services/provenance/ProvenanceService'
+import searchIndexService from '@/services/searchindex/SearchIndexService'
 
 export default {
   data () {
     return {
       prof: {},
+      userData: {},
+      provenanceRecords: [],
       state: {}
     }
   },
   mounted () {
+    let $elfie = this
+    $elfie.registrations = []
+    ethService.fetchNumbRegistrations().then((numbRegistrations) => {
+      this.numbRegistrations = numbRegistrations
+      for (let index = 0; index < 6; index++) {
+        if (index === numbRegistrations) {
+          break
+        }
+        $elfie = this
+        setTimeout(function timer () {
+          ethService.fetchItemByIndex(index, 1).then((item) => {
+            item.index = index
+            let value = item[4].toString()
+            console.log('item: ', item + ' value=' + value)
+            $elfie.registrations.push(item)
+            $elfie.searchIndex(item[0])
+          })
+        }, index * 3000)
+      }
+    })
+  },
+  methods: {
+    searchIndex: function (query) {
+      let $elfie = this
+      searchIndexService.searchIndex('art', this.queryTerm, query)
+        .then((results) => {
+          $elfie.provenanceRecords = []
+          console.log('Total records found in search (may differ from number fetched from gaia storage): ' + results.length)
+          _.forEach(results, function (indexData) {
+            provenanceService.getRecordForSearch(indexData)
+              .then((record) => {
+                console.log('Record: ' + record)
+                if (record && record.indexData && record.indexData.id) {
+                  $elfie.provenanceRecords.push(record)
+                  $elfie.$emit('update:numbResults', $elfie.provenanceRecords.length)
+                }
+              })
+              .catch(e => {
+                console.log('Unable to get from: ', indexData)
+              })
+          })
+        })
+        .catch(e => {
+          console.log('Unable to contact search index.', e)
+        })
+    },
   },
   components: {
     TipeContent
   }
 }
 </script>
+
+<style lang="sass" src="bulma">
+</style>
