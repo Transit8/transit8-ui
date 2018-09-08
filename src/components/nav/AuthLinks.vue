@@ -82,12 +82,10 @@
 
 <script>
 import authorization from 'bright-block-auth'
-import LoginModal from './LoginModal'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
   name: 'AuthLinks',
-  components: { LoginModal },
   data () {
     return {
       loggedIn: false,

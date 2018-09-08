@@ -130,6 +130,11 @@ export default {
       }
     }, 500)
   },
+  watch: {
+    '$route' () {
+      this.showNavigation = false
+    }
+  },
   methods: {
     toggleNavigation () {
       this.showNavigation = !this.showNavigation
