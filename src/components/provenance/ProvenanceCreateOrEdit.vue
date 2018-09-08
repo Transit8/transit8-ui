@@ -223,13 +223,13 @@ export default {
   validations: {
   },
   methods: {
-    deleteImages(): function (e) {
+    deleteImages: function (e) {
       this.provData.images = []
     },
-    deleteArtwork(): function (e) {
+    deleteArtwork: function (e) {
       this.provData.artwork = []
     },
-    deleteDocuments(): function (e) {
+    deleteDocuments: function (e) {
       this.provData.supportingDocuments = []
     },
     checkForm: function (e) {
