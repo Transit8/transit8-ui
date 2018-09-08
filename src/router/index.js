@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import Home from '../pages/Home'
+import About from '../pages/About'
 import Admin from '../components/admin/Admin'
 import AdminRegistrations from '../components/admin/AdminRegistrations'
 import AdminSearchNames from '../components/admin/AdminSearchNames'
@@ -168,6 +169,11 @@ const router = new Router({
       path: '/getBrowser',
       name: 'getBrowser',
       component: Login
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: About,
     }
   ]
 })

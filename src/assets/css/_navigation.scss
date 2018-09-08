@@ -91,9 +91,6 @@
 
     ul { list-style-type: none;
         overflow: hidden;
-        position: absolute;
-        left: 0;
-        right: 0;
         padding-left:0;
         background-color: $black;
         li { display: block;
@@ -108,6 +105,11 @@
             }
         }
     }
+
+  .auth-links {
+    padding-top: 10px;
+    border-top: 1px solid $grey-medium;
+  }
 }
 
 @media (max-width: 992px) {
