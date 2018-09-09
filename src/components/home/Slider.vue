@@ -4,17 +4,19 @@
     <div class="container wide">
       <div class="row">
         <div class="col-sm-12">
-          <uiv-carousel :indicators="true" :controls="false" :interval="8000" ref="carousel" class="slider">
-            <uiv-slide v-for="(slide, index) in slides" :key="index">
-              <div style="width: 100%;height: 969px; background-size:cover"
-                   :style="{backgroundImage: 'url(' + slide.image + ')'}"></div>
-              <div class="slider-content">
-                <h2 class="title-big">{{slide.title}}</h2>
-                <h3 class="subtitle">{{slide.subtitle}}</h3>
-                <a class="button btn btn-sm black-bg white" :href="slide.url">Explore</a>
-              </div>
-            </uiv-slide>
-          </uiv-carousel>
+          <div class="slider-container">
+            <uiv-carousel :indicators="true" :controls="false" :interval="8000" ref="carousel" class="slider"
+                          v-model="slide" v-if="slides.length">
+              <uiv-slide v-for="(sld, index) in slides" :key="index">
+                <div class="slider-background" :style="{backgroundImage: 'url(' + sld.data.image.url + ')'}"></div>
+                <div class="slider-content">
+                  <h2 class="title-big">{{$prismic.richTextAsPlain(sld.data.title)}}</h2>
+                  <h3 class="subtitle">{{$prismic.richTextAsPlain(sld.data.subtitle)}}</h3>
+                  <prismic-link class="button btn btn-sm black-bg white" :field="sld.data.link">Explore</prismic-link>
+                </div>
+              </uiv-slide>
+            </uiv-carousel>
+          </div>
         </div>
       </div>
     </div>
@@ -36,6 +38,9 @@ export default {
   },
   data () {
     return {
+      /**
+       * variable holding number of currently displayed slide
+       */
       slide: 0,
     }
   },

@@ -10,91 +10,41 @@
       <router-link class="logo" to="/">sybella</router-link>
     </div>
     <div class="navbar-right col-md-8 col-xs-12">
-      <div class="search-form col-md-6 col-md-offset-2 col-xs-12 col-xs-offset-0">
-        <input type="text" class="form-control" placeholder="Search" v-model="queryString">
-        <span class="icon-search"  @click="searchIndex()"></span>
-      </div>
-      <ul class="list-inline language-menu col-md-4 col-xs-12">
-        <li><a href="#">English</a></li>
-        <li><a href="#">Korean</a></li>
-        <li><a href="#">Arabic</a></li>
-        <li><a href="#">{{ username }}</a></li>
-      </ul>
+      <search-form @submit="searchIndex($event)"/>
+      <user-menu :user-data="userData" class="pull-right"/>
+      <languages :languages="languages" @change="changeLanguage($event)" class="pull-right"/>
     </div>
     <div id="menu" class="menu" :class="{'open': showNavigation}">
       <ul>
-        <li><router-link to="/artworks">Artworks</router-link></li>
-        <li><router-link to="/artists">Artists</router-link></li>
-        <li><a href="#">Competitions</a></li>
-        <li><a href="#">About</a></li>
+        <li>
+          <router-link to="/artworks">Artworks</router-link>
+        </li>
+        <li>
+          <router-link to="/artists">Artists</router-link>
+        </li>
+        <li>
+          <a href="#">Competitions</a>
+        </li>
+        <li>
+          <router-link to="/about">About</router-link>
+        </li>
       </ul>
-
-      <auth-links/>
     </div>
   </nav>
   <!-- End navbar -->
-
-  <!--
-  <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-      <div class="navbar-item">
-        <router-link to="/" style="font-size:1.6em; color:Tomato">
-          OpenArtMarket
-        </router-link>
-      </div>
-      <div class="navbar-burger" data-target="navMenu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>
-    <div id="navMenu" class="navbar-menu">
-      <div class="navbar-start">
-        <div v-if="loggedIn" class="navbar-item has-dropdown"  v-bind:class="{ 'is-active': isActive }" @click="isActive = ! isActive">
-          <div class="navbar-link">
-            Session Users
-          </div>
-          <div class="navbar-dropdown is-right">
-            <a class="navbar-item" v-for="peer in peers" :key="peer.username">{{ peer.username }}</a>
-          </div>
-        </div>
-      </div>
-      <div class="navbar-end">
-        <router-link to="/admin/search/art" class="navbar-item" v-if="showAdmin">
-          Admin
-        </router-link>
-        <router-link to="/provenance/list" class="navbar-item" v-if="loggedIn">
-          My Art Work
-        </router-link>
-        <router-link to="/market/search" class="navbar-item">
-          Search
-        </router-link>
-        <router-link to="/" class="navbar-item">
-          Artists
-        </router-link>
-        <router-link to="/" class="navbar-item">
-          Artworks
-        </router-link>
-        <nav-item-blockstack v-if="debug"/>
-        <nav-item-dev-tools v-if="debug"/>
-        <bright-block-auth showAccountLink="true"/>
-      </div>
-    </div>
-  </nav>
-  -->
 </template>
 
 <script>
 import BrightBlockAuth from 'bright-block-auth/src/components/auth/BrightBlockAuth'
-import NavItemBlockstack from '@/components/nav/NavItemBlockstack'
-import NavItemDevTools from '@/components/nav/NavItemDevTools'
-import bulma from '@/services/bulma'
-import TipeNavLinks from './TipeNavLinks'
 import authorization from 'bright-block-auth'
 import provenanceService from '@/services/provenance/ProvenanceService'
 import messagingService from '@/services/webrtc/messagingService'
 import AuthLinks from './AuthLinks'
+import Languages from './Languages'
+import SearchForm from './SearchForm'
+import UserMenu from './UserMenu'
 
+// noinspection JSUnusedGlobalSymbols
 export default {
   name: 'Navigation',
   data: () => {
@@ -108,15 +58,22 @@ export default {
       peers: messagingService.peers,
       showNavigation: false,
       queryString: null,
+      languages: [
+        { name: 'English', iso: 'en' },
+        { name: 'Korean', iso: 'ko' },
+        { name: 'Arabic', iso: 'ar' },
+      ],
+      userData: {},
     }
   },
   mounted () {
     let userData = provenanceService.getUserData()
+    this.userData = userData
+
     if (userData) {
       this.username = userData.username
       this.showAdmin = true
     }
-    bulma.initDropdowns()
     if (this.$route.query && this.$route.query.debug) {
       this.debug = true
     }
@@ -139,24 +96,19 @@ export default {
       this.showNavigation = !this.showNavigation
     },
     searchIndex (query) {
-      this.$router.push({path: '/market/search', query: {title: this.queryString}})
+      this.$router.push({ path: '/search', query: { title: query } })
     },
+    changeLanguage (iso) {
+      console.log(iso)
+      // TODO add language change logic
+    }
   },
   components: {
+    UserMenu,
+    SearchForm,
+    Languages,
     AuthLinks,
     BrightBlockAuth,
-    NavItemBlockstack,
-    NavItemDevTools,
-    TipeNavLinks
   }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-  .avatar {
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
-  }
-</style>

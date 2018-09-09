@@ -26,51 +26,23 @@ export default {
   components: { Resource },
   data () {
     return {
-      resources: [
-        {
-          id: 1,
-          image: '/static/images/artist_preview.png',
-          title: 'Title',
-          publishDate: '2018-09-09',
-          version: '1.0.1'
-        },
-        {
-          id: 1,
-          image: '/static/images/artist_preview.png',
-          title: 'Title',
-          publishDate: '2018-09-09',
-          version: '1.0.1'
-        },
-        {
-          id: 1,
-          image: '/static/images/artist_preview.png',
-          title: 'Title',
-          publishDate: '2018-09-09',
-          version: '1.0.1'
-        },
-        {
-          id: 1,
-          image: '/static/images/artist_preview.png',
-          title: 'Title',
-          publishDate: '2018-09-09',
-          version: '1.0.1'
-        },
-        {
-          id: 1,
-          image: '/static/images/artist_preview.png',
-          title: 'Title',
-          publishDate: '2018-09-09',
-          version: '1.0.1'
-        },
-        {
-          id: 1,
-          image: '/static/images/artist_preview.png',
-          title: 'Title',
-          publishDate: '2018-09-09',
-          version: '1.0.1'
-        },
-      ]
+      resources: []
     }
+  },
+  methods: {
+    fetchResources () {
+      this.$prismic.client.query(
+        this.$prismic.Predicates.at('document.type', 'resources'),
+        { orderings: '[document.last_publication_date desc]' }
+      ).then((response) => {
+        // response is the response object, response.results holds the documents
+        console.log('prismic', response.results)
+        this.resources = response.results
+      })
+    }
+  },
+  mounted () {
+    this.fetchResources()
   }
 }
 </script>
