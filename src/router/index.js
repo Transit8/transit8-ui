@@ -12,6 +12,7 @@ import Search from '../pages/Search'
 import MyArtworks from '../pages/MyArtworks'
 import Story from '../pages/Story'
 import Privacy from '../pages/Privacy'
+import Profile from '../pages/Profile'
 import Admin from '../components/admin/Admin'
 import AdminRegistrations from '../components/admin/AdminRegistrations'
 import AdminSearchNames from '../components/admin/AdminSearchNames'
@@ -235,6 +236,11 @@ const router = new Router({
       path: '/privacy',
       name: 'privacy',
       component: Privacy,
+    },
+    {
+      path: '/my-profile',
+      name: 'my-profile',
+      component: Profile,
     },
   ]
 })

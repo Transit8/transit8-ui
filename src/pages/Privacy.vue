@@ -29,6 +29,9 @@ export default {
     }
   },
   mounted () {
+    /**
+     * Fetch content from prismic CMS
+     */
     this.$prismic.client.getSingle('privacy_policy')
       .then((document) => {
         this.content = document

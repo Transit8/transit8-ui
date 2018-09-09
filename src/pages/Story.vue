@@ -30,6 +30,9 @@ export default {
   mounted () {
     const storyId = this.$route.params.storyId
 
+    /**
+     * Fetch story by ID
+     */
     this.$prismic.client.getByID(storyId)
       .then((document) => {
         this.story = document

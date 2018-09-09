@@ -60,6 +60,9 @@ export default {
     }
   },
   mounted () {
+    /**
+     * Fetch content from prismic CMS
+     */
     this.$prismic.client.getSingle('about_us')
       .then((document) => {
         this.content = document

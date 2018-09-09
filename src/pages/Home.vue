@@ -83,24 +83,26 @@ export default {
         })
     },
 
+    /**
+     * Fetch 3 stories from prismic CMS
+     */
     fetchStories () {
       this.$prismic.client.query(
         this.$prismic.Predicates.at('document.type', 'stories'),
         { orderings: '[document.last_publication_date desc]', pageSize: 3 }
       ).then((response) => {
-        // response is the response object, response.results holds the documents
-        console.log('prismic', response.results)
         this.stories = response.results
       })
     },
 
+    /**
+     * Fetch 10 slides from prismic CMS
+     */
     fetchSlides () {
       this.$prismic.client.query(
         this.$prismic.Predicates.at('document.type', 'slides'),
         { orderings: '[document.last_publication_date desc]', pageSize: 10 }
       ).then((response) => {
-        // response is the response object, response.results holds the documents
-        console.log('prismic', response.results)
         this.slides = response.results
       })
     }
