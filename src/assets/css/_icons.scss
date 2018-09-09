@@ -1,30 +1,38 @@
 
 [class^="icon-"], [class*=" icon-"] {
-    /* use !important to prevent issues with browser extensions that change fonts */
-    font-family: 'icomoon' !important;
-    font-style: normal;
-    font-weight: normal;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1;
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
 
-    /* Better Font Rendering =========== */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .icon-email:before {
-    content: "\e901";
-  }
-  .icon-instagram:before {
-    content: "\e902";
-  }
-  .icon-m_social:before {
-    content: "\e903";
-  }
-  .icon-search:before {
-    content: "\e904";
-  }
-  .icon-menu:before {
-    content: "\e900";
-  }
+  content: "\e901";
+}
+
+.icon-instagram:before {
+  content: "\e902";
+}
+
+.icon-m_social:before {
+  content: "\e903";
+}
+
+.icon-search:before {
+  content: "\e904";
+}
+
+.icon-menu:before {
+  content: "\e900";
+}
+
+.icon-user:before {
+  content: "\e905";
+}

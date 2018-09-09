@@ -1,50 +1,53 @@
 <template>
-  <div class="auth-links">
-    <ul v-if="loggedIn">
-      <li>
-        <router-link to="/my-artworks" class="navbar-item">
-          My Art Work
-        </router-link>
-      </li>
-      <li>
-        <router-link to="/market/search" class="navbar-item">
-          Search
-        </router-link>
-      </li>
-      <li>
-        <router-link to="/admin/search/art" class="navbar-item" v-if="showAdmin">
-          Admin
-        </router-link>
-      </li>
-      <li>
-        <router-link to="/account/userData">
-          My Account
-        </router-link>
-      </li>
-      <li>
-        <router-link to="/account/lookup">
-          Who's who
-        </router-link>
-      </li>
-      <li>
-        <a href="#" @click.prevent="logout">
-          Logout
-        </a>
-      </li>
-    </ul>
+  <div>
+    <div class="user-menu">
+      <uiv-dropdown menu-right>
+        <uiv-btn><span class="icon-user"></span></uiv-btn>
+        <template v-if="loggedIn" slot="dropdown">
+          <li class="delimited">
+            <span>{{username}}</span>
+          </li>
+          <li>
+            <router-link to="/my-artworks" class="navbar-item">
+              My Art Work
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/search" class="navbar-item">
+              Search
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/admin/search/art" class="navbar-item" v-if="showAdmin">
+              Admin
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/account/userData">
+              My Account
+            </router-link>
+          </li>
+          <li>
+            <a href="#" @click.prevent="logout">
+              Logout
+            </a>
+          </li>
+        </template>
 
-    <ul v-if="!loggedIn">
-      <li v-if="!cantLogIn">
-        <a href="#" @click.prevent="openModal()">
-          Login
-        </a>
-      </li>
-      <li v-if="cantLogIn">
-        <router-link to="/getBrowser">
-          Download the Blockstack Browser
-        </router-link>
-      </li>
-    </ul>
+        <template v-if="!loggedIn" slot="dropdown">
+          <li v-if="!cantLogIn">
+            <a href="#" @click.prevent="openModal()">
+              Login
+            </a>
+          </li>
+          <li v-if="cantLogIn">
+            <router-link to="/getBrowser">
+              Download the Blockstack Browser
+            </router-link>
+          </li>
+        </template>
+      </uiv-dropdown>
+    </div>
 
     <div v-if="!cantLogIn">
       <uiv-modal :value="isModalActive" :append-to-body="true">
@@ -100,7 +103,7 @@ import authorization from 'bright-block-auth'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
-  name: 'AuthLinks',
+  name: 'UserMenu',
   data () {
     return {
       loggedIn: false,
@@ -160,6 +163,6 @@ export default {
     loginMultiPlayer: () => {
       return authorization.loginMultiPlayer()
     },
-  },
+  }
 }
 </script>

@@ -6,6 +6,8 @@ import App from './App'
 import truncate from 'lodash/truncate'
 import Notifications from 'vue-notification'
 import * as uiv from 'uiv'
+import PrismicVue from 'prismic-vue'
+import linkResolver from './prismic/linkResolver'
 
 import '@/assets/css/main.scss'
 
@@ -20,6 +22,11 @@ Vue.use(Notifications)
 // Vue.use(Vuelidate)
 
 Vue.use(uiv, {prefix: 'uiv'})
+
+Vue.use(PrismicVue, {
+  endpoint: 'https://sybellaio.cdn.prismic.io/api/v2',
+  linkResolver
+})
 
 /* eslint-disable no-new */
 new Vue({

@@ -9,6 +9,9 @@ import Artists from '../pages/Artists'
 import Artist from '../pages/Artist'
 import Resources from '../pages/Resources'
 import Search from '../pages/Search'
+import MyArtworks from '../pages/MyArtworks'
+import Story from '../pages/Story'
+import Privacy from '../pages/Privacy'
 import Admin from '../components/admin/Admin'
 import AdminRegistrations from '../components/admin/AdminRegistrations'
 import AdminSearchNames from '../components/admin/AdminSearchNames'
@@ -216,6 +219,22 @@ const router = new Router({
       name: 'search',
       component: Search,
       meta: { requiresAuth: true },
+    },
+    {
+      path: '/my-artworks',
+      name: 'my-artworks',
+      component: MyArtworks,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/stories/:storyId',
+      name: 'storyDetails',
+      component: Story,
+    },
+    {
+      path: '/privacy',
+      name: 'privacy',
+      component: Privacy,
     },
   ]
 })

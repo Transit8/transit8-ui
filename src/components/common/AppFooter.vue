@@ -4,24 +4,20 @@
     <div class="container-fluid footer-top">
       <div class="col-sm-4 text-left text-uppercase">
         <ul class="list-inline">
-          <li><a href="#">About</a></li>
-          <li><a href="#">Resources</a></li>
+          <li><router-link to="/about">About</router-link></li>
+          <li><router-link to="/resources">Resources</router-link></li>
           <li><a href="#">How it works</a></li>
         </ul>
       </div>
       <div class="col-sm-8 text-left">
-        <span class="grey">Join our mailing list and stay updated</span>
-        <form class="form-inline newsletter-form">
-          <input type="email" placeholder="Your email address" class="form-control input-lg grey">
-          <button class="btn btn-lg black" type="submit">Submit</button>
-        </form>
+        <newsletter-form @submit="submitNewsletterEmail($event)"/>
       </div>
     </div>
     <div class="container-fluid footer-bottom">
       <div class="col-sm-6">
         <ul class="list-inline inline-block">
           <li class="text-uppercase "><span class="copy">&copy;</span>2018 Sybella</li>
-          <li><a>Privacy Policy</a></li>
+          <li><router-link to="/privacy">Privacy Policy</router-link></li>
           <li>Karl Marx Allee 98, 10243 Berlin, DE</li>
         </ul>
       </div>
@@ -39,8 +35,17 @@
 </template>
 
 <script>
+import NewsletterForm from './NewsletterForm'
+
 // noinspection JSUnusedGlobalSymbols
 export default {
   name: 'AppFooter',
+  components: { NewsletterForm },
+  methods: {
+    submitNewsletterEmail (email) {
+      console.log(email)
+      // TODO submit email to newsletter service
+    }
+  }
 }
 </script>

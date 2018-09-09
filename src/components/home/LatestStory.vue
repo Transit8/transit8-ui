@@ -1,7 +1,7 @@
 <template>
-  <router-link :to="story.id" class="col-sm-4 col-xs-12 story-item">
-    <img class="img-responsive" :src="story.image" :alt="story.title">
-    <p class="art-title">{{story.title}}</p>
+  <router-link :to="url" class="col-sm-4 col-xs-12 story-item">
+    <prismic-image :field="story.data.featured_image.listing" class="img-responsive"/>
+    <p class="art-title">{{$prismic.richTextAsPlain(story.data.title)}}</p>
   </router-link>
 </template>
 
@@ -15,5 +15,10 @@ export default {
       required: true,
     },
   },
+  computed: {
+    url () {
+      return `/stories/${this.story.id}`
+    }
+  }
 }
 </script>
