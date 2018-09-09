@@ -140,36 +140,47 @@ const provenanceService = {
     let rootFile = provenanceService.rootFile
     if (rootFile && rootFile.records) {
       let total = rootFile.records.length
+      let counter = 0
       _.forEach(rootFile.records, function (indexData) {
         if (indexData && indexData.id) {
           let fileToFetch = provenanceService.PROVENANCE_FILE_GAIA_SUBPATH + indexData.id + '.json'
           getFile(fileToFetch, {decrypt: false}).then(function (file) {
+            counter++
             if (file) {
               let provData = JSON.parse(file)
               provData.id = indexData.id
               provenanceService.addProvenanceRecordInLS(provData)
+            }
+            if (counter === (total - 1)) {
+              provenanceService.state = 'ROOT_PROV_STARTED'
             }
           }).catch(function (e) {
             console.log('Unable to initialise provenance record: ' + total, e)
           })
         }
       })
-      provenanceService.state = 'ROOT_PROV_STARTED'
     } else {
       provenanceService.state = 'ROOT_PROV_INIT_EMPTY'
     }
   },
-  getProvenanceRecordsInLS: function () {
-    let rootFile = provenanceService.rootFile
-    if (!rootFile) {
-      provenanceService.initRootFile()
-      return []
-    }
-    let results = []
-    _.forEach(rootFile.records, function (theRecord) {
-      results.push(provenanceService.getProvenanceRecord(theRecord.id, rootFile))
+  getProvenanceRecordsInLS: function (recordId) {
+    return new Promise(function (resolve) {
+      let myTimer = setInterval(function () {
+        let rootFile = provenanceService.rootFile
+        if (rootFile && provenanceService.state === 'ROOT_PROV_STARTED') {
+          let results = []
+          if (recordId) {
+            provenanceService.getProvenanceRecord(recordId, rootFile)
+          } else {
+            _.forEach(rootFile.records, function (theRecord) {
+              results.push(provenanceService.getProvenanceRecord(theRecord.id, rootFile))
+            })
+            resolve(results)
+          }
+          clearInterval(myTimer)
+        }
+      }, 100)
     })
-    return results
   },
   getProvenanceRecord: function (id, rootFile) {
     if (!rootFile) {

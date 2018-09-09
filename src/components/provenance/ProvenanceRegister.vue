@@ -73,15 +73,11 @@ export default {
   },
   mounted () {
     let recordId = Number(this.provenanceId)
-    this.provenanceRecord = provenanceService.getProvenanceRecord(this.provenanceId)
-    if (!this.provenanceRecord || !this.provenanceRecord.provData) {
-      provenanceService.getProvenanceRecordFromUserStorage(recordId).then((provenanceRecord) => {
-        this.provenanceRecord = provenanceRecord
-        this.setRegData(provenanceRecord)
-      })
-    } else {
-      this.setRegData(this.provenanceRecord)
-    }
+    let $elfist = this
+    provenanceService.getProvenanceRecordsInLS(recordId).then((provenanceRecord) => {
+      $elfist.provenanceRecord = provenanceRecord
+      $elfist.setRegData(provenanceRecord)
+    })
 
     this.userData = provenanceService.getUserData()
     exchangeRatesService.fetchFiatRates().then((fiatRates) => {
