@@ -13,6 +13,9 @@ import MyArtworks from '../pages/MyArtworks'
 import Story from '../pages/Story'
 import Privacy from '../pages/Privacy'
 import Profile from '../pages/Profile'
+import Competition from '../pages/Competition'
+import Blog from '../pages/Blog'
+import BlogPost from '../pages/BlogPost'
 import Admin from '../components/admin/Admin'
 import AdminRegistrations from '../components/admin/AdminRegistrations'
 import AdminSearchNames from '../components/admin/AdminSearchNames'
@@ -241,6 +244,21 @@ const router = new Router({
       path: '/my-profile',
       name: 'my-profile',
       component: Profile,
+    },
+    {
+      path: '/competition',
+      name: 'competition',
+      component: Competition,
+    },
+    {
+      path: '/blog',
+      name: 'blog',
+      component: Blog,
+    },
+    {
+      path: '/blog/:postId',
+      name: 'blogPost',
+      component: BlogPost,
     },
   ]
 })

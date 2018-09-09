@@ -23,7 +23,10 @@
           <router-link to="/artists">Artists</router-link>
         </li>
         <li>
-          <a href="#">Competitions</a>
+          <router-link to="/blog">Blog</router-link>
+        </li>
+        <li>
+          <router-link to="/competition">Competitions</router-link>
         </li>
         <li>
           <router-link to="/about">About</router-link>
