@@ -21,6 +21,9 @@ import ethService from '@/services/experimental/ethApiService'
 **/
 const provenanceService = {
   state: 'UN_INIT',
+  rootFile: null,
+  localRecords: [],
+  storage: {},
   ROOT_FILE_GAIA_NAME: 'records_v01.json',
   ROOT_FILE_LOCAL_STORAGE_PATH: 'rootFile',
   PROVENANCE_FILE_GAIA_SUBPATH: 'record_',
@@ -31,18 +34,21 @@ const provenanceService = {
     {soid: 2, label: 'Bidding'},
   ],
   getRootFileInLS: function () {
-    let rootFileStringy = localStorage.getItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_PATH)
+    let rootFileStringy = provenanceService.rootFile
+    // let rootFileStringy = localStorage.getItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_PATH)
     if (!rootFileStringy) {
       provenanceService.initRootFile()
     } else {
       return JSON.parse(rootFileStringy)
+      // return JSON.parse(rootFileStringy)
     }
   },
   addProvenanceRecordInLS: function (provData) {
-    let localRecords = JSON.parse(localStorage.getItem(provenanceService.PROVENANCE_FILE_LOCAL_STORAGE_PATH))
-    if (!localRecords) {
-      localRecords = []
-    }
+    let localRecords = provenanceService.localRecords
+    // let localRecords = JSON.parse(localStorage.getItem(provenanceService.PROVENANCE_FILE_LOCAL_STORAGE_PATH))
+    // if (!localRecords) {
+    //   localRecords = []
+    // }
     let index = _.findIndex(localRecords, {id: provData.id})
     if (index > -1) {
       localRecords.splice(index, 1, provData)
@@ -50,14 +56,16 @@ const provenanceService = {
       localRecords.push(provData)
     }
     try {
-      localStorage.setItem(provenanceService.PROVENANCE_FILE_LOCAL_STORAGE_PATH, JSON.stringify(localRecords))
+      provenanceService.localRecords = localRecords
+      // localStorage.setItem(provenanceService.PROVENANCE_FILE_LOCAL_STORAGE_PATH, JSON.stringify(localRecords))
     } catch (e) {
       console.log('No room in local storage for record: ' + provData.id)
     }
   },
   setProvenanceRecordInLS: function (o) {
     try {
-      localStorage.setItem(provenanceService.PROVENANCE_FILE_LOCAL_STORAGE_PATH, JSON.stringify(o))
+      provenanceService.localRecords.push(o)
+      // localStorage.setItem(provenanceService.PROVENANCE_FILE_LOCAL_STORAGE_PATH, JSON.stringify(o))
     } catch (e) {
       console.log('No room in local storage for record: ' + o)
     }
@@ -65,9 +73,11 @@ const provenanceService = {
   setRootFileInLS: function (file) {
     try {
       if (typeof file !== 'string') {
-        localStorage.setItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_PATH, JSON.stringify(file))
+        provenanceService.rootFile = JSON.stringify(file)
+        // localStorage.setItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_PATH, JSON.stringify(file))
       } else {
-        localStorage.setItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_PATH, file)
+        provenanceService.rootFile = file
+        // localStorage.setItem(provenanceService.ROOT_FILE_LOCAL_STORAGE_PATH, file)
       }
     } catch (e) {
       console.log('No room in local storage for record: ' + file)
@@ -107,23 +117,18 @@ const provenanceService = {
         if (!file) {
           provenanceService.makeRootFile().then(function (message) {
             getFile(provenanceService.ROOT_FILE_GAIA_NAME, {decrypt: false}).then(function (file) {
-              provenanceService.setRootFileInLS(file)
+              provenanceService.rootFile = JSON.parse(file)
               provenanceService.state = 'ROOT_INIT'
               resolve({failed: false, message: 'Made new root file in user storage and saved it in local storage: ' + file})
             }).catch(function (e) {
               resolve({failed: true, message: 'Failed fetch new new root file after making it: ' + file})
             })
-          }).catch(function (e) {
-            resolve({failed: true, message: 'Failed to make new root file in user storage and to save it in local storage: ' + file})
           })
         } else {
-          let rootFile = JSON.parse(file)
-          let newData = rootFile.records
-          newData = _.unionBy(rootFile.records, newData, 'id')
-          rootFile.records = newData
-
-          provenanceService.setRootFileInLS(JSON.stringify(rootFile))
-          provenanceService.state = 'ROOT_INIT'
+          provenanceService.rootFile = JSON.parse(file)
+          let newData = provenanceService.rootFile.records
+          newData = _.unionBy(provenanceService.rootFile.records, newData, 'id')
+          provenanceService.rootFile.records = newData
           resolve({failed: false, message: 'Found existing root file and stored it in local storage: ' + file})
         }
       }).catch(function (e) {
@@ -132,31 +137,20 @@ const provenanceService = {
     })
   },
   initProvenanceRecords: function () {
-    let rootFile = provenanceService.getRootFileInLS()
-    provenanceService.setProvenanceRecordInLS([])
+    let rootFile = provenanceService.rootFile
     if (rootFile && rootFile.records) {
-      let count = 0
       let total = rootFile.records.length
       _.forEach(rootFile.records, function (indexData) {
         if (indexData && indexData.id) {
           let fileToFetch = provenanceService.PROVENANCE_FILE_GAIA_SUBPATH + indexData.id + '.json'
           getFile(fileToFetch, {decrypt: false}).then(function (file) {
-            count++
             if (file) {
               let provData = JSON.parse(file)
               provData.id = indexData.id
-              // let record = {
-              //  indexData: indexData,
-              //  provData: provData,
-              // }
-              // provenanceService.setRegData(record)
               provenanceService.addProvenanceRecordInLS(provData)
             }
-            if (count === total) {
-              provenanceService.state = 'ROOT_PROV_FINISHED'
-            }
           }).catch(function (e) {
-            console.log('Unable to initialise provenance record: ', e)
+            console.log('Unable to initialise provenance record: ' + total, e)
           })
         }
       })
@@ -166,7 +160,7 @@ const provenanceService = {
     }
   },
   getProvenanceRecordsInLS: function () {
-    let rootFile = provenanceService.getRootFileInLS()
+    let rootFile = provenanceService.rootFile
     if (!rootFile) {
       provenanceService.initRootFile()
       return []
@@ -179,7 +173,7 @@ const provenanceService = {
   },
   getProvenanceRecord: function (id, rootFile) {
     if (!rootFile) {
-      rootFile = provenanceService.getRootFileInLS()
+      rootFile = provenanceService.rootFile
     }
     let indexData = {}
     _.forEach(rootFile.records, function (theRecord) {
@@ -187,7 +181,8 @@ const provenanceService = {
         indexData = theRecord
       }
     })
-    let localRecords = JSON.parse(localStorage.getItem(provenanceService.PROVENANCE_FILE_LOCAL_STORAGE_PATH))
+    // let localRecords = JSON.parse(localStorage.getItem(provenanceService.PROVENANCE_FILE_LOCAL_STORAGE_PATH))
+    let localRecords = provenanceService.localRecords
     let provData
     if (id) {
       _.forEach(localRecords, function (theRecord) {
@@ -203,6 +198,68 @@ const provenanceService = {
     // provenanceService.setRegData(record).then((regData) => {
     //  record.indexData.regData = regData
     // })
+  },
+  getProvenanceRecordFromUserStorage: function (id) {
+    return new Promise(function (resolve) {
+      getFile(provenanceService.ROOT_FILE_GAIA_NAME, {decrypt: false}).then(function (file) {
+        if (!file) {
+          resolve({failed: true, message: 'Failed to fetch root file in user storage and to save it in local storage: ' + file})
+        } else {
+          let rootFile = JSON.parse(file)
+          let index = _.findIndex(rootFile.records, {id: id})
+          if (index === -1) {
+            index = _.findIndex(rootFile.records, {id: String(id)})
+          }
+          let indexData = rootFile.records[index]
+          indexData.id = Number(id)
+          let fileToFetch = provenanceService.PROVENANCE_FILE_GAIA_SUBPATH + indexData.id + '.json'
+          getFile(fileToFetch, {decrypt: false}).then(function (file) {
+            if (file) {
+              let provData = JSON.parse(file)
+              provData.id = indexData.id
+              resolve({indexData: indexData, provData: provData})
+            } else {
+              resolve({failed: true, message: 'File not found: ' + indexData.id})
+            }
+          }).catch(function (e) {
+            resolve({failed: true, message: 'Unable to initialise provenance record: ' + indexData.id})
+          })
+        }
+      }).catch(function (e) {
+        console.log('Unable to make root file: ', e)
+      })
+    })
+  },
+  getProvenanceRecordsFromUserStorage: function (id) {
+    return new Promise(function (resolve) {
+      getFile(provenanceService.ROOT_FILE_GAIA_NAME, {decrypt: false}).then(function (file) {
+        if (!file) {
+          resolve({failed: true, message: 'Failed to fetch root file in user storage and to save it in local storage: ' + file})
+        } else {
+          let rootFile = JSON.parse(file)
+          let index = _.findIndex(rootFile.records, {id: id})
+          if (index === -1) {
+            index = _.findIndex(rootFile.records, {id: String(id)})
+          }
+          let indexData = rootFile.records[index]
+          indexData.id = Number(id)
+          let fileToFetch = provenanceService.PROVENANCE_FILE_GAIA_SUBPATH + indexData.id + '.json'
+          getFile(fileToFetch, {decrypt: false}).then(function (file) {
+            if (file) {
+              let provData = JSON.parse(file)
+              provData.id = indexData.id
+              resolve({indexData: indexData, provData: provData})
+            } else {
+              resolve({failed: true, message: 'File not found: ' + indexData.id})
+            }
+          }).catch(function (e) {
+            resolve({failed: true, message: 'Unable to initialise provenance record: ' + indexData.id})
+          })
+        }
+      }).catch(function (e) {
+        console.log('Unable to make root file: ', e)
+      })
+    })
   },
   getUserData: function () {
     return loadUserData()
@@ -222,7 +279,7 @@ const provenanceService = {
           resolve(response)
         }).catch(function (e) {
           console.log('Unable to fetch zone file: ', e)
-          resolve({error: 'Unable to fetch zone file: ' + e, rootFile: provenanceService.getRootFileInLS()})
+          resolve({error: 'Unable to fetch zone file: ' + e})
         })
     })
   },
@@ -252,7 +309,9 @@ const provenanceService = {
   createOrUpdateRecord: function (indexData, provData) {
     return new Promise(function (resolve) {
       provenanceService.checkData(indexData, provData)
-      let rootFile = provenanceService.getRootFileInLS()
+      let rootFile = provenanceService.rootFile
+      let idNumber = Number(indexData.id)
+      indexData.id = idNumber
       var index = _.findIndex(rootFile.records, {id: indexData.id})
       if (!indexData.saleData) {
         indexData.saleData = {
@@ -262,31 +321,28 @@ const provenanceService = {
           increment: 0
         }
       }
-      let record = {
-        indexData: indexData,
-        provData: provData,
-      }
-      provenanceService.setRegData(record).then((regData) => {
-        record.indexData.regData = regData
-      })
+      // let record = {
+      //  indexData: indexData,
+      //  provData: provData,
+      // }
+      // provenanceService.setRegData(record).then((regData) => {
+      //  record.indexData.regData = regData
+      // })
       if (index > -1) {
         rootFile.records.splice(index, 1, indexData)
       } else {
         rootFile.records.push(indexData)
       }
       putFile(provenanceService.ROOT_FILE_GAIA_NAME, JSON.stringify(rootFile), {encrypt: false}).then(function (message) {
-        provenanceService.setRootFileInLS(rootFile)
-        console.log('Updated root file in user and local storage: ' + message)
+        provenanceService.rootFile = rootFile
         let fileName = provenanceService.PROVENANCE_FILE_GAIA_SUBPATH + indexData.id + '.json'
         putFile(fileName, JSON.stringify(provData), {encrypt: false})
           .then(function (message) {
             provenanceService.addProvenanceRecordInLS(provData)
-            console.log('Updated provenance file in user and local storage: ' + message)
             indexData.gaiaUrl = message
             indexData.appUrl = window.location.host
             searchIndexService.reindexRecord(indexData).then(function (message) {
               cacheService.updateIndexDataInCache(indexData)
-              console.log('Indexed new record.')
             }).catch(function (e) {
               console.log('Unable to index new record - it should be picked up in next sweep. ', e)
             })
@@ -317,11 +373,14 @@ const provenanceService = {
               indexData: indexData,
               provData: provData
             }
+            resolve(record)
+            /*
             provenanceService.setRegData(record).then((regData) => {
               record.indexData.regData = regData
               cacheService.addToCache(record)
               resolve(record)
             })
+            */
           }).catch(function (e) {
             console.log('Unable to add record: ' + record.indexData.id, e)
           })
@@ -338,26 +397,23 @@ const provenanceService = {
       try {
         if (record.indexData.itemType === 'digiart') {
           if (record.provData && record.provData.artwork && record.provData.artwork[0] && record.provData.artwork[0].dataUrl.length > 0) {
-            tempRegData.timestamp = '0x' + SHA256(record.indexData.uploader + '::' + record.provData.artwork[0].dataUrl).toString()
+            tempRegData.timestamp = '0x' + SHA256(record.provData.artwork[0].dataUrl).toString()
             tempRegData.state = 110
             tempRegData.label = 'registerable'
-            ethService.isRegistered(tempRegData.timestamp).then((result) => {
-              if (result.registered) {
-                tempRegData.state = 120
-                tempRegData.label = 'registered'
-                console.log('reg data. ', tempRegData)
+            ethService.fetchItemByArtHash(tempRegData.timestamp).then((result) => {
+              if (result.failed) {
                 resolve(tempRegData)
               } else {
-                console.log('reg data. ', tempRegData)
+                tempRegData.currentOwner = result[1]
+                tempRegData.state = 120
+                tempRegData.label = 'registered'
                 resolve(tempRegData)
               }
             })
           } else {
-            console.log('reg data. ', tempRegData)
             resolve(tempRegData)
           }
         } else {
-          console.log('reg data. ', tempRegData)
           resolve(tempRegData)
         }
       } catch (e) {

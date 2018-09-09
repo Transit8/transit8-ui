@@ -111,7 +111,7 @@
   </div>
   <div class="modal-card" v-else>
     <header class="modal-card-head">
-      <p class="modal-card-title" v-if="recordForSaleData"><i class="fa fa-snowflake fa-spin fa-3x fa-fw"></i> nearly done - hang on in there.</p>
+      <p class="modal-card-title" v-if="recordForSaleData"><i class="glyphicon glyphicon-repeat normal-left-spinner"></i> nearly done - hang on in there.</p>
       <button class="delete" v-on:click="close" aria-label="close"></button>
     </header>
   </div>

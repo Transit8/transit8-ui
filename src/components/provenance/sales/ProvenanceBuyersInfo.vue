@@ -46,7 +46,18 @@ export default {
   },
   methods: {
     buyNow: function () {
-      ethService.buy(this.provenanceRecord.indexData.title, this.provenanceRecord.indexData.uploader).then((item) => {
+      let buyer = this.username
+      let seller = this.provenanceRecord.indexData.uploader
+      ethService.buy(this.provenanceRecord.indexData.title, seller, buyer).then((item) => {
+        this.provenanceRecord.indexData.uploader = buyer
+        this.provenanceRecord.indexData.gaiaUrl = null
+        this.provenanceRecord.indexData.appUrl = null
+        provenanceService.createOrUpdateRecord(this.provenanceRecord.indexData, this.provenanceRecord.provData).then((records) => {
+          this.spinner = false
+        }).catch(e => {
+          console.log('ProvenanceVue: Unable to lookup ', e)
+        })
+
         console.log(' item: ', item)
       })
     },

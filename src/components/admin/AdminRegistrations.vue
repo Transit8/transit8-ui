@@ -38,7 +38,7 @@ export default {
       let $elfie = this
       $elfie.registrations = []
       ethService.fetchNumberOfItems().then((numberOfItems) => {
-        this.numberOfItems = Number(numberOfItems) + 1
+        this.numberOfItems = Number(numberOfItems)
         for (let index = 0; index < this.numberOfItems; index++) {
           $elfie = this
           setTimeout(function timer () {

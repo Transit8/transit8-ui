@@ -56,12 +56,9 @@ export default {
           break
         }
         $elfie = this
-        ethService.fetchItemByIndex(index, 1).then((item) => {
-          console.log('index: ' + index, item)
+        ethService.fetchItemByIndex(index, 0).then((item) => {
           $elfie.searchIndex(index, item[0])
         })
-        // setTimeout(function timer () {
-        // }, 200)
       }
     })
   },
@@ -71,11 +68,9 @@ export default {
       searchIndexService.searchIndex('art', 'title', title)
         .then((results) => {
           $elfie.provenanceRecords = []
-          console.log('Total records found in search (may differ from number fetched from gaia storage): ' + results.length)
           _.forEach(results, function (indexData) {
             provenanceService.getRecordForSearch(indexData)
               .then((record) => {
-                console.log('Record: ' + record)
                 if (record && record.indexData && record.indexData.id) {
                   $elfie.provenanceRecords[index] = record
                   $elfie.artworks[index].id = record.indexData.id

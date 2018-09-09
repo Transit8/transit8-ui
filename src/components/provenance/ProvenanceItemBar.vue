@@ -13,6 +13,7 @@
       <p class="subtitle is-4" v-if="searching"><a :href="'#/provenance/item/'+provenanceRecord.indexData.id">{{ provenanceRecord.indexData.title }}</a></p>
       <p class="subtitle is-4" v-else><a :href="'#/provenance/edit/'+provenanceRecord.indexData.id">{{ provenanceRecord.indexData.title }}</a></p>
       <p>{{ provenanceRecord.indexData.description }}</p>
+      <p v-if="provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.currentOwner">Sold to: <b>{{ provenanceRecord.indexData.regData.currentOwner }}</b></p>
       <p>Uploaded by: <b>{{ provenanceRecord.indexData.uploader }}</b> on {{ niceTime(provenanceRecord.indexData.id) }} {{ parseAppUrl(provenanceRecord.indexData.appUrl) }}</p>
       <p v-if="provenanceRecord.provData">
         <span v-if="provenanceRecord.provData.owner && provenanceRecord.provData.creator">
@@ -85,8 +86,13 @@ export default {
     }
   },
   mounted () {
+    this.username = this.userData.username
+    let $elfie = this
     provenanceService.setRegData(this.provenanceRecord).then((regData) => {
-      this.provenanceRecord.indexData.regData = regData
+      $elfie.provenanceRecord.indexData.regData = regData
+      if (regData.state === 120 && $elfie.username !== regData.currentOwner) {
+        console.log('found a bought item!')
+      }
     })
     this.searching = (this.$route.name === 'marketSearch')
     if (this.userData) {

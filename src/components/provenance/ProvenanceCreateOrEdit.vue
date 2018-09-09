@@ -1,6 +1,6 @@
 <template>
 <div class="column" v-if="spinner">
-  <p class="modal-card-title"><i class="fa fa-snowflake fa-spin fa-3x fa-fw"></i> nearly done - hang on in there.</p>
+  <p class="modal-card-title"><i class="glyphicon glyphicon-repeat normal-left-spinner"></i> nearly done - hang on in there.</p>
 </div>
 <div class="column" v-else>
   <h1 class="title is-1">{{ formTitle }}</h1>

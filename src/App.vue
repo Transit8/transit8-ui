@@ -17,6 +17,7 @@ import Navigation from '@/components/nav/Navigation'
 import Login from 'bright-block-auth/src/components/auth/Login'
 import ethService from '@/services/experimental/ethApiService'
 import AppFooter from './components/common/AppFooter'
+import provenanceService from '@/services/provenance/ProvenanceService'
 
 export default {
   name: 'App',
@@ -30,6 +31,13 @@ export default {
   },
   mounted () {
     console.log('Running App version ', process.env)
+    provenanceService.initRootFile()
+      .then((result) => {
+        provenanceService.initProvenanceRecords()
+      })
+      .catch(e => {
+        console.log(e)
+      })
     let web3 = ethService.getWeb3()
     if (!web3) {
       this.error = 'no meta mask - routing to settings'

@@ -125,7 +125,7 @@ const ethApiService = {
       })
     })
   },
-  buy: function (title, username) {
+  buy: function (title, seller, buyer) {
     return new Promise(resolve => {
       ethApiService.fetchNumberOfItems().then((numberOfItems) => {
         let $elfist = this
@@ -134,10 +134,10 @@ const ethApiService = {
           setTimeout(function timer () {
             $elfist.index++
             ethApiService.fetchItemByIndex($elfist.index).then((item) => {
-              if (item[0] === title && item[1] === username) {
+              if (item[0] === title && item[1] === seller) {
                 let value = item[4].toString()
                 console.log('index: ' + $elfist.index + ' item: ', item + ' value=' + value)
-                ethApiService.myContract.buy(index, {value: value}, function (err, res) {
+                ethApiService.myContract.buy(index, buyer, {value: value}, function (err, res) {
                   if (err) {
                     console.log(err)
                     resolve({failed: true, reason: err})
@@ -184,6 +184,25 @@ const ethApiService = {
             })
           }, 500)
         }
+      })
+    })
+  },
+  fetchItemByArtHash: function (artHash) {
+    return new Promise(resolve => {
+      ethApiService.fetchNumberOfItems().then((numberOfItems) => {
+        let $elfist = this
+        for (let index = 0; index < numberOfItems; index++) {
+          $elfist.index = -1
+          setTimeout(function timer () {
+            $elfist.index++
+            ethApiService.fetchItemByIndex($elfist.index).then((item) => {
+              if (item[2] === artHash) {
+                resolve(item)
+              }
+            })
+          }, 200)
+        }
+        // resolve({registered: false, failed: true, reason: 'No item matching hash: ' + artHash})
       })
     })
   },

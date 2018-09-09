@@ -12,7 +12,6 @@
 </template>
 
 <script>
-import provenanceService from '@/services/provenance/ProvenanceService'
 import ProvenanceActions from '@/components/provenance/ProvenanceActions'
 import moment from 'moment'
 
@@ -25,13 +24,6 @@ export default {
     }
   },
   mounted () {
-    provenanceService.initRootFile()
-      .then((result) => {
-        provenanceService.initProvenanceRecords()
-      })
-      .catch(e => {
-        console.log(e)
-      })
   },
   methods: {
     niceTime: function (updated) {

@@ -36,6 +36,13 @@ export default {
   mounted () {
     console.log('Running App version ', process.env)
     this.provenanceRecords = provenanceService.getProvenanceRecordsInLS()
+    let $elfist = this
+    setTimeout(function timer () {
+      // waiting for the records to load
+      $elfist.provenanceRecords = provenanceService.getProvenanceRecordsInLS()
+      $elfist.numbResults = $elfist.provenanceRecords.length
+    }, 2000)
+
     this.numbResults = this.provenanceRecords.length
     this.userData = provenanceService.getUserData()
     exchangeRatesService.fetchFiatRates().then((fiatRates) => {
@@ -62,9 +69,6 @@ export default {
     },
     closeSaleDataModal: function (response) {
       this.saleDataModalActive = false
-      if (response) {
-        this.provenanceRecords = provenanceService.getProvenanceRecordsInLS()
-      }
     },
     openSaleDataModal: function (id) {
       let record = provenanceService.getProvenanceRecord(id)

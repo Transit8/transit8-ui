@@ -2,7 +2,7 @@
   <div class="column" v-if="spinner">
     <h1 class="title is-1">{{ provenanceRecord.indexData.title }}</h1>
     <h2 class="title is-3">Register Your Ownership on Chain</h2>
-    <p class="modal-card-title"><i class="fa fa-snowflake fa-spin fa-3x fa-fw"></i> nearly done - hang on in there.</p>
+    <p class="modal-card-title"><i class="glyphicon glyphicon-repeat normal-left-spinner"></i> nearly done - hang on in there.</p>
   </div>
   <div class="column" v-else>
     <h1 class="title is-1">{{ provenanceRecord.indexData.title }}</h1>
@@ -11,7 +11,7 @@
       <p>{{ error }}</p>
     </div>
     <div v-else>
-      <form id="create-provenance" v-if="provenanceRecord.indexData.regData.state === 110">
+      <form id="create-provenance" v-if="provenanceRecord.indexData && provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.state === 110">
         <div class="field">
           <label class="label">Timestamp Proofs</label>
           <div class="control">
@@ -28,7 +28,7 @@
           </div>
         </div>
       </form>
-      <div v-else-if="provenanceRecord.indexData.regData.state === 120">
+      <div v-else-if="provenanceRecord.indexData && provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.state === 120">
         <provenance-sale-data v-if="saleDataModalActive" v-on:close-sale-data-modal="closeSaleDataModal" v-bind:ethToBtc="ethToBtc" v-bind:fiatRates="fiatRates" v-bind:recordForSaleData="recordForSaleData" v-bind:saleDataModalActive="saleDataModalActive"/>
         <p>This art work is already registered on the block chain.</p>
         <p>{{ provenanceRecord.indexData.regData.timestamp }}</p>
@@ -40,7 +40,7 @@
         <p>Only support registering digital artworks on the block chain right now - this will change soon so stay tuned!</p>
       </div>
       <provenance-reg-bar v-bind:provenanceRecord="provenanceRecord" v-bind:userData="userData" v-bind:allowEdit="allowEdit"/>
-      <p v-if="provenanceRecord.indexData.regData.result">Registered in transaction: {{ provenanceRecord.indexData.regData.result }}</p>
+      <p v-if="provenanceRecord.indexData && provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.result">Registered in transaction: {{ provenanceRecord.indexData.regData.result }}</p>
     </div>
   </div>
 </template>
@@ -72,12 +72,17 @@ export default {
   validations: {
   },
   mounted () {
+    let recordId = Number(this.provenanceId)
     this.provenanceRecord = provenanceService.getProvenanceRecord(this.provenanceId)
-    let $elfi = this
-    provenanceService.setRegData(this.provenanceRecord).then((regData) => {
-      $elfi.provenanceRecord.indexData.regData = regData
-      console.log('regData: ', regData)
-    })
+    if (!this.provenanceRecord || !this.provenanceRecord.provData) {
+      provenanceService.getProvenanceRecordFromUserStorage(recordId).then((provenanceRecord) => {
+        this.provenanceRecord = provenanceRecord
+        this.setRegData(provenanceRecord)
+      })
+    } else {
+      this.setRegData(this.provenanceRecord)
+    }
+
     this.userData = provenanceService.getUserData()
     exchangeRatesService.fetchFiatRates().then((fiatRates) => {
       this.fiatRates = fiatRates
@@ -117,6 +122,16 @@ export default {
           this.spinner = false
           this.error = 'Record has been successfully registered on the block chain - but an error was thrown saving to user storage. Tx=' + this.provenanceRecord.indexData.regData.result
         })
+    },
+    setRegData: function (response) {
+      let $elfi = this
+      provenanceService.setRegData(this.provenanceRecord).then((regData) => {
+        $elfi.provenanceRecord.indexData.regData = regData
+        if (regData.state === 120 && this.username !== regData.currentOwner) {
+          console.log('found a bought item!')
+          console.log('regData: ', regData)
+        }
+      })
     },
     closeSaleDataModal: function (response) {
       this.saleDataModalActive = false
