@@ -8,6 +8,7 @@ import Artwork from '../pages/Artwork'
 import Artists from '../pages/Artists'
 import Artist from '../pages/Artist'
 import Resources from '../pages/Resources'
+import Search from '../pages/Search'
 import Admin from '../components/admin/Admin'
 import AdminRegistrations from '../components/admin/AdminRegistrations'
 import AdminSearchNames from '../components/admin/AdminSearchNames'
@@ -208,6 +209,12 @@ const router = new Router({
       path: '/resources',
       name: 'resources',
       component: Resources,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/search',
+      name: 'search',
+      component: Search,
       meta: { requiresAuth: true },
     },
   ]
