@@ -23,8 +23,8 @@
     </div>
     <div id="menu" class="menu" :class="{'open': showNavigation}">
       <ul>
-        <li><a href="#">Artworks</a></li>
-        <li><a href="#">Artists</a></li>
+        <li><router-link to="/artworks">Artworks</router-link></li>
+        <li><router-link to="/artists">Artists</router-link></li>
         <li><a href="#">Competitions</a></li>
         <li><a href="#">About</a></li>
       </ul>

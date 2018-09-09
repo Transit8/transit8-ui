@@ -3,6 +3,12 @@ import Router from 'vue-router'
 
 import Home from '../pages/Home'
 import About from '../pages/About'
+import Artworks from '../pages/Artworks'
+import Artwork from '../pages/Artwork'
+import Artists from '../pages/Artists'
+import Artist from '../pages/Artist'
+import Resources from '../pages/Resources'
+import Search from '../pages/Search'
 import Admin from '../components/admin/Admin'
 import AdminRegistrations from '../components/admin/AdminRegistrations'
 import AdminSearchNames from '../components/admin/AdminSearchNames'
@@ -174,7 +180,43 @@ const router = new Router({
       path: '/about',
       name: 'about',
       component: About,
-    }
+    },
+    {
+      path: '/artworks',
+      name: 'artworks',
+      component: Artworks,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/artworks/:artworkId',
+      name: 'artworkDetails',
+      component: Artwork,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/artists',
+      name: 'artists',
+      component: Artists,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/artists/:artistId',
+      name: 'artistDetails',
+      component: Artist,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/resources',
+      name: 'resources',
+      component: Resources,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/search',
+      name: 'search',
+      component: Search,
+      meta: { requiresAuth: true },
+    },
   ]
 })
 router.beforeEach((to, from, next) => {
