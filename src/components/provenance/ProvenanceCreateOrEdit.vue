@@ -218,7 +218,9 @@ export default {
         when: this.indexData.id
       })
     }
-    provenanceService.setRegData({indexData: this.indexData, provData: this.provData})
+    provenanceService.setRegData({indexData: this.indexData, provData: this.provData}).then((regData) => {
+      this.indexData.regData = regData
+    })
   },
   validations: {
   },
@@ -279,11 +281,10 @@ export default {
         this.provData.id = this.indexData.id
       }
       this.spinner = true
-      provenanceService.createOrUpdateRecord(this.indexData, this.provData)
-        .then((records) => {
-          console.log(records)
-          this.$router.push('/provenance/list')
-        })
+      provenanceService.createOrUpdateRecord(this.indexData, this.provData).then((records) => {
+        console.log(records)
+        this.$router.push('/provenance/list')
+      })
         .catch(e => {
           console.log('ProvenanceVue: Unable to lookup ', e)
         })

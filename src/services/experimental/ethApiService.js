@@ -20,7 +20,7 @@ const ethereumUri = 'http://localhost:8545'
 // ganache 0x73b5657373dfc685ed8a2a4bebdd39d7b3677def
 
 const ETHEREUM_ABI = process.env.ETHEREUM_ABI
-const ETHEREUM_CONTRACT_ADDRESS = '0x48C41e8Ecfb9fb8AB599056115ba977d5CD77fA0'
+const ETHEREUM_CONTRACT_ADDRESS = '0x3C534b0c2b9773ee0FE9D28d906DB3a2751d798f'
 // process.env.ETHEREUM_CONTRACT_ADDRESS
 
 // const ethereumUri = 'https://api.blockcypher.com/v1/eth/main'
@@ -61,7 +61,6 @@ const ethApiService = {
       ethApiService.connectToBlockChain().then(function (result) {
         ethApiService.myContract.itemExists(artHash, function (err, res) {
           if (err) {
-            console.log(err)
             resolve({registered: false, failed: true, reason: err})
           }
           if (res) {
@@ -71,7 +70,7 @@ const ethApiService = {
           }
         })
       }).catch(function (e) {
-        console.log('Unable to provenance record: ', e)
+        resolve({registered: false, failed: true, reason: 'failed to connect to ethereum'})
       })
     })
   },
@@ -79,10 +78,11 @@ const ethApiService = {
     return new Promise(resolve => {
       ethApiService.myContract.addItem(title, artHash, blockstackId, function (err, res) {
         if (err) {
-          console.log(err)
-          resolve({failed: true, reason: err})
+          resolve({registered: false, failed: true, reason: err})
         }
         resolve({txId: res})
+      }).catch(function (e) {
+        resolve({registered: false, failed: true, reason: 'failed to connect to ethereum'})
       })
     })
   },
@@ -101,9 +101,9 @@ const ethApiService = {
   */
   sell: function (title, username, amountInWei) {
     return new Promise(resolve => {
-      ethApiService.fetchNumbRegistrations().then((numbRegistrations) => {
+      ethApiService.fetchNumberOfItems().then((numberOfItems) => {
         let $elfist = this
-        for (let index = 0; index < numbRegistrations; index++) {
+        for (let index = 0; index < numberOfItems; index++) {
           $elfist.index = -1
           setTimeout(function timer () {
             $elfist.index++
@@ -120,14 +120,16 @@ const ethApiService = {
             })
           }, 500)
         }
+      }).catch(function (e) {
+        resolve({registered: false, failed: true, reason: 'failded to fetch transactions'})
       })
     })
   },
   buy: function (title, username) {
     return new Promise(resolve => {
-      ethApiService.fetchNumbRegistrations().then((numbRegistrations) => {
+      ethApiService.fetchNumberOfItems().then((numberOfItems) => {
         let $elfist = this
-        for (let index = 0; index < numbRegistrations; index++) {
+        for (let index = 0; index < numberOfItems; index++) {
           $elfist.index = -1
           setTimeout(function timer () {
             $elfist.index++
@@ -153,23 +155,24 @@ const ethApiService = {
     return new Promise(resolve => {
       ethApiService.myContract.items(index, function (err, item) {
         if (err) {
-          resolve(err)
+          resolve({registered: false, failed: true, reason: err})
         }
-        ethApiService.myContract.getItemOwner(index, ownerIndex, function (err, owner) {
-          if (err) {
-            resolve(err)
-          }
-          console.log(owner)
-          resolve(item)
-        })
+        resolve(item)
+        // ethApiService.myContract.getItemOwner(index, ownerIndex, function (err, owner) {
+        //  if (err) {
+        //    resolve(err)
+        //  }
+        //  console.log(owner)
+        //  resolve(item)
+        // })
       })
     })
   },
   fetchItemByData: function (title, username) {
     return new Promise(resolve => {
-      ethApiService.fetchNumbRegistrations().then((numbRegistrations) => {
+      ethApiService.fetchNumberOfItems().then((numberOfItems) => {
         let $elfist = this
-        for (let index = 0; index < numbRegistrations; index++) {
+        for (let index = 0; index < numberOfItems; index++) {
           $elfist.index = -1
           setTimeout(function timer () {
             $elfist.index++
@@ -184,17 +187,17 @@ const ethApiService = {
       })
     })
   },
-  fetchNumbRegistrations: function () {
+  fetchNumberOfItems: function () {
     return new Promise(resolve => {
       ethApiService.connectToBlockChain().then(function (result) {
         ethApiService.myContract.itemIndex(function (err, numbItems) {
           if (err) {
             console.log(err)
           }
-          resolve(numbItems.c[0])
+          resolve(Number(numbItems) + 1)
         })
       }).catch(function (e) {
-        console.log('Unable to provenance record: ', e)
+        resolve({registered: false, failed: true, reason: 'failed to connect to ethereum'})
       })
     })
   },

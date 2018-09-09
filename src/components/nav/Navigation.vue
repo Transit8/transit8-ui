@@ -18,6 +18,7 @@
         <li><a href="#">English</a></li>
         <li><a href="#">Korean</a></li>
         <li><a href="#">Arabic</a></li>
+        <li><a href="#">{{ username }}</a></li>
       </ul>
     </div>
     <div id="menu" class="menu" :class="{'open': showNavigation}">

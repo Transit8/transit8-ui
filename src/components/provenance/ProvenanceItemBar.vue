@@ -53,7 +53,7 @@
     <div class="media-right" v-if="allowEdit && !searching">
       <div v-if="provenanceRecord.indexData.saleData">
         <provenance-sellers-info v-bind:saleData="provenanceRecord.indexData.saleData"/>
-        <p class="has-text-right"><button class="button is-outlined" v-on:click="openSaleDataModal">Change Sale Data</button></p>
+        <!-- <p class="has-text-right"><button class="button is-outlined" v-on:click="openSaleDataModal">Change Sale Data</button></p> -->
       </div>
       <div v-else>
         <p class="has-text-right"><button class="button is-outlined" v-on:click="openSaleDataModal">Set Sale Data</button></p>
@@ -85,7 +85,9 @@ export default {
     }
   },
   mounted () {
-    provenanceService.setRegData(this.provenanceRecord)
+    provenanceService.setRegData(this.provenanceRecord).then((regData) => {
+      this.provenanceRecord.indexData.regData = regData
+    })
     this.searching = (this.$route.name === 'marketSearch')
     if (this.userData) {
       this.allowEdit = this.userData.username === this.provenanceRecord.indexData.uploader

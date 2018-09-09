@@ -235,8 +235,9 @@ export default {
       provenanceService.createOrUpdateRecord(this.recordForSaleData.indexData, this.recordForSaleData.provData).then((records) => {
         let amountInWei = Math.trunc(saleData.amountInEther * 1000000000000000000)
         $elfist.$emit('close-sale-data-modal', {id: $elfist.recordForSaleData.id, saleData: saleData})
-        ethService.sell(this.recordForSaleData.indexData.title, this.username, amountInWei).then((item) => {
+        ethService.sell($elfist.recordForSaleData.indexData.title, $elfist.username, amountInWei).then((item) => {
           console.log(' amountInWei: ' + amountInWei + ' item: ', item)
+          this.spinner = false
           $elfist.$emit('close-sale-data-modal', {id: $elfist.recordForSaleData.id, saleData: saleData})
         })
       }).catch(e => {

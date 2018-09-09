@@ -22,27 +22,25 @@
             <p>{{ provenanceRecord.indexData.regData.timestamp }}</p>
           </div>
         </div>
-        <div class="field is-grouped">
+        <div class="field is-grouped" v-if="provenanceRecord.indexData.regData.state === 110">
           <div class="control">
             <button class="button is-link" v-on:click="register">Register</button>
           </div>
         </div>
       </form>
       <div v-else-if="provenanceRecord.indexData.regData.state === 120">
+        <provenance-sale-data v-if="saleDataModalActive" v-on:close-sale-data-modal="closeSaleDataModal" v-bind:ethToBtc="ethToBtc" v-bind:fiatRates="fiatRates" v-bind:recordForSaleData="recordForSaleData" v-bind:saleDataModalActive="saleDataModalActive"/>
         <p>This art work is already registered on the block chain.</p>
         <p>{{ provenanceRecord.indexData.regData.timestamp }}</p>
+        <div class="control">
+          <button class="button is-link" v-on:click="openSaleDataModal">Set Price</button>
+        </div>
       </div>
       <div v-else>
         <p>Only support registering digital artworks on the block chain right now - this will change soon so stay tuned!</p>
       </div>
       <provenance-reg-bar v-bind:provenanceRecord="provenanceRecord" v-bind:userData="userData" v-bind:allowEdit="allowEdit"/>
       <p v-if="provenanceRecord.indexData.regData.result">Registered in transaction: {{ provenanceRecord.indexData.regData.result }}</p>
-    </div>
-    <provenance-sale-data v-if="saleDataModalActive" v-on:close-sale-data-modal="closeSaleDataModal" v-bind:ethToBtc="ethToBtc" v-bind:fiatRates="fiatRates" v-bind:recordForSaleData="recordForSaleData" v-bind:saleDataModalActive="saleDataModalActive"/>
-    <div class="field is-grouped">
-      <div class="control">
-        <button class="button is-link" v-on:click="openSaleDataModal">Set Price</button>
-      </div>
     </div>
   </div>
 </template>
@@ -65,7 +63,7 @@ export default {
       spinner: false,
       allowEdit: false,
       provenanceId: (this.$route && this.$route.params.provenanceId) ? parseInt(this.$route.params.provenanceId) : undefined,
-      provenanceRecord: null,
+      provenanceRecord: { indexData: { regData: {} } },
       fiatRates: {},
       ethToBtc: {},
       userData: null
@@ -73,8 +71,13 @@ export default {
   },
   validations: {
   },
-  created () {
+  mounted () {
     this.provenanceRecord = provenanceService.getProvenanceRecord(this.provenanceId)
+    let $elfi = this
+    provenanceService.setRegData(this.provenanceRecord).then((regData) => {
+      $elfi.provenanceRecord.indexData.regData = regData
+      console.log('regData: ', regData)
+    })
     this.userData = provenanceService.getUserData()
     exchangeRatesService.fetchFiatRates().then((fiatRates) => {
       this.fiatRates = fiatRates
@@ -110,6 +113,10 @@ export default {
             })
         }
       })
+        .catch(e => {
+          this.spinner = false
+          this.error = 'Record has been successfully registered on the block chain - but an error was thrown saving to user storage. Tx=' + this.provenanceRecord.indexData.regData.result
+        })
     },
     closeSaleDataModal: function (response) {
       this.saleDataModalActive = false

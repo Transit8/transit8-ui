@@ -33,10 +33,10 @@ export default {
   mounted () {
     let $elfie = this
     $elfie.registrations = []
-    ethService.fetchNumbRegistrations().then((numbRegistrations) => {
-      this.numbRegistrations = numbRegistrations
+    ethService.fetchNumberOfItems().then((numberOfItems) => {
+      this.numberOfItems = numberOfItems
       for (let index = 0; index < 6; index++) {
-        if (index === numbRegistrations) {
+        if (index === numberOfItems) {
           break
         }
         $elfie = this

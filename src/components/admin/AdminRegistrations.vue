@@ -3,7 +3,7 @@
   <h1 class="title is-2">On Chain Registrations</h1>
   <div class="field is-horizontal">
     <div class="field-label is-normal">
-      <label class="label">{{ numbRegistrations }}</label>
+      <label class="label">{{ numberOfItems }}</label>
     </div>
     <div class="field-body">
       <div class="field">
@@ -27,7 +27,7 @@ import ethService from '@/services/experimental/ethApiService'
 export default {
   data () {
     return {
-      numbRegistrations: -1,
+      numberOfItems: -1,
       registrations: [],
     }
   },
@@ -37,13 +37,13 @@ export default {
     findAll: function () {
       let $elfie = this
       $elfie.registrations = []
-      ethService.fetchNumbRegistrations().then((numbRegistrations) => {
-        this.numbRegistrations = numbRegistrations
-        for (let index = 0; index < numbRegistrations; index++) {
+      ethService.fetchNumberOfItems().then((numberOfItems) => {
+        this.numberOfItems = Number(numberOfItems) + 1
+        for (let index = 0; index < this.numberOfItems; index++) {
           $elfie = this
           setTimeout(function timer () {
             // alert('hello world')
-            ethService.fetchItemByIndex(index, 1).then((item) => {
+            ethService.fetchItemByIndex(index, 0).then((item) => {
               item.index = index
               let value = item[4].toString()
               console.log('item: ', item + ' value=' + value)

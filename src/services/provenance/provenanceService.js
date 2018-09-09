@@ -145,11 +145,11 @@ const provenanceService = {
             if (file) {
               let provData = JSON.parse(file)
               provData.id = indexData.id
-              let record = {
-                indexData: indexData,
-                provData: provData,
-              }
-              provenanceService.setRegData(record)
+              // let record = {
+              //  indexData: indexData,
+              //  provData: provData,
+              // }
+              // provenanceService.setRegData(record)
               provenanceService.addProvenanceRecordInLS(provData)
             }
             if (count === total) {
@@ -196,12 +196,13 @@ const provenanceService = {
         }
       })
     }
-    let record = {
+    return {
       indexData: indexData,
       provData: provData,
     }
-    provenanceService.setRegData(record)
-    return record
+    // provenanceService.setRegData(record).then((regData) => {
+    //  record.indexData.regData = regData
+    // })
   },
   getUserData: function () {
     return loadUserData()
@@ -265,7 +266,9 @@ const provenanceService = {
         indexData: indexData,
         provData: provData,
       }
-      provenanceService.setRegData(record)
+      provenanceService.setRegData(record).then((regData) => {
+        record.indexData.regData = regData
+      })
       if (index > -1) {
         rootFile.records.splice(index, 1, indexData)
       } else {
@@ -314,9 +317,11 @@ const provenanceService = {
               indexData: indexData,
               provData: provData
             }
-            provenanceService.setRegData(record)
-            cacheService.addToCache(record)
-            resolve(record)
+            provenanceService.setRegData(record).then((regData) => {
+              record.indexData.regData = regData
+              cacheService.addToCache(record)
+              resolve(record)
+            })
           }).catch(function (e) {
             console.log('Unable to add record: ' + record.indexData.id, e)
           })
@@ -324,33 +329,42 @@ const provenanceService = {
     })
   },
   setRegData: function (record) {
-    // if (record.indexData.regData && record.indexData.regData.result) {
-    //  return
-    // }
     let tempRegData = {
       timestamp: '',
       state: 100,
       label: 'not registerable'
     }
-    try {
-      if (record.indexData.itemType === 'digiart') {
-        if (record.provData && record.provData.artwork && record.provData.artwork[0] && record.provData.artwork[0].dataUrl.length > 0) {
-          tempRegData.timestamp = '0x' + SHA256(record.indexData.uploader + '::' + record.provData.artwork[0].dataUrl).toString()
-          tempRegData.state = 110
-          tempRegData.label = 'registerable'
-          ethService.isRegistered(tempRegData.timestamp).then((result) => {
-            if (result.registered) {
-              tempRegData.state = 120
-              tempRegData.label = 'registered'
-              record.indexData.regData = tempRegData
-            }
-          })
+    return new Promise(function (resolve) {
+      try {
+        if (record.indexData.itemType === 'digiart') {
+          if (record.provData && record.provData.artwork && record.provData.artwork[0] && record.provData.artwork[0].dataUrl.length > 0) {
+            tempRegData.timestamp = '0x' + SHA256(record.indexData.uploader + '::' + record.provData.artwork[0].dataUrl).toString()
+            tempRegData.state = 110
+            tempRegData.label = 'registerable'
+            ethService.isRegistered(tempRegData.timestamp).then((result) => {
+              if (result.registered) {
+                tempRegData.state = 120
+                tempRegData.label = 'registered'
+                console.log('reg data. ', tempRegData)
+                resolve(tempRegData)
+              } else {
+                console.log('reg data. ', tempRegData)
+                resolve(tempRegData)
+              }
+            })
+          } else {
+            console.log('reg data. ', tempRegData)
+            resolve(tempRegData)
+          }
+        } else {
+          console.log('reg data. ', tempRegData)
+          resolve(tempRegData)
         }
+      } catch (e) {
+        console.log('Error reading registration data from ethereum. ', e)
+        resolve(tempRegData)
       }
-    } catch (e) {
-      console.log('Error reading registration data from ethereum. ', e)
-    }
-    record.indexData.regData = tempRegData
+    })
   },
 }
 export default provenanceService
