@@ -9,7 +9,7 @@
           <img :src="artist.image" :alt="artist.name" class="mb-50"/>
         </div>
         <div class="col-xs-12">
-          <p>{{artist.description}}</p>
+          <div v-html="artist.description"></div>
           <p class="mt-50">
             <a href="#" class="inline-block">Read more</a>
           </p>

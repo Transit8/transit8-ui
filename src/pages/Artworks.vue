@@ -33,42 +33,42 @@ export default {
     return {
       artworks: [
         {
-          id: '',
+          id: '1',
           caption: 'Artwork caption',
           title: 'Artwork title',
           image: '/static/images/artwork1.jpg',
           forSale: true
         },
         {
-          id: '',
+          id: '1',
           caption: 'Artwork caption',
           title: 'Artwork title',
           image: '/static/images/artwork2.jpg',
           forAuction: true
         },
         {
-          id: '',
+          id: '1',
           caption: 'Artwork caption',
           title: 'Artwork title',
           image: '/static/images/artwork3.jpg',
           forSale: true
         },
         {
-          id: '',
+          id: '1',
           caption: 'Artwork caption',
           title: 'Artwork title',
           image: '/static/images/artwork4.jpg',
           forSale: true
         },
         {
-          id: '',
+          id: '1',
           caption: 'Artwork caption',
           title: 'Artwork title',
           image: '/static/images/artwork5.jpg',
           forAuction: true
         },
         {
-          id: '',
+          id: '1',
           caption: 'Artwork caption',
           title: 'Artwork title',
           image: '/static/images/artwork6.jpg',

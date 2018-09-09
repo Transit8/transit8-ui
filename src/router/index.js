@@ -4,8 +4,10 @@ import Router from 'vue-router'
 import Home from '../pages/Home'
 import About from '../pages/About'
 import Artworks from '../pages/Artworks'
+import Artwork from '../pages/Artwork'
 import Artists from '../pages/Artists'
 import Artist from '../pages/Artist'
+import Resources from '../pages/Resources'
 import Admin from '../components/admin/Admin'
 import AdminRegistrations from '../components/admin/AdminRegistrations'
 import AdminSearchNames from '../components/admin/AdminSearchNames'
@@ -185,6 +187,12 @@ const router = new Router({
       meta: { requiresAuth: true },
     },
     {
+      path: '/artworks/:artworkId',
+      name: 'artworkDetails',
+      component: Artwork,
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/artists',
       name: 'artists',
       component: Artists,
@@ -195,7 +203,13 @@ const router = new Router({
       name: 'artistDetails',
       component: Artist,
       meta: { requiresAuth: true },
-    }
+    },
+    {
+      path: '/resources',
+      name: 'resources',
+      component: Resources,
+      meta: { requiresAuth: true },
+    },
   ]
 })
 router.beforeEach((to, from, next) => {

@@ -19,7 +19,7 @@
         </div>
         <div class="row">
           <div class="col-sm-12" id="artist-all-artworks">
-            <artworks-list :artworks="artworks" :show-load-button="false" :chunks="6" :artwork-width="2"/>
+            <artworks-list :artworks="artworks" :show-load-button="false" :chunks="6"/>
           </div>
         </div>
       </div>
@@ -45,37 +45,37 @@ export default {
       },
       artworks: [
         {
-          id: '',
+          id: '1',
           caption: 'Artwork caption',
           title: 'Artwork title',
           image: '/static/images/artwork1.jpg',
         },
         {
-          id: '',
+          id: '1',
           caption: 'Artwork caption',
           title: 'Artwork title',
           image: '/static/images/artwork2.jpg',
         },
         {
-          id: '',
+          id: '1',
           caption: 'Artwork caption',
           title: 'Artwork title',
           image: '/static/images/artwork3.jpg',
         },
         {
-          id: '',
+          id: '1',
           caption: 'Artwork caption',
           title: 'Artwork title',
           image: '/static/images/artwork4.jpg',
         },
         {
-          id: '',
+          id: '1',
           caption: 'Artwork caption',
           title: 'Artwork title',
           image: '/static/images/artwork5.jpg',
         },
         {
-          id: '',
+          id: '1',
           caption: 'Artwork caption',
           title: 'Artwork title',
           image: '/static/images/artwork6.jpg',
