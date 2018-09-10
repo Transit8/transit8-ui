@@ -67,7 +67,6 @@ export default {
           _.forEach(results, function (indexData) {
             provenanceService.getRecordForSearch(indexData)
               .then((record) => {
-                console.log('Record: ' + record)
                 if (record && record.indexData && record.indexData.id) {
                   $self.provenanceRecords.push(record)
                   let dataUrl = ''

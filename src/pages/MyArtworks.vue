@@ -28,7 +28,8 @@ export default {
   components: { ArtworksList },
   data () {
     return {
-      artworks: []
+      artworks: [],
+      soldArtworks: []
     }
   },
   mounted () {
@@ -39,18 +40,27 @@ export default {
       $elfist.numbResults = $elfist.provenanceRecords.length
       _.forEach(provenanceRecords, function (record) {
         let dataUrl = '/static/images/artwork1.jpg'
-        if (record.provData && record.provData.artwork && record.provData.artwork.length > 0) {
-          dataUrl = record.provData.artwork[0].dataUrl
+        if (record.provData) {
+          if (record.provData.artwork && record.provData.artwork.length > 0) {
+            dataUrl = record.provData.artwork[0].dataUrl
+          }
+          let artwork = {
+            id: record.indexData.id,
+            caption: record.indexData.uploader,
+            state: record.indexData.regData.state,
+            owner: record.indexData.regData.owner,
+            image: dataUrl,
+            title: record.indexData.title,
+            showRegistration: true,
+            // forSale: record.indexData.saleData.soid === 1,
+            // forAuction: record.indexData.saleData.soid === 2,
+          }
+          if (record.indexData.regData && record.indexData.regData.state === 130) {
+            // $elfist.artworks.push(artwork)
+          } else {
+            $elfist.artworks.push(artwork)
+          }
         }
-        $elfist.artworks.push({
-          id: record.indexData.id,
-          caption: record.indexData.uploader,
-          image: dataUrl,
-          title: record.indexData.title,
-          showRegistration: true,
-          // forSale: record.indexData.saleData.soid === 1,
-          // forAuction: record.indexData.saleData.soid === 2,
-        })
       })
     })
 

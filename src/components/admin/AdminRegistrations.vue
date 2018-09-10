@@ -49,7 +49,7 @@ export default {
               console.log('item: ', item + ' value=' + value)
               $elfie.registrations.push(item)
             })
-          }, index * 3000)
+          }, index * 1000)
         }
       })
     },

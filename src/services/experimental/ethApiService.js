@@ -200,7 +200,7 @@ const ethApiService = {
                 resolve(item)
               }
             })
-          }, 200)
+          }, 50)
         }
         // resolve({registered: false, failed: true, reason: 'No item matching hash: ' + artHash})
       })

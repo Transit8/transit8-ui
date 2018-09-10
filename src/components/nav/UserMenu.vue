@@ -13,6 +13,11 @@
             </router-link>
           </li>
           <li>
+            <router-link to="/provenance/create" class="navbar-item">
+              Upload Artwork
+            </router-link>
+          </li>
+          <li>
             <router-link to="/search" class="navbar-item">
               Search
             </router-link>

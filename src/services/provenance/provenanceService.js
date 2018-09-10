@@ -149,7 +149,39 @@ const provenanceService = {
             if (file) {
               let provData = JSON.parse(file)
               provData.id = indexData.id
+              if (!indexData.saleData) {
+                indexData.saleData = {
+                  soid: 0,
+                  amount: 0,
+                  reserve: 0,
+                  increment: 0
+                }
+              }
+              provData.owner = indexData.uploader
+              if (provData && provData.artwork && provData.artwork[0] && provData.artwork[0].dataUrl.length > 0) {
+                let timestamp = '0x' + SHA256(provData.artwork[0].dataUrl).toString()
+                indexData.timestamp = timestamp
+                console.log('Set timestamp: ', indexData.timestamp)
+                ethService.fetchItemByArtHash(timestamp).then((item) => {
+                  let myIndexData = _.find(rootFile.records, {timestamp: indexData.timestamp})
+                  if (item[1] && item[1].length > 0) {
+                    if (item[1] === myIndexData.uploader) {
+                      myIndexData.regData = {
+                        state: 120,
+                        owner: item[1]
+                      }
+                    } else {
+                      myIndexData.regData = {
+                        state: 130,
+                        owner: item[1]
+                      }
+                      console.log('Found a sold item!!!', indexData, provData)
+                    }
+                  }
+                })
+              }
               provenanceService.addProvenanceRecordInLS(provData)
+              // indexData.regData = provenanceService.setRegData({indexData: indexData, provData: provData})
             }
             if (counter === (total - 1)) {
               provenanceService.state = 'ROOT_PROV_STARTED'
@@ -202,13 +234,15 @@ const provenanceService = {
         }
       })
     }
-    return {
+    let record = {
       indexData: indexData,
       provData: provData,
     }
-    // provenanceService.setRegData(record).then((regData) => {
-    //  record.indexData.regData = regData
-    // })
+    if (!record.provData) {
+
+    }
+    // provenanceService.setRegData(record)
+    return record
   },
   getProvenanceRecordFromUserStorage: function (id) {
     return new Promise(function (resolve) {
@@ -228,6 +262,7 @@ const provenanceService = {
             if (file) {
               let provData = JSON.parse(file)
               provData.id = indexData.id
+              // provenanceService.setRegData({indexData: indexData, provData: provData})
               resolve({indexData: indexData, provData: provData})
             } else {
               resolve({failed: true, message: 'File not found: ' + indexData.id})
@@ -332,13 +367,7 @@ const provenanceService = {
           increment: 0
         }
       }
-      // let record = {
-      //  indexData: indexData,
-      //  provData: provData,
-      // }
-      // provenanceService.setRegData(record).then((regData) => {
-      //  record.indexData.regData = regData
-      // })
+      // provenanceService.setRegData({indexData: indexData, provData: provData})
       if (index > -1) {
         rootFile.records.splice(index, 1, indexData)
       } else {
@@ -384,14 +413,8 @@ const provenanceService = {
               indexData: indexData,
               provData: provData
             }
+            // provenanceService.setRegData(record)
             resolve(record)
-            /*
-            provenanceService.setRegData(record).then((regData) => {
-              record.indexData.regData = regData
-              cacheService.addToCache(record)
-              resolve(record)
-            })
-            */
           }).catch(function (e) {
             console.log('Unable to add record: ' + record.indexData.id, e)
           })
@@ -404,6 +427,7 @@ const provenanceService = {
       state: 100,
       label: 'not registerable'
     }
+    record.indexData.regData = tempRegData
     return new Promise(function (resolve) {
       try {
         if (record.indexData.itemType === 'digiart') {
@@ -411,24 +435,33 @@ const provenanceService = {
             tempRegData.timestamp = '0x' + SHA256(record.provData.artwork[0].dataUrl).toString()
             tempRegData.state = 110
             tempRegData.label = 'registerable'
-            ethService.fetchItemByArtHash(tempRegData.timestamp).then((result) => {
-              if (result.failed) {
+            record.indexData.regData = tempRegData
+            // ethService.fetchItemByArtHash(tempRegData.timestamp).then((result) => {
+            ethService.isRegistered(tempRegData.timestamp).then((result) => {
+              if (result.failed || !result.registered) {
+                record.indexData.regData = tempRegData
                 resolve(tempRegData)
               } else {
-                tempRegData.currentOwner = result[1]
+                // tempRegData.currentOwner = result[1]
                 tempRegData.state = 120
                 tempRegData.label = 'registered'
+                record.indexData.regData = tempRegData
                 resolve(tempRegData)
               }
+            }).catch(function (e) {
+              console.log('MetaMask: are you logged in? ', e)
             })
           } else {
+            record.indexData.regData = tempRegData
             resolve(tempRegData)
           }
         } else {
+          record.indexData.regData = tempRegData
           resolve(tempRegData)
         }
       } catch (e) {
         console.log('Error reading registration data from ethereum. ', e)
+        record.indexData.regData = tempRegData
         resolve(tempRegData)
       }
     })
