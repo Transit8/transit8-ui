@@ -32,12 +32,13 @@
 html, body {
   font-family: 'Grotesk', Helvetica, sans-serif;
   font-weight: normal;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1, .h1 {
   font-size: 60px;
   line-height: 1;
-  letter-spacing: 6px;
+  letter-spacing: 4px;
   margin-bottom: 50px;
   @media all and (max-width: 1366px) {
     font-size: 50px;
@@ -80,6 +81,14 @@ h5, .h5 {
   line-height: 40px;
   @media all and (max-width: 1024px) {
     font-size: 24px;
+  }
+}
+
+.font-size-24 {
+  font-size: 24px;
+  line-height: 1.4;
+  @media all and (max-width: 1024px) {
+    font-size: 18px;
   }
 }
 

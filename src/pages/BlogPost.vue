@@ -3,12 +3,8 @@
     <div class="container wide">
       <div class="row">
         <div class="col-sm-12 pt-60">
-          <div class="container-fluid">
-            <div class="col-md-6">
-              <small>{{publishDate}}</small>
-              <h1 class="font-size-48">{{$prismic.richTextAsPlain(post.data.title)}}</h1>
-            </div>
-          </div>
+          <p>{{publishDate}}</p>
+          <h1 class="font-size-48">{{$prismic.richTextAsPlain(post.data.title)}}</h1>
         </div>
         <div class="col-sm-12 pt-50">
           <prismic-image :field="post.data.image.blog" class="img-responsive mb-50"/>
