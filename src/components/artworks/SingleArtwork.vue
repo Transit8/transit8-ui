@@ -3,6 +3,7 @@
     <img :src="artwork.image" :alt="artwork.title">
     <p class="artwork-caption">{{artwork.caption}}</p>
     <p class="art-title">{{artwork.title}}</p>
+    <router-link :to="'provenance/register/'+artwork.id" class="artwork-action" v-if="artwork.showRegistration">Register</router-link>
     <router-link :to="artwork.id" class="artwork-action" v-if="artwork.forSale">Buy</router-link>
     <router-link :to="artwork.id" class="artwork-action" v-if="artwork.forAuction">Bid</router-link>
   </router-link>

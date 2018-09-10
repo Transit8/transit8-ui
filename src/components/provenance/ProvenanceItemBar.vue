@@ -46,8 +46,8 @@
     </div>
     <nav class="has-text-right" v-if="allowEdit">
       <a :href="'#/provenance/edit/'+provenanceRecord.indexData.id">edit</a>
-      <a v-if="allowEdit && provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.state === 110" :href="'#/provenance/register/'+provenanceRecord.indexData.id">register on blockchain</a>
-      <a v-if="allowEdit && provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.state === 120" :href="'#/provenance/register/'+provenanceRecord.indexData.id">registered on blockchain</a>
+      <a v-if="provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.state === 110" :href="'#/provenance/register/'+provenanceRecord.indexData.id">register on blockchain</a>
+      <a v-if="provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.state === 120" :href="'#/provenance/register/'+provenanceRecord.indexData.id">registered on blockchain</a>
     </nav>
   </div>
   <div>

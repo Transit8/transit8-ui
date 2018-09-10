@@ -170,7 +170,7 @@ const provenanceService = {
         if (rootFile && provenanceService.state === 'ROOT_PROV_STARTED') {
           let results = []
           if (recordId) {
-            provenanceService.getProvenanceRecord(recordId, rootFile)
+            resolve(provenanceService.getProvenanceRecord(recordId, rootFile))
           } else {
             _.forEach(rootFile.records, function (theRecord) {
               results.push(provenanceService.getProvenanceRecord(theRecord.id, rootFile))

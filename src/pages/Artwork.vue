@@ -11,6 +11,7 @@
                 <a href="#" @click.prevent="scrollToAboutSection()"><u>About artwork</u></a>
               </p>
             </div>
+            <img :src="artwork.image" :alt="artwork.title">
             <artwork-slider-controls :images="artwork.images" @change="sliderImageChanged($event)"
                                      :image-displayed="sliderImage"/>
           </div>
@@ -24,7 +25,7 @@
     </section>
     <!-- /#pdp slider -->
 
-    <buy-artwork-form :artwork="artwork" @buy="buyArtwork()" v-if="artwork.forBuy"/>
+    <buy-artwork-form :artwork="artwork" @buy="buyArtwork()" v-if="artwork.forSale"/>
     <bid-artwork-form :artwork="artwork" @bid="bidArtwork($event)" v-if="artwork.forAuction"/>
     <!-- /#pdp-action -->
 
@@ -61,6 +62,14 @@ import BuyArtworkForm from '../components/artworks/BuyArtworkForm'
 import BidArtworkForm from '../components/artworks/BidArtworkForm'
 import ArtworkSlider from '../components/artworks/ArtworkSlider'
 import ArtworkSliderControls from '../components/artworks/ArtworkSliderControls'
+import webrtcService from '@/services/webrtc/WebrtcService'
+import provenanceService from '@/services/provenance/ProvenanceService'
+// import ProvenanceBuyersInfo from '@/components/provenance/sales/ProvenanceBuyersInfo'
+// import ProvenanceSellersInfo from '@/components/provenance/sales/ProvenanceSellersInfo'
+// import moment from 'moment'
+import messagingService from '@/services/webrtc/messagingService'
+import eventBus from '@/services/eventBus'
+// import cacheService from '@/services/cacheService'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -72,41 +81,21 @@ export default {
     BuyArtworkForm,
     AboutArtwork,
     AboutArtist,
-    ArtworksList
+    ArtworksList,
   },
   data () {
     return {
+      tokbox: {},
+      userMessages: messagingService.messages,
+      messageSignal: {time: 'then', message: 'happy?'},
+      username: 'anon',
+      loggedIn: false,
+      webrtcState: 0,
+      owner: false,
+      artworkId: (this.$route && this.$route.params.artworkId) ? parseInt(this.$route.params.artworkId) : undefined,
       sliderImage: 0,
-      artist: {
-        name: 'Artist Name',
-        description: 'Born in Osaka in 1978, Hiroe Saeki graduated from the Faculty of Fine Art, Kyoto Seika University in 2001.<br />Making her debut at the exhibition held at Taka Ishii Gallery in 2004, Saeki won the VOCA Encouragement Prize and held her first overseas solo exhibition at Galerie Almine Rech in Paris, in 2006.',
-        image: '/static/images/artist_preview.png',
-      },
-      artwork: {
-        name: 'Artwork name',
-        keywords: [ 'pen', 'drawing', 'digital' ],
-        description: '<p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quasmolestias.</p>',
-        uploadedBy: 'Uploader Name',
-        ownedBy: 'Owner Name',
-        image: '/static/images/product.jpg',
-        category: 'Photography',
-        year: '2017',
-        prices: {
-          eur: 500,
-          usd: 580.12,
-          eth: 2.38,
-          btc: 0.084
-        },
-        forBuy: false,
-        forAuction: true,
-        minBidIncrement: 500,
-        reservedPrice: 500,
-        images: [
-          '/static/images/product.jpg',
-          '/static/images/product.jpg',
-          '/static/images/product.jpg',
-        ]
-      },
+      artist: {},
+      artwork: {},
       artworks: [
         {
           id: '1',
@@ -147,9 +136,95 @@ export default {
       ],
     }
   },
+  beforeDestroy () {
+    webrtcService.unpublish()
+    eventBus.$off('signal-in-message')
+  },
+  created () {
+    window.addEventListener('beforeunload', this.stopPublishing)
+    let userData = provenanceService.getUserData()
+    if (userData && userData.username) {
+      this.loggedIn = true
+      this.username = userData.username
+    }
+    let recordId = (this.$route && this.$route.params.artworkId) ? parseInt(this.$route.params.artworkId) : undefined
+    let $elfist = this
+    provenanceService.getProvenanceRecordsInLS(recordId).then((record) => {
+      $elfist.record = record
+      $elfist.setRegData(record)
+      $elfist.owner = record.indexData.uploader === this.username
+      webrtcService.startSession($elfist.username, $elfist.artworkId)
+      $elfist.artist = {
+        name: userData.profile.name,
+        description: userData.profile.description,
+        image: (userData.profile.avatarUrl) ? userData.profile.avatarUrl : '/static/images/artist_preview.png',
+      }
+      let dataUrl = '/static/images/artwork1.jpg'
+      if (record.provData && record.provData.artwork && record.provData.artwork.length > 0) {
+        dataUrl = record.provData.artwork[0].dataUrl
+      }
+      $elfist.artwork = {
+        id: record.indexData.id,
+        name: record.indexData.title,
+        description: record.indexData.description,
+        keywords: record.indexData.keywords,
+        uploadedBy: record.indexData.uploader,
+        ownedBy: record.indexData.uploader,
+        category: record.indexData.itemType,
+        year: '1826',
+        image: dataUrl,
+        prices: {
+          eur: 500,
+          usd: 580.12,
+          eth: 2.38,
+          btc: 0.084
+        },
+        forSale: record.indexData.saleData.soid === 1,
+        forAuction: record.indexData.saleData.soid === 2,
+        amount: record.indexData.saleData.amount,
+        minBidIncrement: record.indexData.saleData.increment,
+        reservedPrice: record.indexData.saleData.reserve,
+        images: [
+          dataUrl,
+          dataUrl,
+          dataUrl,
+        ]
+      }
+      // $elfist.artworks.push({
+      //  id: record.indexData.id,
+      //  caption: record.indexData.uploader,
+      //  title: record.indexData.title,
+      //  image: dataUrl,
+      // })
+    })
+    let $elfie = this
+    // eventBus.$on('signal-in-message', function (payLoad) {
+    //  $elfie.userMessages.push(payLoad)
+    // })
+    eventBus.$on('signal-in-bid', function (payLoad) {
+      $elfie.userMessages.push(payLoad)
+    })
+    eventBus.$on('auction-connected', function (payLoad) {
+      $elfie.webrtcState = 1
+    })
+    eventBus.$on('item-edit', function (payLoad) {
+      window.location.reload()
+    })
+  },
   methods: {
     buyArtwork () {
       //
+    },
+
+    setRegData: function (record) {
+      let $elfi = this
+      provenanceService.setRegData(record).then((regData) => {
+        $elfi.provenanceRecord.indexData.regData = regData
+        if (regData.state === 120 && this.username !== regData.currentOwner) {
+          console.log('found a bought item!')
+          console.log('regData: ', regData)
+        }
+      })
     },
 
     bidArtwork (value) {

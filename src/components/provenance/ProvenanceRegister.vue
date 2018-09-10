@@ -11,7 +11,7 @@
       <p>{{ error }}</p>
     </div>
     <div v-else>
-      <form id="create-provenance" v-if="provenanceRecord.indexData && provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.state === 110">
+      <form id="create-provenance" v-if="state === 110">
         <div class="field">
           <label class="label">Timestamp Proofs</label>
           <div class="control">
@@ -22,13 +22,13 @@
             <p>{{ provenanceRecord.indexData.regData.timestamp }}</p>
           </div>
         </div>
-        <div class="field is-grouped" v-if="provenanceRecord.indexData.regData.state === 110">
+        <div class="field is-grouped">
           <div class="control">
             <button class="button is-link" v-on:click="register">Register</button>
           </div>
         </div>
       </form>
-      <div v-else-if="provenanceRecord.indexData && provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.state === 120">
+      <div v-else-if="state === 120">
         <provenance-sale-data v-if="saleDataModalActive" v-on:close-sale-data-modal="closeSaleDataModal" v-bind:ethToBtc="ethToBtc" v-bind:fiatRates="fiatRates" v-bind:recordForSaleData="recordForSaleData" v-bind:saleDataModalActive="saleDataModalActive"/>
         <p>This art work is already registered on the block chain.</p>
         <p>{{ provenanceRecord.indexData.regData.timestamp }}</p>
@@ -39,7 +39,7 @@
       <div v-else>
         <p>Only support registering digital artworks on the block chain right now - this will change soon so stay tuned!</p>
       </div>
-      <provenance-reg-bar v-bind:provenanceRecord="provenanceRecord" v-bind:userData="userData" v-bind:allowEdit="allowEdit"/>
+      <provenance-reg-bar v-bind:provenanceRecord="provenanceRecord" v-bind:username="username" v-bind:allowEdit="allowEdit"/>
       <p v-if="provenanceRecord.indexData && provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.result">Registered in transaction: {{ provenanceRecord.indexData.regData.result }}</p>
     </div>
   </div>
@@ -59,6 +59,7 @@ export default {
   data () {
     return {
       error: null,
+      state: 100,
       saleDataModalActive: false,
       spinner: false,
       allowEdit: false,
@@ -66,7 +67,7 @@ export default {
       provenanceRecord: { indexData: { regData: {} } },
       fiatRates: {},
       ethToBtc: {},
-      userData: null
+      username: null
     }
   },
   validations: {
@@ -79,7 +80,7 @@ export default {
       $elfist.setRegData(provenanceRecord)
     })
 
-    this.userData = provenanceService.getUserData()
+    this.username = provenanceService.getUserData().username
     exchangeRatesService.fetchFiatRates().then((fiatRates) => {
       this.fiatRates = fiatRates
     })
@@ -97,7 +98,7 @@ export default {
     register: function (e) {
       e.preventDefault()
       this.spinner = true
-      ethService.register(this.provenanceRecord.indexData.title, this.provenanceRecord.indexData.regData.timestamp, this.userData.username).then((result) => {
+      ethService.register(this.provenanceRecord.indexData.title, this.provenanceRecord.indexData.regData.timestamp, this.username).then((result) => {
         if (result.failed && result.reason) {
           this.error = result.reason.message
           this.spinner = false
@@ -122,6 +123,7 @@ export default {
     setRegData: function (response) {
       let $elfi = this
       provenanceService.setRegData(this.provenanceRecord).then((regData) => {
+        $elfi.state = regData.state
         $elfi.provenanceRecord.indexData.regData = regData
         if (regData.state === 120 && this.username !== regData.currentOwner) {
           console.log('found a bought item!')
