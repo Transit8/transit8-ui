@@ -1,7 +1,7 @@
 <template>
   <div class="mb-50">
-    <small>{{publishDate}}</small>
-    <h2 class="mt-20">
+    <p>{{publishDate}}</p>
+    <h2 class="h4">
       <router-link :to="'/blog/' + post.id">{{$prismic.richTextAsPlain(post.data.title)}}</router-link>
     </h2>
     <router-link :to="'/blog/' + post.id">

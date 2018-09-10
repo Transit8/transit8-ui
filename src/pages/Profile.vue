@@ -3,11 +3,7 @@
     <div class="container wide">
       <div class="row">
         <div class="col-sm-12 pt-60">
-          <div class="container-fluid">
-            <div class="col-md-6">
-              <h1 class="font-size-48">Profile Information</h1>
-            </div>
-          </div>
+          <h1 class="font-size-48">Profile Information</h1>
         </div>
         <div class="col-sm-12 pt-50 my-profile">
           <profile-detail label="Name" :value="userData.name"/>

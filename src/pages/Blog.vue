@@ -3,11 +3,7 @@
     <div class="container wide">
       <div class="row">
         <div class="col-sm-12 pt-60">
-          <div class="container-fluid">
-            <div class="col-md-6">
-              <h1 class="font-size-48">Blog</h1>
-            </div>
-          </div>
+          <h1 class="font-size-48">Blog</h1>
         </div>
         <div class="col-sm-12 pt-50">
           <single-blog-post v-for="(post, index) of posts" :key="index" :post="post"/>
