@@ -9,9 +9,9 @@
             <div class="col-sm-12 col-lg-4">
               <filters @update="updateFilters($event)"/>
             </div>
-            <div class="col-sm-12 col-lg-8">
+            <div class="col-sm-12 col-lg-7 col-lg-offset-1">
               <div class="hr-spacer hr-mobile-spacer mb-100"></div>
-              <h5 class="grey normal-weight">{{artworks.length}} Artworks for sale</h5>
+              <h5 class="grey-medium normal-weight">{{artworks.length}} Artworks for sale</h5>
               <artworks-list :artworks="artworks" @load-more="loadMore()" />
             </div>
           </div>

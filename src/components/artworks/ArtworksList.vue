@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="grid innerpage-artworks">
+    <div class="grid innerpage-artworks mt-50">
       <div class="grid-sizer"></div>
       <div class="row" v-for="(chunkedArtwork, index) of chunkedArtworks" :key="index">
         <single-artwork v-for="(artwork, index) of chunkedArtwork" :key="index" :artwork="artwork"

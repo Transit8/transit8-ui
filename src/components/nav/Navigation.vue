@@ -11,7 +11,7 @@
     </div>
     <div class="navbar-right col-md-8 col-xs-12">
       <search-form @submit="searchIndex($event)"/>
-      <user-menu :user-data="userData" class="pull-right"/>
+      <user-menu :user-data="userData" class="pull-right col-md-2"/>
       <languages :languages="languages" @change="changeLanguage($event)" class="pull-right"/>
     </div>
     <div id="menu" class="menu" :class="{'open': showNavigation}">

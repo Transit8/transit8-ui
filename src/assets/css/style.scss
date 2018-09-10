@@ -91,7 +91,7 @@ section {
   background: $grey;
   &.hr-mobile-spacer {
     display: none;
-    @media all and (max-width: 1024px) {
+    @media all and (max-width: 1170px) {
       display: block;
 
     }
@@ -255,13 +255,13 @@ button, .button, .btn {
 
 h1, .h1 {
   &.innerpage {
-    font-size: 72px;
+    font-size: 60px;
     text-transform: none;
     letter-spacing: normal;
-    padding-bottom: 58px;
+    padding-bottom: 48px;
     border-bottom: 1px solid $grey;
     @media all and (max-width: 768px) {
-      font-size: 50px;
+      font-size: 40px;
     }
     span {
       display: block;
@@ -365,7 +365,7 @@ section {
   .art-title {
     font-size: 20px;
     margin-bottom: 0;
-    color: $grey;
+    color: $grey-medium;
     font-style: italic;
   }
 }
@@ -432,7 +432,7 @@ section {
     margin: 0 0 60px 0;
     padding: 0;
     li {
-      font-size: 40px;
+      font-size: 32px;
       line-height: 42px;
       color: $black;
       cursor: pointer;
@@ -469,12 +469,12 @@ section {
       color: $grey;
     }
     label {
-      font-size: 40px;
+      font-size: 32px;
       margin: 0 0 0 32px;
       position: relative;
       top: 8px;
       font-weight: normal;
-      line-height: 40px;
+      line-height: 32px;
       vertical-align: top;
     }
   }
@@ -482,7 +482,7 @@ section {
     position: relative;
     padding-top: 60px;
     margin-top: 60px;
-    color: $grey;
+    color: $grey-medium;
     text-transform: uppercase;
     .left {
       position: absolute;
@@ -517,7 +517,7 @@ section {
       }
     }
   }
-  @media all and (max-width: 1024px) {
+  @media all and (max-width: 1170px) {
     margin-bottom: 100px;
   }
 }
@@ -541,7 +541,7 @@ section {
 }
 
 .artwork-action {
-  color: $grey;
+  color: $grey-medium;
   text-transform: uppercase;
   font-size: 20px;
   text-decoration: underline;
