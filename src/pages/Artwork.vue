@@ -25,7 +25,7 @@
     </section>
     <!-- /#pdp slider -->
 
-    <buy-artwork-form :artwork="artwork" @buy="buyArtwork()" v-if="artwork.forSale"/>
+    <buy-artwork-form :artwork="artwork" @buy="buyArtwork()" v-if="artwork.forSale && !owner"/>
     <bid-artwork-form :artwork="artwork" @bid="bidArtwork($event)" v-if="artwork.forAuction"/>
     <!-- /#pdp-action -->
 
@@ -70,6 +70,8 @@ import provenanceService from '@/services/provenance/ProvenanceService'
 import messagingService from '@/services/webrtc/messagingService'
 import eventBus from '@/services/eventBus'
 // import cacheService from '@/services/cacheService'
+import _ from 'lodash'
+import ethService from '@/services/experimental/ethApiService'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -146,56 +148,21 @@ export default {
     if (userData && userData.username) {
       this.loggedIn = true
       this.username = userData.username
-    }
-    let recordId = (this.$route && this.$route.params.artworkId) ? parseInt(this.$route.params.artworkId) : undefined
-    let $elfist = this
-    provenanceService.getProvenanceRecordsInLS(recordId).then((record) => {
-      $elfist.record = record
-      $elfist.setRegData(record)
-      $elfist.owner = record.indexData.uploader === this.username
-      webrtcService.startSession($elfist.username, $elfist.artworkId)
-      $elfist.artist = {
+      this.artist = {
         name: userData.profile.name,
         description: userData.profile.description,
         image: (userData.profile.avatarUrl) ? userData.profile.avatarUrl : '/static/images/artist_preview.png',
       }
-      let dataUrl = '/static/images/artwork1.jpg'
-      if (record.provData && record.provData.artwork && record.provData.artwork.length > 0) {
-        dataUrl = record.provData.artwork[0].dataUrl
+    }
+    let recordId = (this.$route && this.$route.params.artworkId) ? parseInt(this.$route.params.artworkId) : undefined
+    provenanceService.getProvenanceRecordsInLS(recordId).then((record) => {
+      if (!record || !record.provData || !record.indexData.id) {
+        provenanceService.getProvenanceRecordFromUserStorage(recordId).then((record) => {
+          this.setBrokenLink(record)
+        })
+      } else {
+        this.setBrokenLink(record)
       }
-      $elfist.artwork = {
-        id: record.indexData.id,
-        name: record.indexData.title,
-        description: record.indexData.description,
-        keywords: record.indexData.keywords,
-        uploadedBy: record.indexData.uploader,
-        ownedBy: record.indexData.uploader,
-        category: record.indexData.itemType,
-        year: '1826',
-        image: dataUrl,
-        prices: {
-          eur: 500,
-          usd: 580.12,
-          eth: 2.38,
-          btc: 0.084
-        },
-        forSale: record.indexData.saleData.soid === 1,
-        forAuction: record.indexData.saleData.soid === 2,
-        amount: record.indexData.saleData.amount,
-        minBidIncrement: record.indexData.saleData.increment,
-        reservedPrice: record.indexData.saleData.reserve,
-        images: [
-          dataUrl,
-          dataUrl,
-          dataUrl,
-        ]
-      }
-      // $elfist.artworks.push({
-      //  id: record.indexData.id,
-      //  caption: record.indexData.uploader,
-      //  title: record.indexData.title,
-      //  image: dataUrl,
-      // })
     })
     let $elfie = this
     // eventBus.$on('signal-in-message', function (payLoad) {
@@ -213,13 +180,23 @@ export default {
   },
   methods: {
     buyArtwork () {
-      //
+      let buyer = this.username
+      let seller = this.record.indexData.uploader
+      ethService.buy(this.record.indexData.title, seller, buyer).then((item) => {
+        this.record.indexData.uploader = buyer
+        this.record.indexData.gaiaUrl = null
+        this.record.indexData.appUrl = null
+        provenanceService.createOrUpdateRecord(this.record.indexData, this.record.provData).then((records) => {
+          this.spinner = false
+        }).catch(e => {
+          console.log('ProvenanceVue: Unable to lookup ', e)
+        })
+      })
     },
 
-    setRegData: function (record) {
-      let $elfi = this
+    setRegData: function (record, artwork) {
       provenanceService.setRegData(record).then((regData) => {
-        $elfi.provenanceRecord.indexData.regData = regData
+        record.indexData.regData = regData
         if (regData.state === 120 && this.username !== regData.currentOwner) {
           console.log('found a bought item!')
           console.log('regData: ', regData)
@@ -229,6 +206,47 @@ export default {
 
     bidArtwork (value) {
       console.log(value)
+    },
+
+    setBrokenLink (record) {
+      // let recordId = (this.$route && this.$route.params.artworkId) ? parseInt(this.$route.params.artworkId) : undefined
+      let $elfist = this
+      $elfist.record = record
+      $elfist.owner = record.indexData.uploader === this.username
+      webrtcService.startSession($elfist.username, $elfist.artworkId)
+      let images = []
+      if (record.provData && record.provData.artwork && record.provData.artwork.length > 0) {
+        _.forEach(record.provData.artwork, function (artwork) {
+          images.push(record.provData.artwork[0].dataUrl)
+        })
+      } else {
+        images.push('/static/images/artwork1.jpg')
+      }
+      $elfist.artwork = {
+        id: record.indexData.id,
+        name: record.indexData.title,
+        description: record.indexData.description,
+        keywords: record.indexData.keywords,
+        uploadedBy: record.indexData.uploader,
+        ownedBy: record.indexData.uploader,
+        category: record.indexData.itemType,
+        image: images[0],
+        images: images,
+        year: '',
+        saleData: record.indexData.saleData,
+        forSale: record.indexData.saleData.soid === 1,
+        forAuction: record.indexData.saleData.soid === 2,
+        amount: record.indexData.saleData.amount,
+        minBidIncrement: record.indexData.saleData.increment,
+        reservedPrice: record.indexData.saleData.reserve,
+      }
+      $elfist.setRegData(record, $elfist.artwork)
+      // $elfist.artworks.push({
+      //  id: record.indexData.id,
+      //  caption: record.indexData.uploader,
+      //  title: record.indexData.title,
+      //  image: dataUrl,
+      // })
     },
 
     scrollToAboutSection () {

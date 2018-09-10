@@ -103,16 +103,18 @@ export default {
           this.error = result.reason.message
           this.spinner = false
         } else {
-          this.provenanceRecord.indexData.regData.result = result
-          provenanceService.createOrUpdateRecord(this.provenanceRecord.indexData, this.provenanceRecord.provData)
-            .then((record) => {
-              this.error = 'Record has been successfully registered on the block chain. Tx=' + this.provenanceRecord.indexData.regData.result
-              this.spinner = false
-            })
-            .catch(e => {
-              this.spinner = false
-              this.error = 'Record has been successfully registered on the block chain - but an error was thrown saving to user storage. Tx=' + this.provenanceRecord.indexData.regData.result
-            })
+          provenanceService.setRegData(this.provenanceRecord).then((regData) => {
+            this.provenanceRecord.indexData.regData = regData
+            provenanceService.createOrUpdateRecord(this.provenanceRecord.indexData, this.provenanceRecord.provData)
+              .then((record) => {
+                this.error = 'Record has been successfully registered on the block chain. Tx=' + this.provenanceRecord.indexData.regData.result
+                this.spinner = false
+              })
+              .catch(e => {
+                this.spinner = false
+                this.error = 'Record has been successfully registered on the block chain - but an error was thrown saving to user storage. Tx=' + this.provenanceRecord.indexData.regData.result
+              })
+          })
         }
       })
         .catch(e => {
@@ -120,11 +122,11 @@ export default {
           this.error = 'Record has been successfully registered on the block chain - but an error was thrown saving to user storage. Tx=' + this.provenanceRecord.indexData.regData.result
         })
     },
-    setRegData: function (response) {
-      let $elfi = this
-      provenanceService.setRegData(this.provenanceRecord).then((regData) => {
-        $elfi.state = regData.state
-        $elfi.provenanceRecord.indexData.regData = regData
+    setRegData: function (record) {
+      // let $elfi = this
+      provenanceService.setRegData(record).then((regData) => {
+        this.state = regData.state
+        record.indexData.regData = regData
         if (regData.state === 120 && this.username !== regData.currentOwner) {
           console.log('found a bought item!')
           console.log('regData: ', regData)
