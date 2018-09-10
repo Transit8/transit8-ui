@@ -38,7 +38,7 @@ export default {
   },
   computed: {
     keywords () {
-      return this.artwork.keywords.join(', ')
+      return this.artwork.keywords
     }
   }
 }

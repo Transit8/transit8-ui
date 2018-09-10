@@ -5,10 +5,16 @@
   </h3>
   <ul class="">
     <li>
-      <a href="#/provenance/list">My Artworks</a>
+      <router-link to="/my-artworks" class="navbar-item">
+        My Art Work
+      </router-link>
+      <!-- <a href="#/provenance/list">My Artworks</a> -->
     </li>
     <li>
-      <a href="#/provenance/create">Upload Artwork</a>
+      <router-link to="/provenance/create" class="navbar-item">
+        Upload Artwork
+      </router-link>
+      <!-- <a href="#/provenance/create">Upload Artwork</a> -->
     </li>
   </ul>
 </aside>

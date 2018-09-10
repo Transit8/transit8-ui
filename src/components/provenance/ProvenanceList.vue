@@ -35,15 +35,12 @@ export default {
   },
   mounted () {
     console.log('Running App version ', process.env)
-    this.provenanceRecords = provenanceService.getProvenanceRecordsInLS()
     let $elfist = this
-    setTimeout(function timer () {
-      // waiting for the records to load
-      $elfist.provenanceRecords = provenanceService.getProvenanceRecordsInLS()
+    provenanceService.getProvenanceRecordsInLS().then((provenanceRecords) => {
+      $elfist.provenanceRecords = provenanceRecords
       $elfist.numbResults = $elfist.provenanceRecords.length
-    }, 2000)
+    })
 
-    this.numbResults = this.provenanceRecords.length
     this.userData = provenanceService.getUserData()
     exchangeRatesService.fetchFiatRates().then((fiatRates) => {
       this.fiatRates = fiatRates

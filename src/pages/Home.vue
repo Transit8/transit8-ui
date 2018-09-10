@@ -44,28 +44,31 @@ export default {
         })
       }
     })
-
     this.fetchStories()
     this.fetchSlides()
   },
   methods: {
     searchIndex: function (index, title) {
-      let $elfie = this
+      let $self = this
       searchIndexService.searchIndex('art', 'title', title)
         .then((results) => {
-          $elfie.provenanceRecords = []
+          $self.provenanceRecords = []
           _.forEach(results, function (indexData) {
             provenanceService.getRecordForSearch(indexData)
               .then((record) => {
                 if (record && record.indexData && record.indexData.id) {
-                  $elfie.provenanceRecords[ index ] = record
-                  $elfie.artworks[ index ].id = record.indexData.id
-                  $elfie.artworks[ index ].title = record.indexData.title
-                  $elfie.artworks[ index ].caption = record.indexData.uploader
+                  $self.provenanceRecords[ index ] = record
+                  let dataUrl = ''
                   if (record.provData.artwork && record.provData.artwork && record.provData.artwork.length > 0) {
-                    $elfie.artworks[ index ].image = record.provData.artwork[ 0 ].dataUrl
+                    dataUrl = record.provData.artwork[ 0 ].dataUrl
                   }
-                  // $elfie.$emit('update:numbResults', $elfie.provenanceRecords.length)
+                  $self.artworks.push({
+                    id: record.indexData.id,
+                    title: record.indexData.title,
+                    caption: record.indexData.uploader,
+                    image: dataUrl
+                  })
+                  // $self.$emit('update:numbResults', $self.provenanceRecords.length)
                 }
               })
               .catch(e => {

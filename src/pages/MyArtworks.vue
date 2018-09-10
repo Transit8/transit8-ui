@@ -17,6 +17,10 @@
 
 <script>
 import ArtworksList from '../components/artworks/ArtworksList'
+import provenanceService from '@/services/provenance/ProvenanceService'
+// import ProvenanceItemBar from '@/components/provenance/ProvenanceItemBar'
+import exchangeRatesService from '@/services/exchangeRatesService'
+import _ from 'lodash'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -24,57 +28,40 @@ export default {
   components: { ArtworksList },
   data () {
     return {
-      artworks: [
-        {
-          id: '1',
-          image: '/static/images/artwork1.jpg',
-          caption: 'First Last (name)',
-          title: 'Untitled, 2018',
-        },
-        {
-          id: '1',
-          image: '/static/images/artwork2.jpg',
-          caption: 'First Last (name)',
-          title: 'Untitled, 2018',
-        },
-        {
-          id: '1',
-          image: '/static/images/artwork3.jpg',
-          caption: 'First Last (name)',
-          title: 'Untitled, 2018',
-        },
-        {
-          id: '1',
-          image: '/static/images/artwork4.jpg',
-          caption: 'First Last (name)',
-          title: 'Untitled, 2018',
-        },
-        {
-          id: '1',
-          image: '/static/images/artwork5.jpg',
-          caption: 'First Last (name)',
-          title: 'Untitled, 2018',
-        },
-        {
-          id: '1',
-          image: '/static/images/artwork6.jpg',
-          caption: 'First Last (name)',
-          title: 'Untitled, 2018',
-        },
-        {
-          id: '1',
-          image: '/static/images/artwork1.jpg',
-          caption: 'First Last (name)',
-          title: 'Untitled, 2018',
-        },
-        {
-          id: '1',
-          image: '/static/images/artwork2.jpg',
-          caption: 'First Last (name)',
-          title: 'Untitled, 2018',
-        },
-      ]
+      artworks: []
     }
-  }
+  },
+  mounted () {
+    console.log('Running App version ', process.env)
+    let $elfist = this
+    provenanceService.getProvenanceRecordsInLS().then((provenanceRecords) => {
+      $elfist.provenanceRecords = provenanceRecords
+      $elfist.numbResults = $elfist.provenanceRecords.length
+      _.forEach(provenanceRecords, function (record) {
+        let dataUrl = '/static/images/artwork1.jpg'
+        if (record.provData && record.provData.artwork && record.provData.artwork.length > 0) {
+          dataUrl = record.provData.artwork[0].dataUrl
+        }
+        $elfist.artworks.push({
+          id: record.indexData.id,
+          caption: record.indexData.uploader,
+          image: dataUrl,
+          title: record.indexData.title,
+          showRegistration: true,
+          // forSale: record.indexData.saleData.soid === 1,
+          // forAuction: record.indexData.saleData.soid === 2,
+        })
+      })
+    })
+
+    this.userData = provenanceService.getUserData()
+    exchangeRatesService.fetchFiatRates().then((fiatRates) => {
+      this.fiatRates = fiatRates
+    })
+    exchangeRatesService.fetchCoinPair('eth_btc').then((ethToBtc) => {
+      this.ethToBtc = ethToBtc
+    })
+  },
+
 }
 </script>

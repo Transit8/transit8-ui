@@ -45,7 +45,7 @@
       </p>
     </div>
     <nav class="has-text-right" v-if="allowEdit">
-        <a :href="'#/provenance/edit/'+provenanceRecord.indexData.id">edit</a> |
+      <a :href="'#/provenance/edit/'+provenanceRecord.indexData.id">edit</a> |
     </nav>
   </div>
 </article>
@@ -58,7 +58,7 @@ import ProvenanceSellersInfo from '@/components/provenance/sales/ProvenanceSelle
 import moment from 'moment'
 
 export default {
-  props: ['provenanceRecord', 'userData'],
+  props: ['provenanceRecord', 'username'],
   data () {
     return {
       allowEdit: false,
@@ -67,8 +67,8 @@ export default {
   },
   mounted () {
     this.searching = (this.$route.name === 'marketSearch')
-    if (this.userData) {
-      this.allowEdit = this.userData.username === this.provenanceRecord.indexData.uploader
+    if (this.username) {
+      this.allowEdit = this.username === this.provenanceRecord.indexData.uploader
     }
   },
   events: {
