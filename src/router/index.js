@@ -7,6 +7,7 @@ import Artworks from '../pages/Artworks'
 import Artwork from '../pages/Artwork'
 import Artists from '../pages/Artists'
 import Artist from '../pages/Artist'
+import HowItWorks from '../pages/HowItWorks'
 import Resources from '../pages/Resources'
 import Search from '../pages/Search'
 import MyArtworks from '../pages/MyArtworks'
@@ -211,6 +212,11 @@ const router = new Router({
       name: 'artistDetails',
       component: Artist,
       meta: { requiresAuth: true },
+    },
+    {
+      path: '/how-it-works',
+      name: 'HowItWorks',
+      component: HowItWorks,
     },
     {
       path: '/resources',

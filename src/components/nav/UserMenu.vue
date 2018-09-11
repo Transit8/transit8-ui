@@ -56,19 +56,22 @@
 
     <div v-if="!cantLogIn">
       <uiv-modal :value="isModalActive" :append-to-body="true">
-        <div slot="title"><i class="glyphicon glyphicon-heart"></i> Login</div>
-
-        <p>Login to brightblock uses your own id.</p>
-        <p>You can get one from <a href="https://blockstack.org">blockstack</a>!</p>
-
+        <div slot="title"><h1 class="login-modal-title">Login</h1></div>
+        <div class="login-modal-body">
+          <p>Login to brightblock uses your own id.</p>
+          <p>You can get one from <a href="https://blockstack.org">blockstack</a>!</p>
+          <span class="icon-smile"></span>
+        </div>
         <div slot="footer">
-          <button class="btn btn-primary" v-on:click="closeModal">Cancel</button>
-          <button class="btn btn-success is-pulled-right" v-on:click="loginMultiPlayer">Login</button>
-
-          <p class="is-size-7">
-            <a href="#" @click.prevent="login">Signin</a> without multiplayer support if your zone file is linked
-            to dropbox or you have an anonymous address.
-          </p>
+        <div class="login-modal-footer">
+          <button class="btn btn-block btn-white-outline" v-on:click="closeModal">Cancel</button>
+          <button class="btn btn-block btn-black" v-on:click="loginMultiPlayer">Login</button>
+        </div>
+        <!-- TO DO - paragraph below is not in design, remove if not neccessary -->
+        <p class="text-left">
+          <a href="#" @click.prevent="login"><u>Signin</u></a> without multiplayer support if your zone file is linked
+          to dropbox or you have an anonymous address.
+        </p>
         </div>
       </uiv-modal>
     </div>
