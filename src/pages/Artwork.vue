@@ -72,6 +72,7 @@ import eventBus from '@/services/eventBus'
 // import cacheService from '@/services/cacheService'
 import _ from 'lodash'
 import ethService from '@/services/experimental/ethApiService'
+import searchIndexService from '@/services/searchindex/SearchIndexService'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -157,9 +158,7 @@ export default {
     let recordId = (this.$route && this.$route.params.artworkId) ? parseInt(this.$route.params.artworkId) : undefined
     provenanceService.getProvenanceRecordsInLS(recordId).then((record) => {
       if (!record || !record.provData || !record.indexData.id) {
-        provenanceService.getProvenanceRecordFromUserStorage(recordId).then((record) => {
-          this.setBrokenLink(record)
-        })
+        this.searchIndex(recordId)
       } else {
         this.setBrokenLink(record)
       }
@@ -192,6 +191,28 @@ export default {
           console.log('ProvenanceVue: Unable to lookup ', e)
         })
       })
+    },
+
+    searchIndex: function (recordId) {
+      let $self = this
+      searchIndexService.searchIndex('art', 'id', recordId)
+        .then((results) => {
+          $self.provenanceRecords = []
+          _.forEach(results, function (indexData) {
+            provenanceService.getRecordForSearch(indexData)
+              .then((record) => {
+                if (record && record.indexData && record.indexData.id) {
+                  $self.setBrokenLink(record)
+                }
+              })
+              .catch(e => {
+                console.log('Unable to get from: ', indexData)
+              })
+          })
+        })
+        .catch(e => {
+          console.log('Unable to contact search index.', e)
+        })
     },
 
     setRegData: function (record, artwork) {
