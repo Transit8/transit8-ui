@@ -57,6 +57,7 @@
       display: inline-block;
       font-size: 15px;
       a {
+        color: $grey;
         padding: 20px 5px;
         &:hover, &:focus, &:active {
           color: $white;

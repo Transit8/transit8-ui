@@ -60,6 +60,9 @@ section {
   &.divider-white {
     border-bottom: 1px solid $white;
   }
+  &.divider-grey {
+    border-bottom: 1px solid $grey;
+  }
 }
 
 .spacer {
@@ -744,6 +747,29 @@ footer {
 
 .my-profile {
   font-size: 18px;
+}
+
+/* Results List */
+
+.result-item {
+  padding-top: 20px;
+  padding-bottom: 20px;
+
+  p { margin-bottom: 0; }
+
+  .col-description {
+    padding-right: 80px;
+    &:after {
+      content: "\e907";
+      font-family: 'icomoon';
+      position: absolute;
+      right: 15px;
+      font-size: 30px;
+      line-height:30px;
+      color: $grey;
+      top: calc(50% - 15px);
+    }
+  }
 }
 
 @media(max-width: 1280px) {

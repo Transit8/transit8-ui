@@ -3,12 +3,8 @@
     <div class="container wide">
       <div class="row">
         <div class="col-sm-12 pt-120">
-          <h1 class="innerpage">Search results for: {{ queryString }} <span>Results found: {{results.length}}</span></h1>
-          <div class="container-fluid footer-bottom">
-            <div class="col-sm-12">
-              <artworks-list :artworks="results" :show-load-button="false" :chunks="6"/>
-            </div>
-          </div>
+          <h1 class="innerpage">Search results for: {{ queryString }} ({{results.length}})</h1>
+            <results-list :artworks="results" :show-load-button="false" :chunks="6"/>
         </div>
       </div>
     </div>
@@ -16,7 +12,7 @@
 </template>
 
 <script>
-import ArtworksList from '../components/artworks/ArtworksList'
+import ResultsList from '../components/artworks/ResultsList'
 import provenanceService from '@/services/provenance/ProvenanceService'
 import searchIndexService from '@/services/searchindex/SearchIndexService'
 // import ProvenanceItemBar from '@/components/provenance/ProvenanceItemBar'
@@ -26,7 +22,7 @@ import _ from 'lodash'
 // noinspection JSUnusedGlobalSymbols
 export default {
   name: 'Search',
-  components: { ArtworksList },
+  components: { ResultsList },
   data () {
     return {
       userData: {},
