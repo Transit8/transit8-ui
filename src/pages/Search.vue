@@ -3,7 +3,7 @@
     <div class="container wide">
       <div class="row">
         <div class="col-sm-12 pt-120">
-          <h1 class="innerpage">Search results for: {{ queryString }} ({{results.length}})</h1>
+          <h1 class="innerpage mb-0">Search results for: {{ queryString }} ({{results.length}})</h1>
             <results-list :artworks="results" :show-load-button="false" :chunks="6"/>
         </div>
       </div>

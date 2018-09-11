@@ -8,7 +8,7 @@
         <p class="art-title">{{artwork.title}}</p>
         <p class="artwork-caption">{{artwork.caption}}</p>
     </div>
-    <div class="col-sm-7">
+    <div class="col-sm-7 col-description">
       <!--  TO DO: add real decription with keywords -->
      <!--   <p> Edition 1/1, Photography</p>
             <p>At vero eos et accusamus et iusto odio dignissimos...</p>
