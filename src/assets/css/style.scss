@@ -69,6 +69,8 @@ section {
   height: $section-padding;
 }
 
+.spacer-40 { height: 40px; }
+
 .spacer-xxsmall {
   height: 10px;
 }
@@ -255,6 +257,15 @@ button, .button, .btn {
     background: $grey_medium;
   }
 }
+
+.btn-white-outline {
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+  &:hover, &:focus, &:active { color: $grey-medium; }
+}
+
+.btn-black { background-color: black; color: white; }
 
 h1, .h1 {
   &.innerpage {
@@ -788,6 +799,28 @@ footer {
 
 }
 
+/* Login modal */
+
+//this resets all modals
+.modal-header { border-bottom: 0; }
+.modal-footer { border-top: 0; }
+
+//login modal styles
+.login-modal-title { text-align: center; font-size: 60px; font-weight: bold; margin-bottom: 0; margin-top: 45px; }
+.login-modal-body {
+  text-align: center;
+  p { font-size: 30px; line-height: normal; margin-bottom: 5px; }
+  .icon-smile {
+    display: block;
+    font-size: 220px;
+    margin: 60px 0;
+  }
+}
+.login-modal-footer {
+  padding-bottom: 20px;
+  button { height: 60px; font-size: 30px;line-height: 1.8; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 35px; }
+}
+
 @media(max-width: 1280px) {
   .title-big {
     font-size: 52px;
@@ -1047,6 +1080,20 @@ footer {
       }
     }
   }
+
+//login modal styles
+.login-modal-title { font-size: 42px; margin-top: 30px; }
+.login-modal-body {
+  p { font-size: 21px; margin-bottom: 5px; }
+  .icon-smile {
+    font-size: 120px;
+    margin: 40px 0;
+  }
+}
+.login-modal-footer {
+  padding-bottom: 20px;
+  button { height: 40px; font-size: 24px;line-height: 1.5;margin-bottom: 15px; }
+}
 
 }
 
