@@ -772,6 +772,22 @@ footer {
   }
 }
 
+/* 404 - Blockchain settings */
+
+.blockchain-settings {
+
+  .title, .subtext { font-size: 30px; letter-spacing: 1px; line-height: normal; margin-bottom: 42px; }
+  .strong { font-weight: bold; }
+  a { text-decoration: underline; 
+    &:hover, &:focus, &:active { color: $grey-medium; }
+  }
+  p { font-size: 18px; margin-bottom: 24px; }
+  button { height: 64px; line-height: 2; font-size: 30px; margin-top: 30px; color: black;
+    &:hover, &:focus, &:active { background-color: $yellow-hover; color: black; }
+  }
+
+}
+
 @media(max-width: 1280px) {
   .title-big {
     font-size: 52px;
