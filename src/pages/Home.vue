@@ -39,44 +39,29 @@ export default {
     /**
      * Fetch most recently registered artworks from ethereum.
      */
-    fetchArtworks () {
-      let $elfie = this
-      $elfie.blockchainResults = []
+    fetchArtworks: function () {
+      let $elfist = this
+      $elfist.blockchainResults = []
       ethService.fetchNumberOfItems().then((numberOfItems) => {
-        this.numberOfItems = numberOfItems
-        for (let index = numberOfItems; index > 0; index--) {
-          ethService.fetchItemByIndex(index, 0).then((item) => {
-            let title = item[0]
-            let searched = false
-            if (title && title.length > 0) {
-              console.log('Blockchain result: ' + title + ' owner: ' + item[1])
-              $elfie.blockchainResults.push({index: index, title: item[0]})
-              if ($elfie.blockchainResults.length === 6 && !searched) {
-                $elfie.fetchArtwork(index, $elfie.blockchainResults)
-                searched = true
+        for (let index = 0; index < numberOfItems; index++) {
+          $elfist.index = numberOfItems
+          setTimeout(function timer () {
+            $elfist.index--
+            ethService.fetchItemByIndex($elfist.index, 0).then((item) => {
+              let title = item[0]
+              let searched = false
+              if (title && title.length > 0) {
+                console.log('Blockchain result: ' + title + ' owner: ' + item[1] + ' index: ' + index)
+                $elfist.blockchainResults.push({index: index, title: item[0]})
+                if ($elfist.blockchainResults.length === 6 && !searched) {
+                  $elfist.fetchArtwork(index, $elfist.blockchainResults)
+                  searched = true
+                }
+              // $elfist.fetchArtwork(index, item[0])
               }
-              // $elfie.fetchArtwork(index, item[0])
-            }
-          })
+            })
+          }, 250)
         }
-        /*
-        $elfie.index = -1
-        setTimeout(function timer () {
-          $elfie.index++
-          ethService.fetchItemByIndex($elfie.index).then((item) => {
-            let title = item[0]
-            console.log('Blockchain result: ' + title + ' owner: ' + item[1])
-            if (title && title.length > 0) {
-              if (index < 7) {
-                $elfie.blockchainResults.push({index: index, title: item[0]})
-              }
-              if ($elfie.blockchainResults.length === 6) {
-                $elfie.fetchArtwork(index, $elfie.blockchainResults)
-              }
-            }
-          })
-        }, 500)
-        */
       })
     },
 
@@ -84,8 +69,8 @@ export default {
       let $self = this
       _.forEach(results, function (result) {
         let title = result.title
+        console.log('Searching for item with title: ' + title + ' index: ' + index)
         searchIndexService.searchIndex('art', 'title', '"' + title + '"').then((results) => {
-          console.log('Searching for item with title found: ', results)
           let indexData = results[0]
           provenanceService.getRecordForSearch(indexData).then((record) => {
             if (record && record.indexData && record.indexData.id) {

@@ -62,7 +62,6 @@ import cacheService from '@/services/cacheService'
 export default {
   data () {
     return {
-      tokbox: {},
       userMessages: messagingService.messages,
       messageSignal: {time: 'then', message: 'happy?'},
       username: 'anon',
@@ -108,14 +107,6 @@ export default {
   methods: {
     placeBid: function () {
       webrtcService.sendBidSignal(this.recordId, this.saleData.amount + this.saleData.increment)
-    },
-    sendMessageSignal (event) {
-      event.preventDefault()
-      var now = moment({}).valueOf()
-      this.messageSignal.when = now
-      this.messageSignal.who = this.username
-      this.messageSignal.recordId = this.provenanceId
-      messagingService.sendMessageSignal(this.messageSignal)
     },
     parseAppUrl (appUrl) {
       return provenanceService.parseAppUrl(appUrl)
