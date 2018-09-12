@@ -63,8 +63,8 @@ export default {
       queryString: null,
       languages: [
         { name: 'English', iso: 'en' },
-        { name: 'Korean', iso: 'ko' },
-        { name: 'Arabic', iso: 'ar' },
+        // { name: 'Korean', iso: 'ko' },
+        // { name: 'Arabic', iso: 'ar' },
       ],
       userData: {},
     }
