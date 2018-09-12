@@ -4,17 +4,9 @@
       <div class="row">
         <div class="col-sm-12 pt-120">
           <h1 class="innerpage">My Artworks <span>Artworks added: {{artworks.length}}</span></h1>
-          <div class="container-fluid footer-bottom">
-            <div class="col-sm-12">
-              <artworks-list :artworks="artworks" :show-load-button="false" :chunks="6"/>
-            </div>
-          </div>
-        </div>
-        <h1 class="innerpage">Sold Artworks <span>Artworks sold: {{soldArtworks.length}}</span></h1>
-        <div class="container-fluid footer-bottom">
-          <div class="col-sm-12">
-            <artworks-list :artworks="soldArtworks" :show-load-button="false" :chunks="6"/>
-          </div>
+          <artworks-list :artworks="artworks" :show-load-button="false" :chunks="6"/>
+          <h1 class="innerpage mt-50">Sold Artworks <span>Artworks sold: {{soldArtworks.length}}</span></h1>
+          <artworks-list :artworks="soldArtworks" :show-load-button="false" :chunks="6"/>
         </div>
       </div>
     </div>
