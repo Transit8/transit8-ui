@@ -206,7 +206,7 @@ export default {
       let $elfist = this
       $elfist.record = record
       let user = provenanceService.getUserProfile()
-      webrtcService.startSession($elfist.artist.username, $elfist.artworkId)
+      webrtcService.startSession(user.username, $elfist.artworkId)
       let images = []
       if (record.provData && record.provData.artwork && record.provData.artwork.length > 0) {
         _.forEach(record.provData.artwork, function (artwork) {

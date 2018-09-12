@@ -321,9 +321,13 @@ const provenanceService = {
   getArtistProfile: function (record) {
     let profile
     if (record) {
+      let user = provenanceService.getUserProfile()
+      if (record.indexData.uploader === user.username) {
+
+      }
       profile = {
         username: record.indexData.uploader,
-        name: record.indexData.uploader,
+        name: (record.indexData.uploader === user.username) ? user.name : record.indexData.uploader,
         description: 'Anon',
         image: '/static/images/artist_preview.png',
       }
