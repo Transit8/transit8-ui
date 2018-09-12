@@ -30,55 +30,84 @@ export default {
     }
   },
   mounted () {
-    let $elfie = this
-    $elfie.registrations = []
-    ethService.fetchNumberOfItems().then((numberOfItems) => {
-      this.numberOfItems = numberOfItems
-      for (let index = numberOfItems; index > (numberOfItems - 6); index--) {
-        if (index < 0) {
-          break
-        }
-        $elfie = this
-        ethService.fetchItemByIndex(index, 0).then((item) => {
-          $elfie.searchIndex(index, item[0])
-        })
-      }
-    })
+    this.fetchArtworks()
     this.fetchStories()
     this.fetchSlides()
   },
   methods: {
-    searchIndex: function (index, title) {
-      let $self = this
-      searchIndexService.searchIndex('art', 'title', title)
-        .then((results) => {
-          $self.provenanceRecords = []
-          _.forEach(results, function (indexData) {
-            provenanceService.getRecordForSearch(indexData)
-              .then((record) => {
-                if (record && record.indexData && record.indexData.id) {
-                  $self.provenanceRecords[ index ] = record
-                  let dataUrl = ''
-                  if (record.provData.artwork && record.provData.artwork && record.provData.artwork.length > 0) {
-                    dataUrl = record.provData.artwork[ 0 ].dataUrl
-                  }
-                  $self.artworks.push({
-                    id: record.indexData.id,
-                    title: record.indexData.title,
-                    caption: record.indexData.uploader,
-                    image: dataUrl
-                  })
-                  // $self.$emit('update:numbResults', $self.provenanceRecords.length)
-                }
-              })
-              .catch(e => {
-                console.log('Unable to get from: ', indexData)
-              })
+
+    /**
+     * Fetch most recently registered artworks from ethereum.
+     */
+    fetchArtworks () {
+      let $elfie = this
+      $elfie.blockchainResults = []
+      ethService.fetchNumberOfItems().then((numberOfItems) => {
+        this.numberOfItems = numberOfItems
+        for (let index = numberOfItems; index > 0; index--) {
+          ethService.fetchItemByIndex(index, 0).then((item) => {
+            let title = item[0]
+            let searched = false
+            if (title && title.length > 0) {
+              $elfie.blockchainResults.push({index: index, title: item[0]})
+              if ($elfie.blockchainResults.length === 6 && !searched) {
+                $elfie.fetchArtwork(index, $elfie.blockchainResults)
+                searched = true
+              }
+              // $elfie.fetchArtwork(index, item[0])
+            }
           })
-        })
-        .catch(e => {
+        }
+        /*
+        $elfie.index = -1
+        setTimeout(function timer () {
+          $elfie.index++
+          ethService.fetchItemByIndex($elfie.index).then((item) => {
+            let title = item[0]
+            console.log('Blockchain result: ' + title + ' owner: ' + item[1])
+            if (title && title.length > 0) {
+              if (index < 7) {
+                $elfie.blockchainResults.push({index: index, title: item[0]})
+              }
+              if ($elfie.blockchainResults.length === 6) {
+                $elfie.fetchArtwork(index, $elfie.blockchainResults)
+              }
+            }
+          })
+        }, 500)
+        */
+      })
+    },
+
+    fetchArtwork: function (index, results) {
+      let $self = this
+      _.forEach(results, function (result) {
+        let title = result.title
+        searchIndexService.searchIndex('art', 'title', title).then((results) => {
+          // console.log('Searching for item with title found: ', results)
+          let indexData = results[0]
+          provenanceService.getRecordForSearch(indexData).then((record) => {
+            if (record && record.indexData && record.indexData.id) {
+              let dataUrl = ''
+              if (record.provData.artwork && record.provData.artwork && record.provData.artwork.length > 0) {
+                dataUrl = record.provData.artwork[ 0 ].dataUrl
+              }
+              if (dataUrl && dataUrl.length > 0) {
+                $self.artworks.push({
+                  id: record.indexData.id,
+                  title: record.indexData.title,
+                  caption: record.indexData.uploader,
+                  image: dataUrl
+                })
+              }
+            }
+          }).catch(e => {
+            console.log('Unable to get from: ', indexData)
+          })
+        }).catch(e => {
           console.log('Unable to contact search index.', e)
         })
+      })
     },
 
     /**

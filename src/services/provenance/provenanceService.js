@@ -83,26 +83,6 @@ const provenanceService = {
       console.log('No room in local storage for record: ' + file)
     }
   },
-  parseAppUrl: function (appUrl) {
-    if (!appUrl || appUrl.length === 0) {
-      return ''
-    }
-    let showUrl = 'App Url: '
-    if (appUrl.startsWith(':')) {
-      showUrl += appUrl.substring(3)
-    } else if (appUrl.startsWith('http:')) {
-      showUrl += appUrl.substring(7)
-    } else if (appUrl.startsWith('https:')) {
-      showUrl += appUrl.substring(8)
-    } else if (appUrl.startsWith('s:')) {
-      showUrl += appUrl.substring(4)
-    } else if (appUrl.startsWith('p:')) {
-      showUrl += appUrl.substring(4)
-    } else {
-      showUrl += appUrl
-    }
-    return showUrl
-  },
   makeRootFile: function () {
     var now = moment({}).valueOf()
     let newRootFile = {
@@ -157,11 +137,10 @@ const provenanceService = {
                   increment: 0
                 }
               }
-              provData.owner = indexData.uploader
+              provData.blockchainOwner = indexData.uploader
               if (provData && provData.artwork && provData.artwork[0] && provData.artwork[0].dataUrl.length > 0) {
                 let timestamp = '0x' + SHA256(provData.artwork[0].dataUrl).toString()
                 indexData.timestamp = timestamp
-                console.log('Set timestamp: ', indexData.timestamp)
                 ethService.fetchItemByArtHash(timestamp).then((item) => {
                   let myIndexData = _.find(rootFile.records, {timestamp: indexData.timestamp})
                   if (item[1] && item[1].length > 0) {
@@ -170,11 +149,13 @@ const provenanceService = {
                         state: 120,
                         owner: item[1]
                       }
+                      provData.blockchainOwner = item[1]
                     } else {
                       myIndexData.regData = {
                         state: 130,
                         owner: item[1]
                       }
+                      provData.blockchainOwner = item[1]
                       console.log('Found a sold item!!!', indexData, provData)
                     }
                   }
@@ -199,7 +180,7 @@ const provenanceService = {
     return new Promise(function (resolve) {
       let myTimer = setInterval(function () {
         let rootFile = provenanceService.rootFile
-        if (rootFile && provenanceService.state === 'ROOT_PROV_STARTED') {
+        if (rootFile) {
           let results = []
           if (recordId) {
             resolve(provenanceService.getProvenanceRecord(recordId, rootFile))
@@ -209,6 +190,14 @@ const provenanceService = {
             })
             resolve(results)
           }
+          clearInterval(myTimer)
+        } else {
+          var now = moment({}).valueOf()
+          let newRootFile = {
+            created: now,
+            records: []
+          }
+          provenanceService.rootFile = newRootFile
           clearInterval(myTimer)
         }
       }, 100)
@@ -244,7 +233,7 @@ const provenanceService = {
     // provenanceService.setRegData(record)
     return record
   },
-  getProvenanceRecordFromUserStorage: function (id) {
+  getProvenanceRecordFromSearchIndex: function (id) {
     return new Promise(function (resolve) {
       getFile(provenanceService.ROOT_FILE_GAIA_NAME, {decrypt: false}).then(function (file) {
         if (!file) {
@@ -310,8 +299,43 @@ const provenanceService = {
   getUserData: function () {
     return loadUserData()
   },
-  getRootFileName: function () {
-    return provenanceService.ROOT_FILE_GAIA_NAME
+  getUserProfile: function () {
+    let profile
+    let blockstackUser = loadUserData()
+    if (!blockstackUser) {
+      profile = {
+        username: 'unknown',
+        name: 'Anon',
+        description: 'unknown person',
+        image: '/static/images/artist_preview.png',
+      }
+    }
+    profile = {
+      username: blockstackUser.username,
+      name: blockstackUser.profile.name,
+      description: blockstackUser.profile.description,
+      image: (blockstackUser.profile.avatarUrl) ? blockstackUser.profile.avatarUrl : '/static/images/artist_preview.png',
+    }
+    return profile
+  },
+  getArtistProfile: function (record) {
+    let profile
+    if (record) {
+      profile = {
+        username: record.indexData.uploader,
+        name: record.indexData.uploader,
+        description: 'Anon',
+        image: '/static/images/artist_preview.png',
+      }
+    } else {
+      profile = {
+        username: 'unknown artist',
+        name: 'unknown artist',
+        description: 'unknown artist',
+        image: '/static/images/artist_preview.png',
+      }
+    }
+    return profile
   },
   /**
    *  Fetch the users zone file - the blockstack zone which contains the loaction
@@ -331,7 +355,7 @@ const provenanceService = {
   },
   fetchRootfile: function (gaiaUrl) {
     return new Promise(function (resolve) {
-      let url = gaiaUrl + provenanceService.getRootFileName()
+      let url = gaiaUrl + provenanceService.ROOT_FILE_GAIA_NAME
       axios.get(url)
         .then(function (response) {
           resolve(response)
@@ -346,19 +370,19 @@ const provenanceService = {
       throw new Error('Index data is corrupt: ', indexData)
     }
     if (!provData || !provData.id) {
-      throw new Error('Provenance data is corrupt: ', indexData)
+      throw new Error('Provenance data is corrupt: ', provData)
     }
-    if (!provData.id === indexData.id) {
+    if (provData.id !== indexData.id) {
       throw new Error('Index data is out of step with provenance data.')
     }
   },
   createOrUpdateRecord: function (indexData, provData) {
     return new Promise(function (resolve) {
       provenanceService.checkData(indexData, provData)
-      let rootFile = provenanceService.rootFile
+      // let rootFile = provenanceService.rootFile
       let idNumber = Number(indexData.id)
       indexData.id = idNumber
-      var index = _.findIndex(rootFile.records, {id: indexData.id})
+      var index = _.findIndex(provenanceService.rootFile.records, {id: indexData.id})
       if (!indexData.saleData) {
         indexData.saleData = {
           soid: 0,
@@ -367,14 +391,19 @@ const provenanceService = {
           increment: 0
         }
       }
+      if (!provData.owners) {
+        provData.owners = [{
+          owner: indexData.uploader,
+          saleData: indexData.saleData,
+        }]
+      }
       // provenanceService.setRegData({indexData: indexData, provData: provData})
       if (index > -1) {
-        rootFile.records.splice(index, 1, indexData)
+        provenanceService.rootFile.records.splice(index, 1, indexData)
       } else {
-        rootFile.records.push(indexData)
+        provenanceService.rootFile.records.push(indexData)
       }
-      putFile(provenanceService.ROOT_FILE_GAIA_NAME, JSON.stringify(rootFile), {encrypt: false}).then(function (message) {
-        provenanceService.rootFile = rootFile
+      putFile(provenanceService.ROOT_FILE_GAIA_NAME, JSON.stringify(provenanceService.rootFile), {encrypt: false}).then(function (message) {
         let fileName = provenanceService.PROVENANCE_FILE_GAIA_SUBPATH + indexData.id + '.json'
         putFile(fileName, JSON.stringify(provData), {encrypt: false})
           .then(function (message) {
@@ -389,11 +418,26 @@ const provenanceService = {
             resolve(provData)
           }).catch(function (e) {
             console.log('Unable to create provenance record in user gaia storage: ', e)
-            resolve({error: 'Unable to create provenance record in user gaia storage: ' + e, rootFile: provenanceService.getRootFileInLS()})
+            resolve({error: 'Unable to create provenance record in user gaia storage: ' + e, rootFile: provenanceService.rootFile})
           })
       }).catch(function (e) {
         console.log('Unable to update root file: ', e)
         resolve({error: 'Unable to update root file: ' + e, rootFile: provenanceService.getRootFileInLS()})
+      })
+    })
+  },
+  getRecordFromSearchIndexById: function (id) {
+    return new Promise(function (resolve) {
+      searchIndexService.searchIndex('art', 'id', id).then((records) => {
+        provenanceService.getRecordForSearch(records[0]).then((record) => {
+          resolve(record)
+        }).catch(e => {
+          console.log('Unable to get item by id: ' + id, e)
+          resolve({})
+        })
+      }).catch(e => {
+        console.log('Unable to contact search index.', e)
+        resolve({})
       })
     })
   },
@@ -417,6 +461,7 @@ const provenanceService = {
             resolve(record)
           }).catch(function (e) {
             console.log('Unable to add record: ' + record.indexData.id, e)
+            resolve(record)
           })
       }
     })
@@ -465,6 +510,50 @@ const provenanceService = {
         resolve(tempRegData)
       }
     })
+  },
+  parseAppUrl: function (appUrl) {
+    if (!appUrl || appUrl.length === 0) {
+      return ''
+    }
+    let showUrl = 'App Url: '
+    if (appUrl.startsWith(':')) {
+      showUrl += appUrl.substring(3)
+    } else if (appUrl.startsWith('http:')) {
+      showUrl += appUrl.substring(7)
+    } else if (appUrl.startsWith('https:')) {
+      showUrl += appUrl.substring(8)
+    } else if (appUrl.startsWith('s:')) {
+      showUrl += appUrl.substring(4)
+    } else if (appUrl.startsWith('p:')) {
+      showUrl += appUrl.substring(4)
+    } else {
+      showUrl += appUrl
+    }
+    return showUrl
+  },
+  convertToArtwork: function (record) {
+    let dataUrl = '/static/images/artwork1.jpg'
+    if (record.provData.artwork && record.provData.artwork.length > 0) {
+      dataUrl = record.provData.artwork[0].dataUrl
+    }
+    let owner = record.indexData.uploader
+    try {
+      owner = record.provData.owners[record.provData.owners.length - 1].owner
+    } catch (err) {
+      owner = record.indexData.uploader
+    }
+    let artwork = {
+      id: record.indexData.id.toString(),
+      caption: record.indexData.uploader,
+      state: record.indexData.regData.state,
+      owner: owner,
+      image: dataUrl,
+      title: record.indexData.title,
+      showRegistration: true,
+      // forSale: record.indexData.saleData.soid === 1,
+      // forAuction: record.indexData.saleData.soid === 2,
+    }
+    return artwork
   },
 }
 export default provenanceService

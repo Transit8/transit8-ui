@@ -10,6 +10,12 @@
             </div>
           </div>
         </div>
+        <h1 class="innerpage">Sold Artworks <span>Artworks sold: {{soldArtworks.length}}</span></h1>
+        <div class="container-fluid footer-bottom">
+          <div class="col-sm-12">
+            <artworks-list :artworks="soldArtworks" :show-load-button="false" :chunks="6"/>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -18,7 +24,6 @@
 <script>
 import ArtworksList from '../components/artworks/ArtworksList'
 import provenanceService from '@/services/provenance/ProvenanceService'
-// import ProvenanceItemBar from '@/components/provenance/ProvenanceItemBar'
 import exchangeRatesService from '@/services/exchangeRatesService'
 import _ from 'lodash'
 
@@ -33,41 +38,26 @@ export default {
     }
   },
   mounted () {
-    console.log('Running App version ', process.env)
-    let $elfist = this
-    provenanceService.getProvenanceRecordsInLS().then((provenanceRecords) => {
-      $elfist.provenanceRecords = provenanceRecords
-      $elfist.numbResults = $elfist.provenanceRecords.length
-      _.forEach(provenanceRecords, function (record) {
-        let dataUrl = '/static/images/artwork1.jpg'
-        if (record.provData) {
-          if (record.provData.artwork && record.provData.artwork.length > 0) {
-            dataUrl = record.provData.artwork[0].dataUrl
-          }
-          let artwork = {
-            id: record.indexData.id,
-            caption: record.indexData.uploader,
-            state: record.indexData.regData.state,
-            owner: record.indexData.regData.owner,
-            image: dataUrl,
-            title: record.indexData.title,
-            showRegistration: true,
-            // forSale: record.indexData.saleData.soid === 1,
-            // forAuction: record.indexData.saleData.soid === 2,
-          }
+    let $self = this
+    provenanceService.getProvenanceRecordsInLS().then((records) => {
+      _.forEach(records, function (record) {
+        try {
+          let artwork = provenanceService.convertToArtwork(record)
           if (record.indexData.regData && record.indexData.regData.state === 130) {
-            // $elfist.artworks.push(artwork)
+            $self.soldArtworks.push(artwork)
           } else {
-            $elfist.artworks.push(artwork)
+            $self.artworks.push(artwork)
           }
+        } catch (e) {
+          console.log('Skipping record: ', e)
         }
       })
     })
 
-    this.userData = provenanceService.getUserData()
     exchangeRatesService.fetchFiatRates().then((fiatRates) => {
       this.fiatRates = fiatRates
     })
+
     exchangeRatesService.fetchCoinPair('eth_btc').then((ethToBtc) => {
       this.ethToBtc = ethToBtc
     })

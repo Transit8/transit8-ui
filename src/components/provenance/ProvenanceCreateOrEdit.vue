@@ -283,7 +283,7 @@ export default {
       this.spinner = true
       provenanceService.createOrUpdateRecord(this.indexData, this.provData).then((records) => {
         console.log(records)
-        this.$router.push('/provenance/list')
+        this.$router.push('/my-artworks')
       })
         .catch(e => {
           console.log('ProvenanceVue: Unable to lookup ', e)

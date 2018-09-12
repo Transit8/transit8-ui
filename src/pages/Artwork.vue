@@ -25,7 +25,7 @@
     </section>
     <!-- /#pdp slider -->
 
-    <buy-artwork-form :artwork="artwork" @buy="buyArtwork()" v-if="artwork.forSale && !owner"/>
+    <buy-artwork-form :artwork="artwork" :owner="owner" @buy="buyArtwork()" v-if="artwork.forSale"/>
     <bid-artwork-form :artwork="artwork" @bid="bidArtwork($event)" v-if="artwork.forAuction"/>
     <!-- /#pdp-action -->
 
@@ -72,7 +72,6 @@ import eventBus from '@/services/eventBus'
 // import cacheService from '@/services/cacheService'
 import _ from 'lodash'
 import ethService from '@/services/experimental/ethApiService'
-import searchIndexService from '@/services/searchindex/SearchIndexService'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -91,8 +90,6 @@ export default {
       tokbox: {},
       userMessages: messagingService.messages,
       messageSignal: {time: 'then', message: 'happy?'},
-      username: 'anon',
-      loggedIn: false,
       webrtcState: 0,
       owner: false,
       artworkId: (this.$route && this.$route.params.artworkId) ? parseInt(this.$route.params.artworkId) : undefined,
@@ -145,23 +142,11 @@ export default {
   },
   created () {
     window.addEventListener('beforeunload', this.stopPublishing)
-    let userData = provenanceService.getUserData()
-    if (userData && userData.username) {
-      this.loggedIn = true
-      this.username = userData.username
-      this.artist = {
-        name: userData.profile.name,
-        description: userData.profile.description,
-        image: (userData.profile.avatarUrl) ? userData.profile.avatarUrl : '/static/images/artist_preview.png',
-      }
-    }
     let recordId = (this.$route && this.$route.params.artworkId) ? parseInt(this.$route.params.artworkId) : undefined
-    provenanceService.getProvenanceRecordsInLS(recordId).then((record) => {
-      if (!record || !record.provData || !record.indexData.id) {
-        this.searchIndex(recordId)
-      } else {
-        this.setBrokenLink(record)
-      }
+    provenanceService.getRecordFromSearchIndexById(recordId).then((record) => {
+      this.artist = provenanceService.getArtistProfile(record)
+      this.user = provenanceService.getUserProfile(record)
+      this.setRecord(record)
     })
     let $elfie = this
     // eventBus.$on('signal-in-message', function (payLoad) {
@@ -179,12 +164,28 @@ export default {
   },
   methods: {
     buyArtwork () {
-      let buyer = this.username
-      let seller = this.record.indexData.uploader
+      let buyer = this.user.username
+      let seller = this.artist.username
+      if (!buyer || !seller || buyer === seller) {
+        return
+      }
       ethService.buy(this.record.indexData.title, seller, buyer).then((item) => {
         this.record.indexData.uploader = buyer
         this.record.indexData.gaiaUrl = null
         this.record.indexData.appUrl = null
+        this.record.indexData.saleData = null
+
+        if (!this.record.provData.owners) {
+          this.record.provData.owners = [{
+            owner: this.record.indexData.uploader,
+            saleData: this.record.indexData.saleData,
+          }]
+        }
+        this.record.provData.owners.push({
+          owner: this.record.indexData.uploader,
+          saleData: this.record.indexData.saleData,
+        })
+
         provenanceService.createOrUpdateRecord(this.record.indexData, this.record.provData).then((records) => {
           this.spinner = false
         }).catch(e => {
@@ -193,32 +194,10 @@ export default {
       })
     },
 
-    searchIndex: function (recordId) {
-      let $self = this
-      searchIndexService.searchIndex('art', 'id', recordId)
-        .then((results) => {
-          $self.provenanceRecords = []
-          _.forEach(results, function (indexData) {
-            provenanceService.getRecordForSearch(indexData)
-              .then((record) => {
-                if (record && record.indexData && record.indexData.id) {
-                  $self.setBrokenLink(record)
-                }
-              })
-              .catch(e => {
-                console.log('Unable to get from: ', indexData)
-              })
-          })
-        })
-        .catch(e => {
-          console.log('Unable to contact search index.', e)
-        })
-    },
-
     setRegData: function (record, artwork) {
       provenanceService.setRegData(record).then((regData) => {
         record.indexData.regData = regData
-        if (regData.state === 120 && this.username !== regData.currentOwner) {
+        if (regData.state === 120 && this.artist.username !== regData.currentOwner) {
           console.log('found a bought item!')
           console.log('regData: ', regData)
         }
@@ -229,12 +208,11 @@ export default {
       console.log(value)
     },
 
-    setBrokenLink (record) {
-      // let recordId = (this.$route && this.$route.params.artworkId) ? parseInt(this.$route.params.artworkId) : undefined
+    setRecord (record) {
       let $elfist = this
       $elfist.record = record
-      $elfist.owner = record.indexData.uploader === this.username
-      webrtcService.startSession($elfist.username, $elfist.artworkId)
+      $elfist.owner = record.indexData.uploader === this.artist.username
+      webrtcService.startSession($elfist.artist.username, $elfist.artworkId)
       let images = []
       if (record.provData && record.provData.artwork && record.provData.artwork.length > 0) {
         _.forEach(record.provData.artwork, function (artwork) {

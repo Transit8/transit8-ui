@@ -78,7 +78,7 @@ import ProvenanceSellersInfo from '@/components/provenance/sales/ProvenanceSelle
 import moment from 'moment'
 
 export default {
-  props: ['provenanceRecord', 'userData'],
+  props: ['provenanceRecord', 'username'],
   data () {
     return {
       allowEdit: false,
