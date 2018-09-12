@@ -1,5 +1,5 @@
 <template>
-  <ul class="list-inline language-menu col-md-4">
+  <ul class="list-inline language-menu col-md-5">
     <li v-for="(lang, index) of languages" :key="index">
       <a href="#" @click.prevent="changeLanguage(lang.iso)">{{lang.name}}</a>
     </li>

@@ -88,6 +88,7 @@
       top: 50%;
       right: 24px;
       transform: translateY(-50%);
+      margin-top: 0;
 
       .icon-search {
         font-size: 30px;
@@ -193,9 +194,11 @@
     color: #999999;
     background: transparent;
     border: 0;
+    margin-top:0;
 
     span {
-      font-size: 36px;
+       font-size: 30px;
+       line-height: 1.4;
     }
 
     &:active, &:focus, &:hover, &:focus:active {
@@ -240,7 +243,6 @@
       font-size: 36px;
     }
     .language-menu {
-      text-align: center;
       margin: 0;
     }
   }

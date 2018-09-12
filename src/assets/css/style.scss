@@ -312,6 +312,10 @@ section {
   width: 100%;
   height: $slider-height;
 
+  @media(max-width: 768px) {
+    height: $slider-sm-height;
+  }
+
   .slider {
     @media(max-width: 768px) {
       height: $slider-sm-height;
@@ -707,6 +711,7 @@ footer {
 
     .social {
       text-align: right;
+      .list-inline li { display: inline-block; }
     }
 
   }
@@ -733,6 +738,10 @@ footer {
       height: 82px;
       box-sizing: border-box;
       padding: 0 50px;
+      @media all and (max-width: 768px) {
+        width: 100%;
+        max-width: 400px;
+      }
     }
     input.form-control {
       height: 82px;
@@ -1049,17 +1058,18 @@ footer {
     .action-button {
       margin-top: 7px;
     }
-    footer {
-      position: relative;
+  }
+
+  footer {
+    position: relative;
+    text-align: center;
+    .footer-top, .footer-top > * {
       text-align: center;
-      .footer-top, .footer-top > * {
+    }
+    .footer-bottom {
+      text-align: center;
+      .social {
         text-align: center;
-      }
-      .footer-bottom {
-        text-align: center;
-        .social {
-          text-align: center;
-        }
       }
     }
   }
