@@ -1,34 +1,20 @@
 <template>
-<section class="main-page">
-  <div class="columns">
-    <div class="column is-one-fifth" style="padding: 30px">
-      <ul>
-        <li></li>
-      </ul>
-    </div>
-    <div class="column">
-      <h1 class="title is-1">Blockchain Settings</h1>
-      <p>This application is part of the new decentralised internet based on blockchain technology.</p>
-      <h3 class="title is-5" style="margin-top: 40px;">1. Ethereum Blockchain - Meta Mask Wallet</h3>
-      <div v-if="metamask && metamask.accounts && metamask.accounts.length > 0">
-        <div v-for="(key, value) in metamask.accounts" v-bind:key="key">
-          <p>Account {{ value }} : {{ key }}</p>
+  <section class="black blockchain-settings">
+    <div class="container wide pt-75">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2 col-sm-12">
+          <h1 class="title strong">Yikes! Don’t worry, it’s not a 404 error.</h1>
+          <p class="title strong">We don’t like those either.</p>
+          <p class="subtext">In order to experience the amazing technology that gives you access to a truly decentralized network, take a minute to install <a href="https://metamask.io/" target="_blank">Meta Mask</a> and <a href="https://blockstack.org/" target="_blank">Blockstack</a>.</p>
+          <p>Think of Meta Mask  as your online wallet where you keep your cryptocurrency.</p>
+          <p>We admit it takes some time to figure it out, but promise it’s easier than you think. Besides, all the cool kids are doing it!</p>
+          <p>Blockstack is a piece of next generation internet - one that allows you to be in full control of your own data. With this technology, you will never have to worry about becoming someone’s product - no ads and no user information gathering. We at Sybella believe that all internet should be like this.</p>
+          <p>Know only some of these words? Don’t worry - people in 1990 felt the same way about the internet!</p>
+          <button class="btn btn-block yellow-bg text-uppercase" v-on:click="$emit('continue-onward')">Click here to continue!</button>
         </div>
       </div>
-      <div v-else>
-        <p>Meta Mask not detected.</p>
-        <ul>
-          <li>Install meta mask browser extension: chrome, firefox</li>
-          <li>For Ropsten you can get free ether from here: <a href="https://faucet.metamask.io">faucet</a></li>
-        </ul>
-        <p>Some <a target="blank" href="https://medium.com/@followcoin/how-to-install-metamask-88cbdabc1d28">instructions on medium</a>.</p>
-      </div>
-      <div class="subtitle is-1" style="margin-top: 40px;">
-        <button class="button" v-on:click="$emit('continue-onward')">Click here to continue!</button>
-      </div>
     </div>
-  </div>
-</section>
+  </section>
 </template>
 
 <script>

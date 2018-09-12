@@ -6,7 +6,7 @@
         <ul class="list-inline">
           <li><router-link to="/about">About</router-link></li>
           <li><router-link to="/resources">Resources</router-link></li>
-          <li><a href="#">How it works</a></li>
+          <li><router-link to="/how-it-works">How it works</router-link></li>
         </ul>
       </div>
       <div class="col-sm-8 text-left">
