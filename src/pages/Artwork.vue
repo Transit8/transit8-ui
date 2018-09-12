@@ -25,7 +25,7 @@
     </section>
     <!-- /#pdp slider -->
 
-    <buy-artwork-form :artwork="artwork" :owner="owner" @buy="buyArtwork()" v-if="artwork.forSale"/>
+    <buy-artwork-form :artwork="artwork" @buy="buyArtwork()" v-if="artwork.forSale"/>
     <bid-artwork-form :artwork="artwork" @bid="bidArtwork($event)" v-if="artwork.forAuction"/>
     <!-- /#pdp-action -->
 
@@ -91,7 +91,6 @@ export default {
       userMessages: messagingService.messages,
       messageSignal: {time: 'then', message: 'happy?'},
       webrtcState: 0,
-      owner: false,
       artworkId: (this.$route && this.$route.params.artworkId) ? parseInt(this.$route.params.artworkId) : undefined,
       sliderImage: 0,
       artist: {},
@@ -170,10 +169,9 @@ export default {
         return
       }
       ethService.buy(this.record.indexData.title, seller, buyer).then((item) => {
-        this.record.indexData.uploader = buyer
         this.record.indexData.gaiaUrl = null
         this.record.indexData.appUrl = null
-        this.record.indexData.saleData = null
+        this.record.indexData.owner = buyer
 
         if (!this.record.provData.owners) {
           this.record.provData.owners = [{
@@ -182,7 +180,7 @@ export default {
           }]
         }
         this.record.provData.owners.push({
-          owner: this.record.indexData.uploader,
+          owner: this.record.indexData.owner,
           saleData: this.record.indexData.saleData,
         })
 
@@ -197,10 +195,6 @@ export default {
     setRegData: function (record, artwork) {
       provenanceService.setRegData(record).then((regData) => {
         record.indexData.regData = regData
-        if (regData.state === 120 && this.artist.username !== regData.currentOwner) {
-          console.log('found a bought item!')
-          console.log('regData: ', regData)
-        }
       })
     },
 
@@ -211,7 +205,7 @@ export default {
     setRecord (record) {
       let $elfist = this
       $elfist.record = record
-      $elfist.owner = record.indexData.uploader === this.artist.username
+      let user = provenanceService.getUserProfile()
       webrtcService.startSession($elfist.artist.username, $elfist.artworkId)
       let images = []
       if (record.provData && record.provData.artwork && record.provData.artwork.length > 0) {
@@ -229,6 +223,7 @@ export default {
         uploadedBy: record.indexData.uploader,
         ownedBy: record.indexData.uploader,
         category: record.indexData.itemType,
+        canBuy: record.indexData.owner !== user.username,
         image: images[0],
         images: images,
         year: '',

@@ -69,10 +69,11 @@ export default {
                   if (record.provData.artwork && record.provData.artwork && record.provData.artwork.length > 0) {
                     dataUrl = record.provData.artwork[ 0 ].dataUrl
                   }
+                  let caption = record.indexData.uploader
                   $self.results.push({
                     id: record.indexData.id,
                     title: record.indexData.title,
-                    caption: record.indexData.uploader,
+                    caption: caption,
                     image: dataUrl,
                     forAuction: false
                   })

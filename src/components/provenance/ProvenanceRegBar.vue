@@ -16,31 +16,16 @@
       <p v-if="provenanceRecord.indexData.regData && provenanceRecord.indexData.regData.currentOwner">Sold to: <b>{{ provenanceRecord.indexData.regData.currentOwner }}</b></p>
       <p>Uploaded by: <b>{{ provenanceRecord.indexData.uploader }}</b> on {{ niceTime(provenanceRecord.indexData.id) }} {{ parseAppUrl(provenanceRecord.indexData.appUrl) }}</p>
       <p v-if="provenanceRecord.provData">
-        <span v-if="provenanceRecord.provData.owner && provenanceRecord.provData.creator">
-          Owned and created by: {{ provenanceRecord.indexData.uploader }}
+        <span>
+          Owner: {{ provenanceRecord.indexData.owner }}
         </span>
-        <span v-else-if="provenanceRecord.provData.owner">
-          Owned by: {{ provenanceRecord.indexData.uploader }}
-        </span>
-        <span v-else-if="provenanceRecord.provData.creator">
-          Created by: {{ provenanceRecord.indexData.uploader }}
-        </span>
-        <span v-else>
-          Owner and creator unknown
+        <span>
+          Artist: {{ provenanceRecord.indexData.uploader }}
         </span>
       </p>
-      <p v-if="provenanceRecord.indexData">
-        <span v-if="provenanceRecord.indexData.itemType === 'physart'">
-          Type: <b>physical artwork</b>
-        </span>
-        <span v-else-if="provenanceRecord.indexData.itemType === 'photoart'">
-          Type: <b>photographic artwork</b>
-        </span>
-        <span v-else-if="provenanceRecord.indexData.itemType === 'digiart'">
-          Type: <b>digital artwork</b>
-        </span>
-        <span v-else>
-          Type: <b>unknown</b>
+      <p>
+        <span>
+          Type: <b>{{ artType }}</b>
         </span>
       </p>
     </div>
@@ -62,13 +47,21 @@ export default {
   data () {
     return {
       allowEdit: false,
+      artType: '',
       searching: true
     }
   },
   mounted () {
     this.searching = (this.$route.name === 'marketSearch')
     if (this.username) {
-      this.allowEdit = this.username === this.provenanceRecord.indexData.uploader
+      this.allowEdit = true
+    }
+    if (this.provenanceRecord.indexData.itemType === 'physart') {
+      this.artType = 'Pysical Art'
+    } else if (this.provenanceRecord.indexData.itemType === 'photoart') {
+      this.artType = 'Photo Art'
+    } else {
+      this.artType = 'Digital Art'
     }
   },
   events: {
