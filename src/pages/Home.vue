@@ -49,6 +49,7 @@ export default {
             let title = item[0]
             let searched = false
             if (title && title.length > 0) {
+              console.log('Blockchain result: ' + title + ' owner: ' + item[1])
               $elfie.blockchainResults.push({index: index, title: item[0]})
               if ($elfie.blockchainResults.length === 6 && !searched) {
                 $elfie.fetchArtwork(index, $elfie.blockchainResults)
@@ -83,8 +84,8 @@ export default {
       let $self = this
       _.forEach(results, function (result) {
         let title = result.title
-        searchIndexService.searchIndex('art', 'title', title).then((results) => {
-          // console.log('Searching for item with title found: ', results)
+        searchIndexService.searchIndex('art', 'title', '"' + title + '"').then((results) => {
+          console.log('Searching for item with title found: ', results)
           let indexData = results[0]
           provenanceService.getRecordForSearch(indexData).then((record) => {
             if (record && record.indexData && record.indexData.id) {
