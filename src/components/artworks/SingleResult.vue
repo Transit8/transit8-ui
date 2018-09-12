@@ -2,7 +2,7 @@
   <router-link :to="url" :class="[artworkWidth]" class="col-xs-12">
   <div class="row result-item clearfix">
     <div class="col-sm-2">
-    <img :src="artwork.image" :alt="artwork.title" class="img-responsive">
+    <img :src="artwork.image" :alt="artwork.title" class="">
     </div>
     <div class="col-sm-3">
         <p class="art-title">{{artwork.title}}</p>
