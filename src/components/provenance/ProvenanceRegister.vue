@@ -7,6 +7,10 @@
   <div class="column" v-else>
     <h1 class="title is-1">{{ provenanceRecord.indexData.title }}</h1>
     <h2 class="title is-3">Register Your Ownership on Chain</h2>
+    <div v-for="owner in owners" :key="owner.owner">
+      <p>Owners: {{owner.owner}}</p>
+      <p v-if="owner.saleData">{{ owner.saleData.fiatCurrency }} {{ owner.saleData.amount }} ({{ owner.saleData.amountInEther }} at {{ owner.saleData.initialRateEth}})</p>
+    </div>
     <div v-if="error">
       <p>{{ error }}</p>
     </div>
@@ -67,6 +71,7 @@ export default {
       provenanceRecord: { indexData: { regData: {} } },
       fiatRates: {},
       ethToBtc: {},
+      owners: [],
       username: null
     }
   },
@@ -78,6 +83,7 @@ export default {
     provenanceService.getProvenanceRecordsInLS(recordId).then((provenanceRecord) => {
       $elfist.provenanceRecord = provenanceRecord
       $elfist.setRegData(provenanceRecord)
+      $elfist.owners = provenanceRecord.provData.owners
     })
 
     this.username = provenanceService.getUserData().username
@@ -107,20 +113,21 @@ export default {
             this.provenanceRecord.indexData.regData = regData
             provenanceService.createOrUpdateRecord(this.provenanceRecord.indexData, this.provenanceRecord.provData)
               .then((record) => {
-                this.error = 'Record has been successfully registered on the block chain. Tx=' + this.provenanceRecord.indexData.regData.result
+                this.error = 'Record has been successfully registered on the block chain - refresh this screen to set a price.'
                 this.spinner = false
               })
               .catch(e => {
                 this.spinner = false
-                this.error = 'Record has been successfully registered on the block chain - but an error was thrown saving to user storage. Tx=' + this.provenanceRecord.indexData.regData.result
+                this.error = 'Record has been successfully registered on the block chain'
+                console.log('Error: ', e)
               })
           })
         }
+      }).catch(e => {
+        this.spinner = false
+        this.error = 'Record has been successfully registered on the block chain'
+        console.log('Error: ', e)
       })
-        .catch(e => {
-          this.spinner = false
-          this.error = 'Record has been successfully registered on the block chain - but an error was thrown saving to user storage. Tx=' + this.provenanceRecord.indexData.regData.result
-        })
     },
     setRegData: function (record) {
       // let $elfi = this

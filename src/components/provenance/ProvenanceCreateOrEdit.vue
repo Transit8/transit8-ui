@@ -87,15 +87,6 @@
     <div class="field">
       <div class="control">
         <label class="checkbox">
-          <input type="checkbox" :checked="provData.owner" :value="provData.owner" v-model="provData.owner">
-          This item belongs to me.
-        </label>
-      </div>
-    </div>
-
-    <div class="field">
-      <div class="control">
-        <label class="checkbox">
           <input type="checkbox" :checked="provData.creator" :value="provData.creator" v-model="provData.creator">
           This item was created by me.
         </label>
@@ -175,7 +166,7 @@ export default {
       spinner: false,
       provData: {
         artwork: [],
-        owner: true,
+        owner: '',
         creator: true,
         supportingDocuments: [],
         images: [],
@@ -262,6 +253,7 @@ export default {
 
       if (this.createMode) {
         this.indexData.id = moment({}).valueOf()
+        this.indexData.owner = this.indexData.uploader
         this.provData.auditData = [{
           event: 'uploaded',
           who: userData.username,
@@ -269,6 +261,13 @@ export default {
         }]
       } else if (this.provenanceId) {
         this.indexData.id = this.provenanceId
+        if (!this.indexData.owner) {
+          if (this.provData.owners && this.provData.owners.length > 0) {
+            this.indexData.owner = this.provData.owners[this.provData.owners.length - 1].owner
+          } else {
+            this.indexData.owner = this.indexData.uploader
+          }
+        }
         this.provData.auditData.push({
           event: 'edited',
           who: userData.username,

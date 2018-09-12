@@ -20,7 +20,7 @@
   <div class="columns" style="margin-top: 70px;">
     <div class="column">
       <div class="media-right" v-if="provenanceRecord.indexData.saleData">
-        <provenance-sellers-info v-if="owner" v-bind:saleData="provenanceRecord.indexData.saleData" v-bind:recordId="provenanceRecord.indexData.id"/>
+        <provenance-sellers-info v-if="provenanceRecord.indexData.owner === provenanceRecord.indexData.uploader" v-bind:saleData="provenanceRecord.indexData.saleData" v-bind:recordId="provenanceRecord.indexData.id"/>
         <provenance-buyers-info v-else v-bind:provenanceRecord="provenanceRecord" v-bind:recordId="provenanceRecord.indexData.id"/>
       </div>
     </div>
@@ -68,7 +68,6 @@ export default {
       username: 'anon',
       loggedIn: false,
       webrtcState: 0,
-      owner: false,
       provenanceRecord: {
         indexData: {},
         provData: {}
@@ -91,7 +90,6 @@ export default {
     if (!this.provenanceRecord) {
       this.provenanceRecord = provenanceService.getProvenanceRecord(this.provenanceId)
     }
-    this.owner = this.provenanceRecord.indexData.uploader === this.username
     let $elfie = this
     // eventBus.$on('signal-in-message', function (payLoad) {
     //  $elfie.userMessages.push(payLoad)

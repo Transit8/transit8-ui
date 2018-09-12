@@ -226,8 +226,8 @@ export default {
         saleData.increment = 0
       }
       saleData.fiatCurrency = this.currency
-      saleData.initialRateBtc = this.fiatRates[this.currency]
-      saleData.initialRateEth = this.ethToBtc
+      saleData.initialRateBtc = this.fiatRates[this.currency]['15m']
+      saleData.initialRateEth = this.ethToBtc.rate
       saleData.amountInEther = this.getValueInEther(saleData.amount)
       this.recordForSaleData.indexData.saleData = saleData
       this.spinner = true

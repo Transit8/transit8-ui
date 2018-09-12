@@ -545,7 +545,7 @@ const provenanceService = {
     let artwork = {
       id: record.indexData.id.toString(),
       caption: record.indexData.uploader,
-      state: record.indexData.regData.state,
+      state: (record.indexData.regData) ? record.indexData.regData.state : -1,
       owner: owner,
       image: dataUrl,
       title: record.indexData.title,
