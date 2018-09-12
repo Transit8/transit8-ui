@@ -3,7 +3,7 @@
   <div class="row result-item">
   <div class="clearfix">
     <div class="col-sm-2">
-     <img :src="artwork.image" :alt="artwork.title">
+     <img :src="artwork.image" :alt="artwork.title" class="img-responsive">
     </div>
     <div class="col-sm-3">
         <p class="art-title">{{artwork.title}}</p>
