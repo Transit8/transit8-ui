@@ -94,11 +94,14 @@ export default {
                 dataUrl = record.provData.artwork[ 0 ].dataUrl
               }
               if (dataUrl && dataUrl.length > 0) {
-                $self.artworks.push({
-                  id: record.indexData.id,
-                  title: record.indexData.title,
-                  caption: record.indexData.uploader,
-                  image: dataUrl
+                provenanceService.getArtistProfile(record).then((profile) => {
+                  $self.artworks.push({
+                    id: record.indexData.id,
+                    title: record.indexData.title,
+                    caption: profile.displayName,
+                    // caption: record.indexData.uploader,
+                    image: dataUrl
+                  })
                 })
               }
             }

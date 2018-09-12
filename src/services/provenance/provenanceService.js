@@ -1,5 +1,7 @@
 import axios from 'axios'
 import {
+  Person,
+  lookupProfile,
   getFile,
   putFile,
   loadUserData
@@ -319,30 +321,41 @@ const provenanceService = {
     return profile
   },
   getArtistProfile: function (record) {
-    let profile
-    if (record) {
-      profile = {
-        username: record.indexData.uploader,
-        name: record.indexData.uploader,
-        description: 'Anon',
-        image: '/static/images/artist_preview.png',
+    return new Promise(function (resolve) {
+      let profile = {}
+      if (record) {
+        lookupProfile(record.indexData.uploader).then((profile) => {
+          let person = new Person(profile.person)
+          profile.person = person
+          console.log('lookupUserProfile: profile : ' + profile)
+          profile = {
+            username: record.indexData.uploader,
+            description: profile.description,
+            name: profile.name,
+            displayName: profile.name,
+            image: (profile.image && profile.image[0]) ? profile.image[0].contentUrl : '/static/images/artist_preview.png',
+          }
+          resolve(profile)
+        })
+      } else {
+        profile = {
+          username: 'unknown artist',
+          displayName: 'unknown artist',
+          description: 'unknown artist',
+          image: '/static/images/artist_preview.png',
+        }
+        resolve(profile)
       }
-    } else {
-      profile = {
-        username: 'unknown artist',
-        name: 'unknown artist',
-        description: 'unknown artist',
-        image: '/static/images/artist_preview.png',
-      }
-    }
-    return profile
+    })
   },
   /**
    *  Fetch the users zone file - the blockstack zone which contains the loaction
    *  of the users storage url.
   **/
-  fetchZonefile: function () {
-    var username = loadUserData().username
+  fetchZonefile: function (username) {
+    if (!username) {
+      username = loadUserData().username
+    }
     return new Promise(function (resolve) {
       axios.get('https://core.brightblock.org/v1/names/' + username)
         .then(function (response) {
