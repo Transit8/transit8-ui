@@ -29,13 +29,13 @@ export default {
       }
     }
   },
- data () {
+  data () {
     return {
-    showDescription: false
+      showDescription: false
     }
   },
   methods: {
-    toggleReadMore: function(){
+    toggleReadMore: function () {
       this.showDescription = !this.showDescription
     },
   }
