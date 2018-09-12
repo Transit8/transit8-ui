@@ -1,9 +1,9 @@
 <template>
   <div>
-    <section id="pdp-slider" class="pb-0 black-bg white pdp-slider pt-60">
+    <section id="pdp-slider" class="pb-0 black-bg white pdp-slider pt-60 pb-60">
       <div class="container wide">
         <div class="row">
-          <div class="col-sm-12">
+          <div class="col-sm-12 clearfix">
             <div class="pull-left">
               <h1 class="product-title">{{artist.name}}, {{artwork.name}}</h1>
               <p class="mb-0">
@@ -11,13 +11,13 @@
                 <a href="#" @click.prevent="scrollToAboutSection()"><u>About artwork</u></a>
               </p>
             </div>
-            <img :src="artwork.image" :alt="artwork.title">
-            <artwork-slider-controls :images="artwork.images" @change="sliderImageChanged($event)"
+             <artwork-slider-controls :images="artwork.images" @change="sliderImageChanged($event)"
                                      :image-displayed="sliderImage"/>
           </div>
         </div>
         <div class="row">
           <div class="col-sm-8 col-sm-offset-2 pt-80">
+            <img :src="artwork.image" :alt="artwork.title" class="img-responsive">
             <artwork-slider :images="artwork.images" :image-num="sliderImage" @change="sliderImageChanged($event)"/>
           </div>
         </div>

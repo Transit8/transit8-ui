@@ -1,5 +1,5 @@
 <template>
-  <section id="about-artwork" class="grey-bg black pt-60 about-artwork">
+  <section id="about-artwork" class="grey-light-bg black pt-60 about-artwork">
     <div class="container wide">
       <div class="row">
         <div class="col-sm-6">
