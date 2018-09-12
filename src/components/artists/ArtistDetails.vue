@@ -7,11 +7,9 @@
       <div class="row" id="artist-description">
         <div class="col-xs-12">
           <img :src="artist.image" :alt="artist.name" class="mb-50"/>
-        </div>
-        <div class="col-xs-12">
-          <div v-html="artist.description"></div>
+          <p v-html="artist.description" class="artist-description" v-bind:class="{ expanded: showDescription }"></p>
           <p class="mt-50">
-            <a href="#" class="inline-block">Read more</a>
+            <a v-on:click="toggleReadMore" class="read-more inline-block">Read more</a>
           </p>
         </div>
       </div>
@@ -30,6 +28,16 @@ export default {
         return {}
       }
     }
+  },
+ data () {
+    return {
+    showDescription: false
+    }
+  },
+  methods: {
+    toggleReadMore: function(){
+      this.showDescription = !this.showDescription
+    },
   }
 }
 </script>
