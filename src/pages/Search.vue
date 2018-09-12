@@ -69,15 +69,16 @@ export default {
                   if (record.provData.artwork && record.provData.artwork && record.provData.artwork.length > 0) {
                     dataUrl = record.provData.artwork[ 0 ].dataUrl
                   }
-                  let caption = record.indexData.uploader
-                  $self.results.push({
-                    id: record.indexData.id,
-                    title: record.indexData.title,
-                    caption: caption,
-                    image: dataUrl,
-                    forAuction: false
+                  provenanceService.getArtistProfile(record).then((profile) => {
+                    $self.results.push({
+                      id: record.indexData.id,
+                      title: record.indexData.title,
+                      caption: profile.displayName,
+                      image: dataUrl,
+                      forAuction: false
+                    })
+                    $self.$emit('update:numbResults', $self.provenanceRecords.length)
                   })
-                  $self.$emit('update:numbResults', $self.provenanceRecords.length)
                 }
               })
               .catch(e => {

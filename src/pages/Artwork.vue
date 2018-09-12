@@ -143,9 +143,11 @@ export default {
     window.addEventListener('beforeunload', this.stopPublishing)
     let recordId = (this.$route && this.$route.params.artworkId) ? parseInt(this.$route.params.artworkId) : undefined
     provenanceService.getRecordFromSearchIndexById(recordId).then((record) => {
-      this.artist = provenanceService.getArtistProfile(record)
-      this.user = provenanceService.getUserProfile(record)
-      this.setRecord(record)
+      provenanceService.getArtistProfile(record).then((profile) => {
+        this.artist = profile
+        this.user = provenanceService.getUserProfile(record)
+        this.setRecord(record)
+      })
     })
     let $elfie = this
     // eventBus.$on('signal-in-message', function (payLoad) {
@@ -220,7 +222,7 @@ export default {
         name: record.indexData.title,
         description: record.indexData.description,
         keywords: record.indexData.keywords,
-        uploadedBy: record.indexData.uploader,
+        uploadedBy: this.artist.displayName,
         ownedBy: record.indexData.uploader,
         category: record.indexData.itemType,
         canBuy: record.indexData.owner !== user.username,
