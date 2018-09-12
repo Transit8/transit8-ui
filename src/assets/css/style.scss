@@ -125,6 +125,10 @@ section {
   margin-bottom: 0;
 }
 
+.mb-20 {
+  margin-bottom: 20px;
+}
+
 .mb-50 {
   margin-bottom: 50px;
 }
@@ -308,6 +312,10 @@ section {
   width: 100%;
   height: $slider-height;
 
+  @media(max-width: 768px) {
+    height: $slider-sm-height;
+  }
+
   .slider {
     @media(max-width: 768px) {
       height: $slider-sm-height;
@@ -373,7 +381,7 @@ section {
   }
   .artwork-caption {
     font-size: 20px;
-    margin-top: 48px;
+    margin-top: 30px;
     margin-bottom: 0;
   }
   .art-title {
@@ -577,10 +585,23 @@ section {
       }
     }
   }
+
+  .artist-description { 
+    height: 69px; 
+    overflow: hidden; 
+    -webkit-transition: all 2s ease;
+    -moz-transition: all 2s ease;
+    -o-transition: all 2s ease;
+    transition: all 2s ease;
+
+    &.expanded { height: auto; overflow: auto; }
+}
   @media all and (max-width: 1024px) {
     margin-top: 48px;
   }
 }
+
+.read-more { cursor: pointer; }
 
 /*** PDP page ***/
 
@@ -690,6 +711,7 @@ footer {
 
     .social {
       text-align: right;
+      .list-inline li { display: inline-block; }
     }
 
   }
@@ -716,6 +738,10 @@ footer {
       height: 82px;
       box-sizing: border-box;
       padding: 0 50px;
+      @media all and (max-width: 768px) {
+        width: 100%;
+        max-width: 400px;
+      }
     }
     input.form-control {
       height: 82px;
@@ -765,22 +791,21 @@ footer {
 .result-item {
   padding-top: 20px;
   padding-bottom: 20px;
+  padding-right: 80px;
+
+  &:after {
+    content: "\e907";
+    font-family: 'icomoon';
+    position: absolute;
+    right: 15px;
+    font-size: 30px;
+    line-height:30px;
+    color: $grey;
+    top: calc(50% - 15px);
+  }
 
   p { margin-bottom: 0; }
-
-  .col-description {
-    padding-right: 80px;
-    &:after {
-      content: "\e907";
-      font-family: 'icomoon';
-      position: absolute;
-      right: 15px;
-      font-size: 30px;
-      line-height:30px;
-      color: $grey;
-      top: calc(50% - 15px);
-    }
-  }
+  
 }
 
 /* 404 - Blockchain settings */
@@ -1032,17 +1057,18 @@ footer {
     .action-button {
       margin-top: 7px;
     }
-    footer {
-      position: relative;
+  }
+
+  footer {
+    position: relative;
+    text-align: center;
+    .footer-top, .footer-top > * {
       text-align: center;
-      .footer-top, .footer-top > * {
+    }
+    .footer-bottom {
+      text-align: center;
+      .social {
         text-align: center;
-      }
-      .footer-bottom {
-        text-align: center;
-        .social {
-          text-align: center;
-        }
       }
     }
   }

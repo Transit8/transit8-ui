@@ -3,7 +3,8 @@
     <div class="container wide">
       <div class="row">
         <div class="col-sm-12 pt-60">
-          <h1 class="font-size-48">{{$prismic.richTextAsPlain(story.data.title)}}</h1>
+        <h1 class="font-size-48 mb-20">{{$prismic.richTextAsPlain(story.data.title)}}</h1>
+        <p class="mb-50">{{publishDate}}</p>
         </div>
         <div class="col-sm-12 pt-50">
           <prismic-image :field="story.data.featured_image" class="img-responsive mb-50"/>
@@ -15,6 +16,8 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 // noinspection JSUnusedGlobalSymbols
 export default {
   name: 'Story',
@@ -33,6 +36,11 @@ export default {
       .then((document) => {
         this.story = document
       })
+  },
+  computed: {
+    publishDate () {
+      return moment(this.story.data.date).format('DD. MMMM YYYY')
+    }
   }
 }
 </script>

@@ -1,8 +1,9 @@
 <template>
   <router-link :to="url" :class="[artworkWidth]" class="col-xs-12 grid-item">
     <img :src="artwork.image" :alt="artwork.title">
-    <p class="art-title">{{artwork.title}}</p>
+    <!-- TO DO: in design, artwork caption is artist name -->
     <p class="artwork-caption">{{artwork.caption}}</p>
+    <p class="art-title">{{artwork.title}}</p>
     <!--
     <p class="artwork-caption">{{artwork.owner}}</p>
     <p class="artwork-caption">{{artwork.state}}</p>

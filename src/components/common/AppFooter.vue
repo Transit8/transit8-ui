@@ -1,7 +1,7 @@
 <template>
   <!-- Footer -->
   <footer class="black-bg">
-    <div class="container-fluid footer-top">
+    <div class="footer-top clearfix">
       <div class="col-sm-4 text-left text-uppercase">
         <ul class="list-inline">
           <li><router-link to="/about">About</router-link></li>
@@ -13,9 +13,9 @@
         <newsletter-form @submit="submitNewsletterEmail($event)"/>
       </div>
     </div>
-    <div class="container-fluid footer-bottom">
+    <div class="footer-bottom clearfix">
       <div class="col-sm-6">
-        <ul class="list-inline inline-block">
+        <ul class="list-inline">
           <li class="text-uppercase "><span class="copy">&copy;</span>2018 Sybella</li>
           <li><router-link to="/privacy">Privacy Policy</router-link></li>
           <li>Karl Marx Allee 98, 10243 Berlin, DE</li>

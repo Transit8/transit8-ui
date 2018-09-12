@@ -1,10 +1,11 @@
 <template>
-  <router-link :to="url" :class="[artworkWidth]" class="col-xs-12">
-  <div class="row result-item clearfix">
+  <router-link :to="url" :class="[artworkWidth]" class="col-sm-12">
+  <div class="row result-item">
+  <div class="clearfix">
     <div class="col-sm-2">
+     <img :src="artwork.image" :alt="artwork.title">
     </div>
     <div class="col-sm-3">
-      <img :src="artwork.image" :alt="artwork.title" class="">
         <p class="art-title">{{artwork.title}}</p>
         <p class="artwork-caption">{{artwork.caption}}</p>
     </div>
@@ -23,7 +24,8 @@
         <router-link :to="artwork.id" class="artwork-action" v-if="artwork.forSale">Buy</router-link>
         <router-link :to="artwork.id" class="artwork-action" v-if="artwork.forAuction">Bid</router-link> -->
    </div>
-     <div class="col-xs-12 divider divider-grey"></div>
+   </div>
+     <div class="divider divider-grey"></div>
   </router-link>
 </template>
 
