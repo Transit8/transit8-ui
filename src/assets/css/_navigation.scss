@@ -42,12 +42,12 @@
       background: initial;
     }
   }
-  .logo {
-    font-size: 50px;
-    color: $white;
-    text-transform: uppercase;
-    padding-top: 12px;
+  .logo { width: 250px; 
+  
+  @media(max-width: 768px){
+      width: 200px;
   }
+}
 
   .language-menu {
     padding: 20px 0;
@@ -229,7 +229,10 @@
 
 @media (max-width: 992px) {
   .navbar.navbar-default {
-    height: 210px;
+    height: 240px;
+    .navbar-header {
+      margin-bottom: 30px;
+    }
     .logo {
       font-size: 32px;
       padding-top: 8px;
@@ -239,7 +242,7 @@
     }
   }
   .menu {
-  //  margin-top: 210px;
+    top: 220px;
     ul {
       height: auto;
       position: relative;

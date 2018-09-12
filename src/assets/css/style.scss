@@ -21,12 +21,16 @@
   background-color: $grey-medium;
 }
 
+.grey-light-bg {
+  background-color: $grey-light;
+}
+
 .yellow-bg {
   background-color: $yellow;
 }
 
 .light-gray-bg {
-  background-color: $grey_light;
+  background-color: $grey-light;
 }
 
 .black {
@@ -43,6 +47,10 @@
 
 .grey-medium {
   color: $grey_medium;
+}
+
+.grey-light {
+  color: $grey-light;
 }
 
 .yellow {
@@ -378,10 +386,10 @@ section {
     max-width: 100%;
     width: 100%;
     height: auto;
+    margin-bottom: 30px;
   }
   .artwork-caption {
     font-size: 20px;
-    margin-top: 30px;
     margin-bottom: 0;
   }
   .art-title {
@@ -429,8 +437,8 @@ section {
     margin: 50px 0 80px 0;
     .grid-item {
       padding-bottom: 45px;
-      .artwork-caption {
-        margin-top: 24px;
+      .img {
+        margin-bottom: 24px;
       }
     }
 
