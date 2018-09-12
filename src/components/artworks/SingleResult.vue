@@ -1,13 +1,13 @@
 <template>
-  <router-link :to="url" :class="[artworkWidth]" class="col-sm-12">
+  <router-link :to="url" class="col-sm-12">
   <div class="row result-item">
   <div class="clearfix">
     <div class="col-sm-2">
      <img :src="artwork.image" :alt="artwork.title" class="img-responsive">
     </div>
     <div class="col-sm-3">
-        <p class="art-title">{{artwork.title}}</p>
         <p class="artwork-caption">{{artwork.caption}}</p>
+        <p class="art-title">{{artwork.title}}</p>
     </div>
     <div class="col-sm-7 col-description">
       <!--  TO DO: add real decription with keywords -->
@@ -46,9 +46,6 @@ export default {
     }
   },
   computed: {
-    artworkWidth () {
-      return `col-sm-${this.width}`
-    },
     url () {
       return `/artworks/${this.artwork.id}`
     }
