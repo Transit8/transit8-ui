@@ -43,16 +43,16 @@ export default {
       let $elfist = this
       $elfist.blockchainResults = []
       ethService.fetchNumberOfItems().then((numberOfItems) => {
-        for (let index = 0; index < numberOfItems; index++) {
-          $elfist.index = numberOfItems
+        for (let index = numberOfItems; index >= numberOfItems - 6; index--) {
+          $elfist.index = index
           setTimeout(function timer () {
-            $elfist.index--
-            ethService.fetchItemByIndex($elfist.index, 0).then((item) => {
+            // $elfist.index--
+            ethService.fetchItemByIndex(index, 0).then((item) => {
               let title = item[0]
               let searched = false
               if (title && title.length > 0) {
-                console.log('Blockchain result: ' + title + ' owner: ' + item[1] + ' index: ' + index)
-                $elfist.blockchainResults.push({index: index, title: item[0]})
+                console.log('Blockchain result: ' + title + ' index: ' + index)
+                $elfist.blockchainResults.push({index: index, title: title})
                 if ($elfist.blockchainResults.length === 6 && !searched) {
                   $elfist.fetchArtwork(index, $elfist.blockchainResults)
                   searched = true
@@ -69,7 +69,7 @@ export default {
       let $self = this
       _.forEach(results, function (result) {
         let title = result.title
-        console.log('Searching for item with title: ' + title + ' index: ' + index)
+        console.log('Searching for item with title: ' + result.title + ' index: ' + result.index + ' index: ' + index)
         searchIndexService.searchIndex('art', 'title', '"' + title + '"').then((results) => {
           let indexData = results[0]
           provenanceService.getRecordForSearch(indexData).then((record) => {
