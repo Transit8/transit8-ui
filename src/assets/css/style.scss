@@ -346,8 +346,9 @@ section {
         letter-spacing: 1px;
         text-transform: uppercase;
         line-height: 33px;
-        padding: 6px 6px 0px 6px;
+        padding: 6px;
         margin-top: 40px;
+        height: 38px;
       }
     }
 
@@ -704,6 +705,18 @@ input.form-control.bid-input {
   font-size: 24px;
 }
 
+ /* General static page */
+ .featured-image { width: 100%; }
+
+ .static-page-content {
+   h2 { font-size: 36px; margin-bottom: 50px; line-height: normal; font-weight: bold; }
+   p { font-size: 36px; margin-bottom: 30px;
+      @media(max-width: 768px){
+      font-size: 18px;
+    } 
+  }
+ }
+
 /* Footer */
 footer {
   flex-shrink: 0;
@@ -997,7 +1010,7 @@ footer {
     }
   }
   //Homepage slider
-
+.slider-container{
   .slider {
     .slider-content {
       padding: 30px;
@@ -1005,11 +1018,14 @@ footer {
       .button {
         font-size: 24px;
         line-height: 28px;
-        padding: 6px 6px 0px 6px;
+        padding: 6px;
         margin-top: 20px;
+        height: 36px;
       }
     }
   }
+}
+  
   /* typography */
   h1 {
     font-size: 40px;
@@ -1134,7 +1150,7 @@ footer {
 }
 
 @media (max-width: 480px) {
-
+.slider-container {
   .slider {
     .slider-content {
       padding: 15px;
@@ -1143,9 +1159,12 @@ footer {
         font-size: 15px;
         line-height: 18px;
         margin-top: 5px;
+        height: 25px;
       }
     }
   }
+}
+  
 
   .title-big {
     font-size: 24px;
