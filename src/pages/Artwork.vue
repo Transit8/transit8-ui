@@ -87,7 +87,6 @@ export default {
   },
   data () {
     return {
-      tokbox: {},
       userMessages: messagingService.messages,
       messageSignal: {time: 'then', message: 'happy?'},
       webrtcState: 0,
