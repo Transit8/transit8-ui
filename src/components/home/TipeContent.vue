@@ -13,7 +13,7 @@ import tipes from '@/services/tipes'
 export default {
   data: () => {
     return {
-      homepage: '<i class="fas fa-cog fa-spin"></i>',
+      homepage: '<i class="glyphicon glyphicon-repeat normal-left-spinner"></i>',
     }
   },
   mounted () {

@@ -3,15 +3,30 @@
 import Vue from 'vue'
 import router from './router'
 import App from './App'
-import _ from 'lodash'
-import '@/styles/main.scss'
+import truncate from 'lodash/truncate'
+import Notifications from 'vue-notification'
+import * as uiv from 'uiv'
+import PrismicVue from 'prismic-vue'
+import linkResolver from './prismic/linkResolver'
 
+import '@/assets/css/main.scss'
+
+// import Vuelidate from 'vuelidate'
 Vue.config.productionTip = false
-
+Vue.prototype.$eventHub = new Vue() // Global event bus
 Vue.filter('truncate', function (value) {
-  return _.truncate(value, { length: 45, omission: '...' })
+  return truncate(value, { length: 45, omission: '...' })
 })
 Vue.prototype.$appName = 'My App'
+Vue.use(Notifications)
+// Vue.use(Vuelidate)
+
+Vue.use(uiv, {prefix: 'uiv'})
+
+Vue.use(PrismicVue, {
+  endpoint: 'https://sybellaio.cdn.prismic.io/api/v2',
+  linkResolver
+})
 
 /* eslint-disable no-new */
 new Vue({

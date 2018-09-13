@@ -16,7 +16,8 @@ const tipes = {
     }
   },
   fetch: function () {
-    let requestDetails = this.getDetails('5aa2ad4d6c3250001374f3c2')
+    // let requestDetails = this.getDetails('5aa2ad4d6c3250001374f3c2')
+    let requestDetails = this.getDetails('5b4f22f0c77a3c0013d6ab7d')
     return new Promise(resolve => {
       axios.get(requestDetails.url, { headers: requestDetails.headers })
         .then(response => {
