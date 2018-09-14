@@ -2,19 +2,19 @@
 <div class="container wide">
   <h1 class="title is-2">Settings</h1>
   <div class="row">
-    <div class="col-sm-12 pt-60">Environment: {{ environment }}</div>
+    <div class="col-sm-12 pt-1">Environment: {{ environment }}</div>
   </div>
   <div class="row">
-    <div class="col-sm-12 pt-60">Search URL: {{ searchUrl }}</div>
+    <div class="col-sm-12 pt-5">Contract Address: {{ contract }} on network {{ network.networkId }} ({{ network.networkName }})</div>
   </div>
   <div class="row">
-    <div class="col-sm-12 pt-60">Shape Shift Url: {{ shapeShiftUrl }}</div>
+    <div class="col-sm-12 pt-5">Shape Shift Url: {{ shapeShiftUrl }}</div>
   </div>
   <div class="row">
-    <div class="col-sm-12 pt-60">Contract Address: {{ contract }} on network {{ network }}</div>
+    <div class="col-sm-12 pt-5">Search URL: {{ searchUrl }}</div>
   </div>
   <div class="row">
-    <div class="col-sm-12 pt-60">Tokbox api key: {{ apiKey }}</div>
+    <div class="col-sm-12 pt-20">Tokbox api key: {{ apiKey }}</div>
   </div>
 </div>
 </template>

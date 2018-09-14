@@ -27,7 +27,31 @@ const ETHEREUM_CONTRACT_ADDRESS = '0x3C534b0c2b9773ee0FE9D28d906DB3a2751d798f'
 
 const ethApiService = {
   getNetworkType: function () {
-    return this.getWeb3().version.network
+    let networkId = this.getWeb3().version.network
+    let networkName = ''
+    switch (networkId) {
+      case '1':
+        networkName = 'Main'
+        break
+      case '2':
+        networkName = 'Morden'
+        break
+      case '3':
+        networkName = 'Ropsten'
+        break
+      case '4':
+        networkName = 'Rinkeby'
+        break
+      case '42':
+        networkName = 'Kovan'
+        break
+      default:
+        networkName = 'Unknown'
+    }
+    return {
+      networkId: networkId,
+      networkName: networkName
+    }
   },
   getWeb3: function () {
     if (typeof window.web3 !== 'undefined') {
