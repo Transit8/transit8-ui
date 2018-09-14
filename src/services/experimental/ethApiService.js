@@ -26,6 +26,9 @@ const ETHEREUM_CONTRACT_ADDRESS = '0x3C534b0c2b9773ee0FE9D28d906DB3a2751d798f'
 // const ethereumUri = 'https://api.blockcypher.com/v1/eth/main'
 
 const ethApiService = {
+  getNetworkType: function () {
+    return this.getWeb3().version.network
+  },
   getWeb3: function () {
     if (typeof window.web3 !== 'undefined') {
       ethApiService.web3 = new Web3(window.web3.currentProvider)
