@@ -314,7 +314,8 @@ const provenanceService = {
       }
     }
     profile = {
-      admin: (blockstackUser.username === 'mike.personal.id' || blockstackUser.username === 'brightblock.id' || blockstackUser.username === 'antoniomeic.id.blockstack')
+      // TODO need a way to identify who should be.. admin: (blockstackUser.username === 'mike.personal.id' || blockstackUser.username === 'brightblock.id' || blockstackUser.username === 'antoniomeic.id.blockstack')
+      admin: true,
       username: blockstackUser.username,
       name: blockstackUser.profile.name,
       description: blockstackUser.profile.description,
