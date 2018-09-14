@@ -306,6 +306,7 @@ const provenanceService = {
     let blockstackUser = loadUserData()
     if (!blockstackUser) {
       profile = {
+        admin: false,
         username: 'unknown',
         name: 'Anon',
         description: 'unknown person',
@@ -313,6 +314,8 @@ const provenanceService = {
       }
     }
     profile = {
+      // TODO need a way to identify who should be.. admin: (blockstackUser.username === 'mike.personal.id' || blockstackUser.username === 'brightblock.id' || blockstackUser.username === 'antoniomeic.id.blockstack')
+      admin: true,
       username: blockstackUser.username,
       name: blockstackUser.profile.name,
       description: blockstackUser.profile.description,
@@ -327,7 +330,7 @@ const provenanceService = {
         lookupProfile(record.indexData.uploader).then((profile) => {
           let person = new Person(profile.person)
           profile.person = person
-          console.log('lookupUserProfile: profile : ' + profile)
+          // console.log('lookupUserProfile: profile : ', profile)
           profile = {
             username: record.indexData.uploader,
             description: profile.description,
