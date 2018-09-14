@@ -27,7 +27,7 @@
         </div>
       </div>
     </div>
-    </section> 
+    </section>
 
   <!-- Main Content -->
   <section class="white-bg black">
@@ -55,7 +55,7 @@
         </div>
       </div>
     </section>
- 
+
   <!-- /Content-->
    </div>
 </template>
