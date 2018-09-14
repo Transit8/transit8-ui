@@ -306,6 +306,7 @@ const provenanceService = {
     let blockstackUser = loadUserData()
     if (!blockstackUser) {
       profile = {
+        admin: false,
         username: 'unknown',
         name: 'Anon',
         description: 'unknown person',
@@ -313,6 +314,7 @@ const provenanceService = {
       }
     }
     profile = {
+      admin: (blockstackUser.username === 'mike.personal.id' || blockstackUser.username === 'brightblock.id' || blockstackUser.username === 'antoniomeic.id.blockstack')
       username: blockstackUser.username,
       name: blockstackUser.profile.name,
       description: blockstackUser.profile.description,
