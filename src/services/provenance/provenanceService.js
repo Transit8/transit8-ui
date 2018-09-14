@@ -327,7 +327,7 @@ const provenanceService = {
         lookupProfile(record.indexData.uploader).then((profile) => {
           let person = new Person(profile.person)
           profile.person = person
-          console.log('lookupUserProfile: profile : ' + profile)
+          // console.log('lookupUserProfile: profile : ', profile)
           profile = {
             username: record.indexData.uploader,
             description: profile.description,
