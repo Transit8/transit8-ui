@@ -13,6 +13,7 @@ import xhrService from '@/services/xhrService'
 import cacheService from '@/services/cacheService'
 import SHA256 from 'crypto-js/sha256'
 import ethService from '@/services/experimental/ethApiService'
+import utils from '../utils'
 
 /**
  *  Service manages a file structure which has a root file and a set of provenance records.
@@ -141,7 +142,7 @@ const provenanceService = {
               }
               provData.blockchainOwner = indexData.uploader
               if (provData && provData.artwork && provData.artwork[0] && provData.artwork[0].dataUrl.length > 0) {
-                let timestamp = '0x' + SHA256(provData.artwork[0].dataUrl).toString()
+                let timestamp = utils.buildArtworkHash(provData.artwork[0].dataUrl)
                 indexData.timestamp = timestamp
                 ethService.fetchItemByArtHash(timestamp).then((item) => {
                   let myIndexData = _.find(rootFile.records, {timestamp: indexData.timestamp})
@@ -443,17 +444,18 @@ const provenanceService = {
     })
   },
   getRecordFromSearchIndexById: function (id) {
-    return new Promise(function (resolve) {
-      searchIndexService.searchIndex('art', 'id', id).then((records) => {
-        provenanceService.getRecordForSearch(records[0]).then((record) => {
-          resolve(record)
-        }).catch(e => {
-          console.log('Unable to get item by id: ' + id, e)
-          resolve({})
+    return searchIndexService.searchIndex('art', 'id', id).then((records) => {
+      return provenanceService.getRecordForSearch(records[0]).then((record) => {
+        let hash = utils.buildArtworkHash(record.provData.artwork[0].dataUrl)
+
+        // console.log('hash****', hash)
+
+        return ethService.fetchItemByArtHash(hash).then((data) => {
+          record.scData = data
+
+          // console.log('record*********', record)
+          return record
         })
-      }).catch(e => {
-        console.log('Unable to contact search index.', e)
-        resolve({})
       })
     })
   },

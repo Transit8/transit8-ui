@@ -222,7 +222,7 @@ export default {
         description: record.indexData.description,
         keywords: record.indexData.keywords,
         uploadedBy: this.artist.displayName,
-        ownedBy: record.indexData.uploader,
+        ownedBy: record.scData[1],
         category: record.indexData.itemType,
         canBuy: record.indexData.owner !== user.username,
         image: images[0],
