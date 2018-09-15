@@ -127,7 +127,7 @@
 </template>
 
 <script>
-import lightningService from '@/services/lightning/LightningService'
+import lightningService from '@/services/lightning/lightningService'
 import SHA256 from 'crypto-js/sha256'
 import _ from 'lodash'
 

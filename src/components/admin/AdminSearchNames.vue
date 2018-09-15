@@ -116,7 +116,7 @@
 </template>
 
 <script>
-import searchIndexService from '@/services/searchindex/SearchIndexService'
+import searchIndexService from '@/services/searchindex/searchIndexService'
 
 export default {
   data () {

@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import lightningService from '@/services/lightning/LightningService'
+import lightningService from '@/services/lightning/lightningService'
 import LightningActions from '@/components/lightning/LightningActions'
 import LightningNode from '@/components/lightning/LightningNode'
 import SockJS from 'sockjs-client'

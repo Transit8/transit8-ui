@@ -15,7 +15,7 @@
 
 <script>
 import ArtworksList from '../components/artworks/ArtworksList'
-import provenanceService from '@/services/provenance/ProvenanceService'
+import provenanceService from '@/services/provenance/provenanceService'
 import exchangeRatesService from '@/services/exchangeRatesService'
 import _ from 'lodash'
 

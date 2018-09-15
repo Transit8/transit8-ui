@@ -155,7 +155,7 @@
 <script>
 import ProvenanceActions from '@/components/provenance/ProvenanceActions'
 import ProvenanceCreateImages from '@/components/provenance/ProvenanceCreateImages'
-import provenanceService from '@/services/provenance/ProvenanceService'
+import provenanceService from '@/services/provenance/provenanceService'
 import _ from 'lodash'
 import moment from 'moment'
 

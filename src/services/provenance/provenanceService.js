@@ -7,7 +7,7 @@ import {
   loadUserData
 } from 'blockstack'
 import _ from 'lodash'
-import searchIndexService from '@/services/searchindex/SearchIndexService'
+import searchIndexService from '@/services/searchindex/searchIndexService'
 import moment from 'moment'
 import xhrService from '@/services/xhrService'
 import cacheService from '@/services/cacheService'

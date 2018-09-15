@@ -50,8 +50,8 @@
 </template>
 
 <script>
-import webrtcService from '@/services/webrtc/WebrtcService'
-import provenanceService from '@/services/provenance/ProvenanceService'
+import webrtcService from '@/services/webrtc/webrtcService'
+import provenanceService from '@/services/provenance/provenanceService'
 import ProvenanceBuyersInfo from '@/components/provenance/sales/ProvenanceBuyersInfo'
 import ProvenanceSellersInfo from '@/components/provenance/sales/ProvenanceSellersInfo'
 import moment from 'moment'

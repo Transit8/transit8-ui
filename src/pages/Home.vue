@@ -14,8 +14,8 @@ import Slider from '../components/home/Slider'
 import LastArtworks from '../components/home/LastArtworks'
 import LatestStories from '../components/home/LatestStories'
 import ethService from '@/services/experimental/ethApiService'
-import provenanceService from '@/services/provenance/ProvenanceService'
-import searchIndexService from '@/services/searchindex/SearchIndexService'
+import provenanceService from '@/services/provenance/provenanceService'
+import searchIndexService from '@/services/searchindex/searchIndexService'
 import _ from 'lodash'
 
 // noinspection JSUnusedGlobalSymbols
