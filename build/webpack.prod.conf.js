@@ -12,21 +12,21 @@ const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const env = process.env.NODE_ENV === 'testing'
-//  ? require('../config/test.env')
-//  : require('../config/prod.env')
+ ? require('../config/test.env')
+ : require('../config/prod.env')
 
 // var env = false
-if (process.env.RELEASE === 'staging') {
-  console.log('staging mode')
-  require('../config/stag.env')
-} else if (process.env.RELEASE === 'testing') {
-  console.log('test mode')
-  require('../config/test.env')
-  env = true
-} else {
-  console.log('production mode')
-  require('../config/prod.env')
-}
+// if (process.env.RELEASE === 'staging') {
+//   console.log('staging mode')
+//   require('../config/stag.env')
+// } else if (process.env.RELEASE === 'testing') {
+//   console.log('test mode')
+//   require('../config/test.env')
+//   env = true
+// } else {
+//   console.log('production mode')
+//   require('../config/prod.env')
+// }
 const webpackConfig = merge(baseWebpackConfig, {
   module: {
     rules: utils.styleLoaders({
