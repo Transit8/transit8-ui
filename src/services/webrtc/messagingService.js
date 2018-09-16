@@ -1,5 +1,5 @@
 // import eventBus from '@/services/eventBus'
-import webrtcService from '@/services/webrtc/WebrtcService'
+import webrtcService from '@/services/webrtc/webrtcService'
 import _ from 'lodash'
 
 /**

@@ -17,7 +17,7 @@
 
 <script>
 import ethService from '@/services/experimental/ethApiService'
-import provenanceService from '@/services/provenance/ProvenanceService'
+import provenanceService from '@/services/provenance/provenanceService'
 
 export default {
   props: ['provenanceRecord', 'recordId'],

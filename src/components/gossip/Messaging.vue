@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import webrtcService from '@/services/webrtc/WebrtcService'
+import webrtcService from '@/services/webrtc/webrtcService'
 import messagingService from '@/services/webrtc/messagingService'
 import eventBus from '@/services/eventBus'
 

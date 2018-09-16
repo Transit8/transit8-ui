@@ -40,7 +40,7 @@
 <script>
 import BrightBlockAuth from 'bright-block-auth/src/components/auth/BrightBlockAuth'
 import authorization from 'bright-block-auth'
-import provenanceService from '@/services/provenance/ProvenanceService'
+import provenanceService from '@/services/provenance/provenanceService'
 import messagingService from '@/services/webrtc/messagingService'
 import AuthLinks from './AuthLinks'
 import Languages from './Languages'

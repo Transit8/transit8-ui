@@ -17,7 +17,7 @@ import Navigation from '@/components/nav/Navigation'
 import Login from 'bright-block-auth/src/components/auth/Login'
 import ethService from '@/services/experimental/ethApiService'
 import AppFooter from './components/common/AppFooter'
-import provenanceService from '@/services/provenance/ProvenanceService'
+import provenanceService from '@/services/provenance/provenanceService'
 
 export default {
   name: 'App',

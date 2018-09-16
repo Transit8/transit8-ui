@@ -62,8 +62,8 @@ import BuyArtworkForm from '../components/artworks/BuyArtworkForm'
 import BidArtworkForm from '../components/artworks/BidArtworkForm'
 import ArtworkSlider from '../components/artworks/ArtworkSlider'
 import ArtworkSliderControls from '../components/artworks/ArtworkSliderControls'
-import webrtcService from '@/services/webrtc/WebrtcService'
-import provenanceService from '@/services/provenance/ProvenanceService'
+import webrtcService from '@/services/webrtc/webrtcService'
+import provenanceService from '@/services/provenance/provenanceService'
 // import ProvenanceBuyersInfo from '@/components/provenance/sales/ProvenanceBuyersInfo'
 // import ProvenanceSellersInfo from '@/components/provenance/sales/ProvenanceSellersInfo'
 // import moment from 'moment'
@@ -170,26 +170,30 @@ export default {
         return
       }
       ethService.buy(this.record.indexData.title, seller, buyer).then((item) => {
-        this.record.indexData.gaiaUrl = null
-        this.record.indexData.appUrl = null
-        this.record.indexData.owner = buyer
+        console.log('buying item ********', item)
+        if (item.failed !== true) {
+          this.record.indexData.gaiaUrl = null
+          this.record.indexData.appUrl = null
+          this.record.indexData.owner = buyer
 
-        if (!this.record.provData.owners) {
-          this.record.provData.owners = [{
-            owner: this.record.indexData.uploader,
+          if (!this.record.provData.owners) {
+            this.record.provData.owners = [{
+              owner: this.record.indexData.uploader,
+              saleData: this.record.indexData.saleData,
+            }]
+          }
+          this.record.provData.owners.push({
+            owner: this.record.indexData.owner,
             saleData: this.record.indexData.saleData,
-          }]
-        }
-        this.record.provData.owners.push({
-          owner: this.record.indexData.owner,
-          saleData: this.record.indexData.saleData,
-        })
+          })
 
-        provenanceService.createOrUpdateRecord(this.record.indexData, this.record.provData).then((records) => {
-          this.spinner = false
-        }).catch(e => {
-          console.log('ProvenanceVue: Unable to lookup ', e)
-        })
+          provenanceService.createOrUpdateRecord(this.record.indexData, this.record.provData).then((records) => {
+            console.log('records *******', records)
+            this.spinner = false
+          }).catch(e => {
+            console.log('ProvenanceVue: Unable to lookup ', e)
+          })
+        }
       })
     },
 
@@ -222,7 +226,7 @@ export default {
         description: record.indexData.description,
         keywords: record.indexData.keywords,
         uploadedBy: this.artist.displayName,
-        ownedBy: record.indexData.uploader,
+        ownedBy: record.scData[1],
         category: record.indexData.itemType,
         canBuy: record.indexData.owner !== user.username,
         image: images[0],

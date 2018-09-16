@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import provenanceService from '@/services/provenance/ProvenanceService'
+import provenanceService from '@/services/provenance/provenanceService'
 import ProvenanceBuyersInfo from '@/components/provenance/sales/ProvenanceBuyersInfo'
 import ProvenanceSellersInfo from '@/components/provenance/sales/ProvenanceSellersInfo'
 import moment from 'moment'

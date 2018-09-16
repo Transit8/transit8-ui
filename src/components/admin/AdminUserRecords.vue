@@ -51,8 +51,8 @@
 </template>
 
 <script>
-import searchIndexService from '@/services/searchindex/SearchIndexService'
-import provenanceService from '@/services/provenance/ProvenanceService'
+import searchIndexService from '@/services/searchindex/searchIndexService'
+import provenanceService from '@/services/provenance/provenanceService'
 import moment from 'moment'
 import _ from 'lodash'
 
