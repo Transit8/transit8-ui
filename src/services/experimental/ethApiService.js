@@ -15,17 +15,17 @@ import Web3 from 'web3'
 * 4. Get user account from metamask
 * 5. Get user balance
 */
-const ethereumUri = 'http://localhost:8545'
 // ropstein const contractAddress = '0xD224A5487F6FD3B62DACf3f31B110a3eCA6BCdC2'
 // ganache 0x73b5657373dfc685ed8a2a4bebdd39d7b3677def
 
-const ETHEREUM_ABI = process.env.ETHEREUM_ABI
-const ETHEREUM_CONTRACT_ADDRESS = '0x3C534b0c2b9773ee0FE9D28d906DB3a2751d798f'
 // process.env.ETHEREUM_CONTRACT_ADDRESS
 
-// const ethereumUri = 'https://api.blockcypher.com/v1/eth/main'
+// const ETHEREUM_URI = 'https://api.blockcypher.com/v1/eth/main'
 
 const ethApiService = {
+  ETHEREUM_URI: 'http://localhost:8545',
+  ETHEREUM_ABI: process.env.ETHEREUM_ABI,
+  ETHEREUM_CONTRACT_ADDRESS: '0x3C534b0c2b9773ee0FE9D28d906DB3a2751d798f',
   getNetworkType: function () {
     let networkId = this.getWeb3().version.network
     let networkName = ''
@@ -58,7 +58,7 @@ const ethApiService = {
       ethApiService.web3 = new Web3(window.web3.currentProvider)
     } else {
       // set the  provider you want from Web3.providers
-      ethApiService.web3 = new Web3(new Web3.providers.HttpProvider(ethereumUri))
+      ethApiService.web3 = new Web3(new Web3.providers.HttpProvider(ethApiService.ETHEREUM_URI))
     }
     if (ethApiService.web3.isConnected()) {
       return ethApiService.web3
@@ -77,8 +77,8 @@ const ethApiService = {
         }
         web3.eth.defaultAccount = result[0]
         ethApiService.accounts = result
-        ethApiService.artmarketContract = web3.eth.contract(ETHEREUM_ABI)
-        ethApiService.myContract = ethApiService.artmarketContract.at(ETHEREUM_CONTRACT_ADDRESS)
+        ethApiService.artmarketContract = web3.eth.contract(ethApiService.ETHEREUM_ABI)
+        ethApiService.myContract = ethApiService.artmarketContract.at(ethApiService.ETHEREUM_CONTRACT_ADDRESS)
         resolve({failed: false, accounts: ethApiService.accounts})
       })
     })
