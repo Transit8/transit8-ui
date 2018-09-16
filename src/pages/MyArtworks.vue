@@ -33,7 +33,9 @@ export default {
     const $self = this
     const userData = provenanceService.getUserData()
     provenanceService.getProvenanceRecordsInLS().then((records) => {
+      console.log('records ++++++', records)
       Promise.each(records, function (record) {
+        console.log('record .......', record)
         return provenanceService.getRecordFromSearchIndexById(record.indexData.id)
           .then((result) => {
             console.log('result++++', result)
@@ -41,14 +43,16 @@ export default {
             const artworkData = {
               image: result.provData.artwork[0].dataUrl,
               title: result.indexData.title,
-              caption: result.scData[1],
+              caption: result.scData ? result.scData[1] : result.indexData.uploader,
               id: result.indexData.id.toString(),
               forSale: result.indexData.saleData.soid === 1,
               forAuction: result.indexData.saleData.soid === 2,
               showRegistration: true,
             }
 
-            if (result.scData[1] === userData.username) {
+            console.log(result.scData, result.indexData.uploader, userData.username)
+
+            if ((!result.scData.length && result.indexData.uploader === userData.username) || result.scData[1] === userData.username) {
               $self.artworks.push(artworkData)
             } else {
               $self.soldArtworks.push(artworkData)

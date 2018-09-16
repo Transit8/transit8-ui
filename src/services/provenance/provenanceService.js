@@ -148,7 +148,7 @@ const provenanceService = {
                 indexData.timestamp = timestamp
                 ethService.fetchItemByArtHash(timestamp).then((item) => {
                   let myIndexData = _.find(rootFile.records, {timestamp: indexData.timestamp})
-                  if (item[1] && item[1].length > 0) {
+                  if (item && item[1] && item[1].length > 0) {
                     if (item[1] === myIndexData.uploader) {
                       myIndexData.regData = {
                         state: 120,
@@ -451,10 +451,13 @@ const provenanceService = {
       if (records.length) {
         return provenanceService.getRecordForSearch(records[0]).then((record) => {
           let hash = utils.buildArtworkHash(record.provData.artwork[0].dataUrl)
+          console.log(hash)
           return ethService.fetchItemByArtHash(hash).then((data) => {
+            console.log('scData*********', data)
             record.scData = data
             return record
           })
+            .catch((err) => console.error(err))
         })
       }
     })
