@@ -35,7 +35,7 @@ export default {
         {
           id: '1',
           caption: 'Artwork caption',
-          title: 'Artwork title',
+          title: 'Artwork title 1',
           image: '/static/images/artwork1.jpg',
           forSale: true
         },
