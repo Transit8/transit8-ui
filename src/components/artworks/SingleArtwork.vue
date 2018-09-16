@@ -10,8 +10,8 @@
     -->
     <router-link :to="'provenance/register/'+artwork.id" class="artwork-action" v-if="artwork.showRegistration">Register</router-link>
     <router-link :to="'provenance/edit/'+artwork.id" class="artwork-action" v-if="artwork.showRegistration">Edit</router-link>
-    <router-link :to="artwork.id" class="artwork-action" v-if="artwork.forSale">Buy</router-link>
-    <router-link :to="artwork.id" class="artwork-action" v-if="artwork.forAuction">Bid</router-link>
+    <router-link :to="'/artworks/' + artwork.id" class="artwork-action" v-if="artwork.forSale">Buy</router-link>
+    <router-link :to="'/artworks/' + artwork.id" class="artwork-action" v-if="artwork.forAuction">Bid</router-link>
   </router-link>
 </template>
 

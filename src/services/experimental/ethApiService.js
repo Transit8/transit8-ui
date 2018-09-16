@@ -1,5 +1,6 @@
 // import axios from 'axios'
 import Web3 from 'web3'
+import Promise from 'bluebird'
 
 // const Eth = require('ethjs')
 // const eth = new Eth(new Eth.HttpProvider('https://ropsten.infura.io'));
@@ -187,6 +188,7 @@ const ethApiService = {
       })
     })
   },
+  /*
   fetchItemByArtHash: function (artHash) {
     return new Promise(resolve => {
       ethApiService.fetchNumberOfItems().then((numberOfItems) => {
@@ -199,15 +201,35 @@ const ethApiService = {
               if (item[2] === artHash) {
                 resolve(item)
               }
-
-              if (!item) {
-                resolve([])
-              }
             })
           }, 50)
         }
+
+        resolve([])
         // resolve({registered: false, failed: true, reason: 'No item matching hash: ' + artHash})
       })
+    })
+  },
+  */
+  fetchItemByArtHash: function (artHash) {
+    return ethApiService.fetchNumberOfItems().then((numberOfItems) => {
+      const promises = []
+      for (let i = 0; i < numberOfItems; i++) {
+        promises.push(ethApiService.fetchItemByIndex(i))
+      }
+
+      return Promise.each(promises, (item) => item)
+        .then((res) => {
+          const map = res.map((item) => {
+            if (item[2] === artHash) {
+              return item
+            }
+
+            return null
+          }).filter((i) => i !== null)
+
+          return map.length ? map[0] : []
+        })
     })
   },
   fetchNumberOfItems: function () {
