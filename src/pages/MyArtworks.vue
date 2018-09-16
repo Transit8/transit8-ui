@@ -17,7 +17,7 @@
 import ArtworksList from '../components/artworks/ArtworksList'
 import provenanceService from '@/services/provenance/provenanceService'
 import exchangeRatesService from '@/services/exchangeRatesService'
-import _ from 'lodash'
+import Promise from 'bluebird'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -30,19 +30,30 @@ export default {
     }
   },
   mounted () {
-    let $self = this
+    const $self = this
+    const userData = provenanceService.getUserData()
     provenanceService.getProvenanceRecordsInLS().then((records) => {
-      _.forEach(records, function (record) {
-        try {
-          let artwork = provenanceService.convertToArtwork(record)
-          if (record.indexData.regData && record.indexData.regData.state === 130) {
-            $self.soldArtworks.push(artwork)
-          } else {
-            $self.artworks.push(artwork)
-          }
-        } catch (e) {
-          console.log('Skipping record: ', e)
-        }
+      Promise.each(records, function (record) {
+        return provenanceService.getRecordFromSearchIndexById(record.indexData.id)
+          .then((result) => {
+            console.log('result++++', result)
+
+            const artworkData = {
+              image: result.provData.artwork[0].dataUrl,
+              title: result.indexData.title,
+              caption: result.scData[1],
+              id: result.indexData.id.toString(),
+              forSale: result.indexData.saleData.soid === 1,
+              forAuction: result.indexData.saleData.soid === 2,
+              showRegistration: true,
+            }
+
+            if (result.scData[1] === userData.username) {
+              $self.artworks.push(artworkData)
+            } else {
+              $self.soldArtworks.push(artworkData)
+            }
+          })
       })
     })
 

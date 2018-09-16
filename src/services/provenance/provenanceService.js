@@ -447,18 +447,16 @@ const provenanceService = {
   },
   getRecordFromSearchIndexById: function (id) {
     return searchIndexService.searchIndex('art', 'id', id).then((records) => {
-      return provenanceService.getRecordForSearch(records[0]).then((record) => {
-        let hash = utils.buildArtworkHash(record.provData.artwork[0].dataUrl)
-
-        // console.log('hash****', hash)
-
-        return ethService.fetchItemByArtHash(hash).then((data) => {
-          record.scData = data
-
-          // console.log('record*********', record)
-          return record
+      console.log('search records +++++++', records)
+      if (records.length) {
+        return provenanceService.getRecordForSearch(records[0]).then((record) => {
+          let hash = utils.buildArtworkHash(record.provData.artwork[0].dataUrl)
+          return ethService.fetchItemByArtHash(hash).then((data) => {
+            record.scData = data
+            return record
+          })
         })
-      })
+      }
     })
   },
   getRecordForSearch: function (indexData) {

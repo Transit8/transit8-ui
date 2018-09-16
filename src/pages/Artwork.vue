@@ -235,7 +235,7 @@ export default {
         saleData: record.indexData.saleData,
         forSale: record.indexData.saleData.soid === 1,
         forAuction: record.indexData.saleData.soid === 2,
-        amount: record.indexData.saleData.amount,
+        amount: record.scData[4],
         minBidIncrement: record.indexData.saleData.increment,
         reservedPrice: record.indexData.saleData.reserve,
       }

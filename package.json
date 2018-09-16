@@ -20,6 +20,7 @@
     "babel-preset-es2015": "^6.24.1",
     "bignumber.js": "^7.2.1",
     "blockstack": "^18.0.2",
+    "bluebird": "^3.5.2",
     "bootstrap": "^3.3.7",
     "bright-block-auth": "^1.0.21",
     "bulma": "^0.6.2",
