@@ -100,6 +100,7 @@ const provenanceService = {
         if (!file) {
           provenanceService.makeRootFile().then(function (message) {
             getFile(provenanceService.ROOT_FILE_GAIA_NAME, {decrypt: false}).then(function (file) {
+              console.log('root file **********', JSON.parse(file))
               provenanceService.rootFile = JSON.parse(file)
               provenanceService.state = 'ROOT_INIT'
               resolve({failed: false, message: 'Made new root file in user storage and saved it in local storage: ' + file})
@@ -108,6 +109,7 @@ const provenanceService = {
             })
           })
         } else {
+          console.log('root file 2 **********', JSON.parse(file))
           provenanceService.rootFile = JSON.parse(file)
           let newData = provenanceService.rootFile.records
           newData = _.unionBy(provenanceService.rootFile.records, newData, 'id')
