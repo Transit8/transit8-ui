@@ -101,6 +101,7 @@ const ethApiService = {
   },
   */
   sell: function (title, username, amountInWei) {
+    const self = this
     return new Promise(resolve => {
       ethApiService.fetchNumberOfItems().then((numberOfItems) => {
         let $elfist = this
@@ -110,7 +111,7 @@ const ethApiService = {
             $elfist.index++
             ethApiService.fetchItemByIndex($elfist.index).then((item) => {
               if (item[0] === title && item[1] === username) {
-                ethApiService.myContract.sell(index, amountInWei, function (err, res) {
+                ethApiService.myContract.sell(index, self.getEth(amountInWei), function (err, res) {
                   if (err) {
                     console.log(err)
                     resolve({failed: true, reason: err})
@@ -125,6 +126,36 @@ const ethApiService = {
         resolve({registered: false, failed: true, reason: 'failded to fetch transactions'})
       })
     })
+  },
+  startAuction (title, username, saleData) {
+    const self = this
+    return new Promise(resolve => {
+      ethApiService.fetchNumberOfItems().then((numberOfItems) => {
+        let $elfist = this
+        for (let index = 0; index < numberOfItems; index++) {
+          $elfist.index = -1
+          setTimeout(function timer () {
+            $elfist.index++
+            ethApiService.fetchItemByIndex($elfist.index).then((item) => {
+              if (item[0] === title && item[1] === username) {
+                ethApiService.myContract.startAuction(index, saleData.duration, self.getEth(saleData.reserve), self.getEth(saleData.increment), function (err, res) {
+                  if (err) {
+                    console.log(err)
+                    resolve({failed: true, reason: err})
+                  }
+                  resolve({txId: res})
+                })
+              }
+            })
+          }, 500)
+        }
+      }).catch(function (e) {
+        resolve({registered: false, failed: true, reason: 'failded to fetch transactions'})
+      })
+    })
+  },
+  getEth (num) {
+    return num * 1000000000000000000
   },
   buy: function (title, seller, buyer) {
     return new Promise(resolve => {
@@ -152,6 +183,19 @@ const ethApiService = {
       })
     })
   },
+  bid (auctionIndex, amount) {
+    const amountValue = this.getEth(amount)
+
+    return new Promise(resolve => {
+      ethApiService.myContract.buy(auctionIndex, {value: amountValue}, function (err, res) {
+        if (err) {
+          console.log(err)
+          resolve({failed: true, reason: err})
+        }
+        resolve({txId: res})
+      })
+    })
+  },
   fetchItemByIndex: function (index, ownerIndex) {
     return new Promise(resolve => {
       ethApiService.myContract.items(index, function (err, item) {
@@ -166,6 +210,16 @@ const ethApiService = {
         //  console.log(owner)
         //  resolve(item)
         // })
+      })
+    })
+  },
+  fetchAuctionByIndex: function (index) {
+    return new Promise(resolve => {
+      ethApiService.myContract.auctions(index, function (err, auction) {
+        if (err) {
+          resolve([])
+        }
+        resolve(auction)
       })
     })
   },
@@ -232,6 +286,31 @@ const ethApiService = {
         })
     })
   },
+  fetchItemByAuction: function (artHash) {
+    return ethApiService.fetchNumberOfAuctions().then((numberOfAuctions) => {
+      const promises = []
+      for (let i = 0; i < numberOfAuctions; i++) {
+        promises.push(ethApiService.fetchAuctionByIndex(i))
+      }
+
+      return Promise.each(promises, (a) => a)
+        .then((auctions) => {
+          let auctionIndex = -1
+
+          return Promise.map(auctions, (a) => {
+            return ethApiService.fetchItemByIndex(a[0].toNumber())
+              .then((item) => {
+                if (item[2] === artHash) {
+                  auctionIndex++
+                  return {scData: item, auctionData: a, auctionIndex}
+                }
+                auctionIndex++
+                return null
+              })
+          })
+        })
+    })
+  },
   fetchNumberOfItems: function () {
     return new Promise(resolve => {
       ethApiService.connectToBlockChain().then(function (result) {
@@ -240,6 +319,20 @@ const ethApiService = {
             console.log(err)
           }
           resolve(Number(numbItems) + 1)
+        })
+      }).catch(function (e) {
+        resolve({registered: false, failed: true, reason: 'failed to connect to ethereum'})
+      })
+    })
+  },
+  fetchNumberOfAuctions () {
+    return new Promise(resolve => {
+      ethApiService.connectToBlockChain().then(function (result) {
+        ethApiService.myContract.auctionIndex(function (err, numbAuctions) {
+          if (err) {
+            console.log(err)
+          }
+          resolve(Number(numbAuctions) + 1)
         })
       }).catch(function (e) {
         resolve({registered: false, failed: true, reason: 'failed to connect to ethereum'})

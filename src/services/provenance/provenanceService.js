@@ -450,14 +450,26 @@ const provenanceService = {
       console.log('search records +++++++', records)
       if (records.length) {
         return provenanceService.getRecordForSearch(records[0]).then((record) => {
+          console.log('rec', record)
           let hash = utils.buildArtworkHash(record.provData.artwork[0].dataUrl)
           console.log(hash)
-          return ethService.fetchItemByArtHash(hash).then((data) => {
-            console.log('scData*********', data)
-            record.scData = data
-            return record
-          })
-            .catch((err) => console.error(err))
+
+          if (record.indexData.saleData.soid === 1) {
+            return ethService.fetchItemByArtHash(hash).then((data) => {
+              console.log('scData*********', data)
+              record.scData = data
+              return record
+            })
+              .catch((err) => console.error(err))
+          } else if (record.indexData.saleData.soid === 2) {
+            return ethService.fetchItemByAuction(hash).then((data) => {
+              console.log('scAuctionData*********', data)
+              record = Object.assign({}, record, ...data)
+              console.log('recordData*********', record)
+              return record
+            })
+              .catch((err) => console.error(err))
+          }
         })
       }
     })

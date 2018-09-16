@@ -100,6 +100,16 @@
               </div>
             </div>
           </div>
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
+              <label class="label">Duration (seconds)</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <input class="input is-info" type="number" step="50" placeholder="Duration" v-model="recordForSaleData.indexData.saleData.duration">
+              </div>
+            </div>
+          </div>
         </div>
         <div class="field is-grouped is-grouped-right" style="margin-top: 40px;">
           <div class="control has-text-right">
@@ -217,6 +227,7 @@ export default {
         amount: (tempSaleData.amount) ? Number(tempSaleData.amount) : 0,
         reserve: (tempSaleData.reserve) ? Number(tempSaleData.reserve) : 0,
         increment: (tempSaleData.increment) ? Number(tempSaleData.increment) : 0,
+        duration: tempSaleData.duration ? tempSaleData.duration : 300,
       }
       if (saleData.soid === 0 || saleData.soid === 2) {
         saleData.amount = 0
@@ -233,17 +244,25 @@ export default {
       this.spinner = true
       let $elfist = this
       provenanceService.createOrUpdateRecord(this.recordForSaleData.indexData, this.recordForSaleData.provData).then((records) => {
-        let amountInWei = Math.trunc(saleData.amountInEther * 1000000000000000000)
+        let amountInWei = saleData.amountInEther
         $elfist.$emit('close-sale-data-modal', {id: $elfist.recordForSaleData.id, saleData: saleData})
-        ethService.sell($elfist.recordForSaleData.indexData.title, $elfist.username, amountInWei).then((item) => {
-          console.log(' amountInWei: ' + amountInWei + ' item: ', item)
-          this.spinner = false
-          $elfist.$emit('close-sale-data-modal', {id: $elfist.recordForSaleData.id, saleData: saleData})
-        })
+        if (this.saleOptionSoid === 1) { // set for sale
+          ethService.sell($elfist.recordForSaleData.indexData.title, $elfist.username, amountInWei).then((item) => {
+            console.log(' amountInWei: ' + amountInWei + ' item: ', item)
+            this.spinner = false
+            $elfist.$emit('close-sale-data-modal', { id: $elfist.recordForSaleData.id, saleData: saleData })
+          })
+        } else if (this.saleOptionSoid === 2) { // set for auction
+          ethService.startAuction($elfist.recordForSaleData.indexData.title, $elfist.username, saleData).then((item) => {
+            console.log(' sale data: ' + saleData + ' item: ', item)
+            this.spinner = false
+            $elfist.$emit('close-sale-data-modal', { id: $elfist.recordForSaleData.id, saleData: saleData })
+          })
+        }
       }).catch(e => {
         console.log('ProvenanceVue: Unable to lookup ', e)
       })
-    }
+    },
   },
   components: {
     ConversionRates

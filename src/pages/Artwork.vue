@@ -205,6 +205,18 @@ export default {
 
     bidArtwork (value) {
       console.log(value)
+
+      ethService.bid(this.record.auctionIndex, value).then((item) => {
+        console.log('bidding for item ********', item)
+        if (item.failed !== true) {
+          provenanceService.createOrUpdateRecord(this.record.indexData, this.record.provData).then((records) => {
+            console.log('records *******', records)
+            this.spinner = false
+          }).catch(e => {
+            console.log('ProvenanceVue: Unable to lookup ', e)
+          })
+        }
+      })
     },
 
     setRecord (record) {
