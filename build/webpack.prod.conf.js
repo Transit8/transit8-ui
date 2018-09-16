@@ -11,11 +11,11 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
-// const env = process.env.NODE_ENV === 'testing'
+const env = process.env.NODE_ENV === 'testing'
 //  ? require('../config/test.env')
 //  : require('../config/prod.env')
 
-var env = false
+// var env = false
 if (process.env.RELEASE === 'staging') {
   console.log('staging mode')
   require('../config/stag.env')
