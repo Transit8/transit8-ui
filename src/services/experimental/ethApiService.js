@@ -198,7 +198,9 @@ const ethApiService = {
             ethApiService.fetchItemByIndex($elfist.index).then((item) => {
               if (item[2] === artHash) {
                 resolve(item)
-              } else {
+              }
+
+              if (!item) {
                 resolve([])
               }
             })
