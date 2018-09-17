@@ -247,6 +247,41 @@ const ethApiService = {
       })
     })
   },
+  loadArtworks: function (numberOfArtworks, callback) {
+    let $elfist = this
+    $elfist.callback = callback
+    $elfist.numberOfArtworks = numberOfArtworks
+    $elfist.counter = 0
+    if (!callback && ethApiService.blockchainResults && ethApiService.blockchainResults.length >= numberOfArtworks) {
+      for (let index = ethApiService.blockchainResults.length; index >= 0; index--) {
+        if ($elfist.counter < numberOfArtworks) {
+          if (ethApiService.blockchainResults[index]) {
+            $elfist.callback(ethApiService.blockchainResults[index])
+            $elfist.counter++
+          }
+        }
+      }
+    } else {
+      ethApiService.blockchainResults = []
+      ethApiService.fetchNumberOfItems().then((numberOfItems) => {
+        for (let index = numberOfItems; index >= numberOfItems - numberOfArtworks; index--) {
+          ethApiService.fetchItemByIndex(index, 0).then((item) => {
+            let title = item[0]
+            if (title && title.length > 0) {
+              console.log('Blockchain result: ' + title + ' index: ' + index)
+              ethApiService.blockchainResults.push({index0: index, item: item})
+              if (ethApiService.blockchainResults.length <= numberOfArtworks) {
+                $elfist.callback({index: index, item: item})
+              }
+              // $elfist.fetchArtwork(index, item[0])
+            }
+          }).catch(function (e) {
+            console.log({registered: false, failed: true, reason: 'failded to fetch transactions'})
+          })
+        }
+      })
+    }
+  },
   getBalance: function (account0) {
     return new Promise(resolve => {
       ethApiService.web3.eth.getBalance(account0, function (error, result) {
