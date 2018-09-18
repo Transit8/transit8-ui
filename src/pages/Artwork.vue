@@ -94,44 +94,7 @@ export default {
       sliderImage: 0,
       artist: {},
       artwork: {},
-      artworks: [
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork1.jpg',
-        },
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork2.jpg',
-        },
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork3.jpg',
-        },
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork4.jpg',
-        },
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork5.jpg',
-        },
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork6.jpg',
-        },
-      ],
+      artworks: [],
     }
   },
   beforeDestroy () {
@@ -139,16 +102,18 @@ export default {
     eventBus.$off('signal-in-message')
   },
   created () {
+    let $elfie = this
     window.addEventListener('beforeunload', this.stopPublishing)
     let recordId = (this.$route && this.$route.params.artworkId) ? parseInt(this.$route.params.artworkId) : undefined
     provenanceService.getRecordFromSearchIndexById(recordId).then((record) => {
       provenanceService.getArtistProfile(record).then((profile) => {
+        $elfie.record = record
         this.artist = profile
         this.user = provenanceService.getUserProfile(record)
         this.setRecord(record)
+        this.loadArtworks(50)
       })
     })
-    let $elfie = this
     // eventBus.$on('signal-in-message', function (payLoad) {
     //  $elfie.userMessages.push(payLoad)
     // })
@@ -163,6 +128,28 @@ export default {
     })
   },
   methods: {
+    loadArtworks: function (numberToLoad) {
+      ethService.loadArtworks(numberToLoad, this.loadArtwork)
+    },
+
+    loadArtwork: function (blockchainItem) {
+      let $self = this
+      provenanceService.findArtworkFromBlockChainData(blockchainItem, function (record) {
+        if (record.indexData.uploader === $self.record.indexData.uploader) {
+          let saleData = record.indexData.saleData
+          $self.artworks.push({
+            id: String(record.indexData.id),
+            title: record.indexData.title,
+            caption: record.profile.displayName,
+            // caption: record.indexData.uploader,
+            forSale: (saleData && saleData.soid === 1),
+            forAuction: (saleData && saleData.soid === 2),
+            image: record.image
+          })
+        }
+      })
+    },
+
     buyArtwork () {
       let buyer = this.user.username
       let seller = this.artist.username

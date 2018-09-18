@@ -31,6 +31,8 @@
 import ArtistDetails from '../components/artists/ArtistDetails'
 import SingleArtwork from '../components/artworks/SingleArtwork'
 import ArtworksList from '../components/artworks/ArtworksList'
+import provenanceService from '@/services/provenance/provenanceService'
+import ethService from '@/services/experimental/ethApiService'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -43,45 +45,48 @@ export default {
         description: 'Born in Osaka in 1978, Hiroe Saeki graduated from the Faculty of Fine Art, Kyoto Seika University in 2001.<br />Making her debut at the exhibition held at Taka Ishii Gallery in 2004, Saeki won the VOCA Encouragement Prize and held her first overseas solo exhibition at Galerie Almine Rech in Paris, in 2006.',
         image: '/static/images/artist_preview.png',
       },
-      artworks: [
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork1.jpg',
-        },
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork2.jpg',
-        },
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork3.jpg',
-        },
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork4.jpg',
-        },
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork5.jpg',
-        },
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork6.jpg',
-        },
-      ]
+      artworks: []
     }
+  },
+  mounted () {
+    this.loadArtworks(50)
+  },
+
+  methods: {
+
+    loadArtworks: function (numberToLoad) {
+      ethService.loadArtworks(numberToLoad, this.loadArtwork)
+    },
+
+    loadArtwork: function (blockchainItem) {
+      let $self = this
+      let artistId = this.$route.params.artistId
+      let blockstackId = artistId.replace(/_/g, '.')
+      let found = false
+      provenanceService.findArtworkFromBlockChainData(blockchainItem, function (record) {
+        if (record.indexData.uploader === blockstackId) {
+          if (!found) {
+            $self.artist = {
+              id: blockstackId,
+              name: record.profile.name,
+              description: record.profile.description,
+              image: record.profile.image
+            }
+          }
+          found = true
+          let saleData = record.indexData.saleData
+          $self.artworks.push({
+            id: String(record.indexData.id),
+            title: record.indexData.title,
+            caption: record.profile.displayName,
+            // caption: record.indexData.uploader,
+            forSale: (saleData && saleData.soid === 1),
+            forAuction: (saleData && saleData.soid === 2),
+            image: record.image
+          })
+        }
+      })
+    },
   }
 }
 </script>

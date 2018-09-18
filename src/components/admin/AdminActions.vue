@@ -5,6 +5,9 @@
   </h3>
   <ul class="">
     <li>
+      <a href="#/admin/settings">Settings</a>
+    </li>
+    <li>
       <a href="#/admin/search/names">Names Index</a>
     </li>
     <li>

@@ -8,10 +8,10 @@
     <p class="artwork-caption">{{artwork.owner}}</p>
     <p class="artwork-caption">{{artwork.state}}</p>
     -->
-    <router-link :to="'provenance/register/'+artwork.id" class="artwork-action" v-if="artwork.showRegistration">Register</router-link>
-    <router-link :to="'provenance/edit/'+artwork.id" class="artwork-action" v-if="artwork.showRegistration">Edit</router-link>
-    <router-link :to="artwork.id" class="artwork-action" v-if="artwork.forSale">Buy</router-link>
-    <router-link :to="artwork.id" class="artwork-action" v-if="artwork.forAuction">Bid</router-link>
+    <router-link :to="registerUrl" class="artwork-action" v-if="artwork.showRegistration">Register</router-link>
+    <router-link :to="editUrl" class="artwork-action" v-if="artwork.showRegistration">Edit</router-link>
+    <router-link :to="url" class="artwork-action" v-if="artwork.forSale">Buy</router-link>
+    <router-link :to="url" class="artwork-action" v-if="artwork.forAuction">Bid</router-link>
   </router-link>
 </template>
 
@@ -34,6 +34,12 @@ export default {
   computed: {
     artworkWidth () {
       return `col-sm-${this.width}`
+    },
+    registerUrl () {
+      return `/provenance/register/${this.artwork.id}`
+    },
+    editUrl () {
+      return `/provenance/edit/${this.artwork.id}`
     },
     url () {
       return `/artworks/${this.artwork.id}`

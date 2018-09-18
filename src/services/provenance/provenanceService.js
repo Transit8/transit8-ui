@@ -461,6 +461,35 @@ const provenanceService = {
       })
     })
   },
+  findArtworkFromBlockChainData: function (blockchainItem, callback) {
+    let $self = this
+    $self.callback = callback
+    let index = blockchainItem.index
+    let title = blockchainItem.item[0]
+    console.log('Searching for item with title: ' + title + ' index: ' + index)
+    searchIndexService.searchIndex('art', 'title', '"' + title + '"').then((results) => {
+      let indexData = results[0]
+      provenanceService.getRecordForSearch(indexData).then((record) => {
+        if (record && record.indexData && record.indexData.id) {
+          let dataUrl = ''
+          if (record.provData.artwork && record.provData.artwork && record.provData.artwork.length > 0) {
+            dataUrl = record.provData.artwork[ 0 ].dataUrl
+          }
+          if (dataUrl && dataUrl.length > 0) {
+            provenanceService.getArtistProfile(record).then((profile) => {
+              record.profile = profile
+              record.image = dataUrl
+              $self.callback(record)
+            })
+          }
+        }
+      }).catch(e => {
+        console.log('Unable to get from: ', indexData)
+      })
+    }).catch(e => {
+      console.log('Unable to contact search index.', e)
+    })
+  },
   getRecordForSearch: function (indexData) {
     return new Promise(function (resolve) {
       let useCache = false

@@ -7,7 +7,7 @@
         <span class="sr-only">Toggle navigation</span>
         <span class="icon-menu"></span>
       </button>
-      <router-link to="/"><img class="logo" src="static/images/sybella-logo.png" alt="Sybella logo"></router-link>
+      <router-link to="/"><img class="logo" src="/static/images/sybella-logo.png" alt="Sybella logo"></router-link>
     </div>
     <div class="navbar-right col-md-8 col-xs-12">
       <search-form @submit="searchIndex($event)"/>
