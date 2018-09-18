@@ -22,7 +22,7 @@
     height: 100%;
     display: flex;
     align-items: center;
-    padding-left: 94px;
+    padding-left: 64px;
     padding-top: 5px;
 
     .icon-menu {
@@ -37,11 +37,11 @@
   .navbar-toggle {
     position: absolute;
     left: 0;
-    z-index: 2;
+    z-index: 17;
     display: block;
     float: left;
     border: none;
-    padding: 5px 30px;
+    padding: 5px 30px 5px 0;
     margin: 0;
     &:hover, &:focus, &:active {
       background: initial;
@@ -127,7 +127,7 @@
   width: 0;
   height: 100vh;
   position: absolute;
-  z-index: 1;
+  z-index: 16;
   top: 0;
   left: 0;
   background-color: $black;

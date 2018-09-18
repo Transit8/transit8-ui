@@ -1,6 +1,6 @@
 <template>
   <section id="stories" class="pb-150">
-    <div class="container wide pt-120">
+    <div class="container wide pt-80">
       <div class="row">
         <div class="col-xs-12">
           <h2 class="section-title">Sybella Stories</h2>

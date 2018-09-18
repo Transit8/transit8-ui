@@ -1,6 +1,6 @@
 <template>
   <section id="artworks">
-    <div class="container wide pt-120">
+    <div class="container wide pt-80">
       <div class="row">
         <div class="col-sm-12">
           <h2 class="section-title">Artworks at Sybella</h2>
