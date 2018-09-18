@@ -13,8 +13,8 @@
 
 <script>
 import ResultsList from '../components/artworks/ResultsList'
-import provenanceService from '@/services/provenance/ProvenanceService'
-import searchIndexService from '@/services/searchindex/SearchIndexService'
+import provenanceService from '@/services/provenance/provenanceService'
+import searchIndexService from '@/services/searchindex/searchIndexService'
 // import ProvenanceItemBar from '@/components/provenance/ProvenanceItemBar'
 import moment from 'moment'
 import _ from 'lodash'

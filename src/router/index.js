@@ -18,6 +18,7 @@ import Competition from '../pages/Competition'
 import Blog from '../pages/Blog'
 import BlogPost from '../pages/BlogPost'
 import Admin from '../components/admin/Admin'
+import AdminSettings from '../components/admin/AdminSettings'
 import AdminRegistrations from '../components/admin/AdminRegistrations'
 import AdminSearchNames from '../components/admin/AdminSearchNames'
 import AdminSearchArt from '../components/admin/AdminSearchArt'
@@ -96,6 +97,10 @@ const router = new Router({
           path: '/admin/search/names',
           name: 'adminSearchNames',
           component: AdminSearchNames
+        }, {
+          path: '/admin/settings',
+          name: 'adminSettings',
+          component: AdminSettings
         }, {
           path: '/admin/registrations',
           name: 'adminRegistrations',

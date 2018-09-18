@@ -111,7 +111,7 @@
 </template>
 
 <script>
-import searchIndexService from '@/services/searchindex/SearchIndexService'
+import searchIndexService from '@/services/searchindex/searchIndexService'
 import moment from 'moment'
 
 export default {

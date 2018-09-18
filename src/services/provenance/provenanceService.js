@@ -7,12 +7,13 @@ import {
   loadUserData
 } from 'blockstack'
 import _ from 'lodash'
-import searchIndexService from '@/services/searchindex/SearchIndexService'
+import searchIndexService from '@/services/searchindex/searchIndexService'
 import moment from 'moment'
 import xhrService from '@/services/xhrService'
 import cacheService from '@/services/cacheService'
 import SHA256 from 'crypto-js/sha256'
 import ethService from '@/services/experimental/ethApiService'
+import utils from '../utils'
 
 /**
  *  Service manages a file structure which has a root file and a set of provenance records.
@@ -99,6 +100,7 @@ const provenanceService = {
         if (!file) {
           provenanceService.makeRootFile().then(function (message) {
             getFile(provenanceService.ROOT_FILE_GAIA_NAME, {decrypt: false}).then(function (file) {
+              console.log('root file **********', JSON.parse(file))
               provenanceService.rootFile = JSON.parse(file)
               provenanceService.state = 'ROOT_INIT'
               resolve({failed: false, message: 'Made new root file in user storage and saved it in local storage: ' + file})
@@ -107,6 +109,7 @@ const provenanceService = {
             })
           })
         } else {
+          console.log('root file 2 **********', JSON.parse(file))
           provenanceService.rootFile = JSON.parse(file)
           let newData = provenanceService.rootFile.records
           newData = _.unionBy(provenanceService.rootFile.records, newData, 'id')
@@ -141,7 +144,7 @@ const provenanceService = {
               }
               provData.blockchainOwner = indexData.uploader
               if (provData && provData.artwork && provData.artwork[0] && provData.artwork[0].dataUrl.length > 0) {
-                let timestamp = '0x' + SHA256(provData.artwork[0].dataUrl).toString()
+                let timestamp = utils.buildArtworkHash(provData.artwork[0].dataUrl)
                 indexData.timestamp = timestamp
                 ethService.fetchItemByArtHash(timestamp).then((item) => {
                   let myIndexData = _.find(rootFile.records, {timestamp: indexData.timestamp})
@@ -443,18 +446,48 @@ const provenanceService = {
     })
   },
   getRecordFromSearchIndexById: function (id) {
-    return new Promise(function (resolve) {
-      searchIndexService.searchIndex('art', 'id', id).then((records) => {
-        provenanceService.getRecordForSearch(records[0]).then((record) => {
-          resolve(record)
-        }).catch(e => {
-          console.log('Unable to get item by id: ' + id, e)
-          resolve({})
+    return searchIndexService.searchIndex('art', 'id', id).then((records) => {
+      return provenanceService.getRecordForSearch(records[0]).then((record) => {
+        let hash = utils.buildArtworkHash(record.provData.artwork[0].dataUrl)
+
+        // console.log('hash****', hash)
+
+        return ethService.fetchItemByArtHash(hash).then((data) => {
+          record.scData = data
+
+          // console.log('record*********', record)
+          return record
         })
-      }).catch(e => {
-        console.log('Unable to contact search index.', e)
-        resolve({})
       })
+    })
+  },
+  findArtworkFromBlockChainData: function (blockchainItem, callback) {
+    let $self = this
+    $self.callback = callback
+    let index = blockchainItem.index
+    let title = blockchainItem.item[0]
+    console.log('Searching for item with title: ' + title + ' index: ' + index)
+    searchIndexService.searchIndex('art', 'title', '"' + title + '"').then((results) => {
+      let indexData = results[0]
+      provenanceService.getRecordForSearch(indexData).then((record) => {
+        if (record && record.indexData && record.indexData.id) {
+          let dataUrl = ''
+          if (record.provData.artwork && record.provData.artwork && record.provData.artwork.length > 0) {
+            dataUrl = record.provData.artwork[ 0 ].dataUrl
+          }
+          if (dataUrl && dataUrl.length > 0) {
+            provenanceService.getArtistProfile(record).then((profile) => {
+              record.profile = profile
+              record.image = dataUrl
+              $self.callback(record)
+            })
+          }
+        }
+      }).catch(e => {
+        console.log('Unable to get from: ', indexData)
+      })
+    }).catch(e => {
+      console.log('Unable to contact search index.', e)
     })
   },
   getRecordForSearch: function (indexData) {

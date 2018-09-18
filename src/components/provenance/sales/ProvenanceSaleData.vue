@@ -119,7 +119,7 @@
 </template>
 
 <script>
-import provenanceService from '@/services/provenance/ProvenanceService'
+import provenanceService from '@/services/provenance/provenanceService'
 import ConversionRates from '@/components/rates/ConversionRates'
 import ethService from '@/services/experimental/ethApiService'
 

@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import lightningService from '@/services/lightning/LightningService'
+import lightningService from '@/services/lightning/lightningService'
 import _ from 'lodash'
 
 export default {

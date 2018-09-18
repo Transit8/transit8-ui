@@ -24,6 +24,8 @@
 <script>
 import Filters from '../components/artworks/Filters'
 import ArtworksList from '../components/artworks/ArtworksList'
+import ethService from '@/services/experimental/ethApiService'
+import provenanceService from '@/services/provenance/provenanceService'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -31,54 +33,34 @@ export default {
   components: { ArtworksList, Filters },
   data () {
     return {
-      artworks: [
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork1.jpg',
-          forSale: true
-        },
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork2.jpg',
-          forAuction: true
-        },
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork3.jpg',
-          forSale: true
-        },
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork4.jpg',
-          forSale: true
-        },
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork5.jpg',
-          forAuction: true
-        },
-        {
-          id: '1',
-          caption: 'Artwork caption',
-          title: 'Artwork title',
-          image: '/static/images/artwork6.jpg',
-          forSale: true
-        },
-      ],
+      artworks: [],
       filters: {}
     }
   },
+  mounted () {
+    this.loadArtworks(9)
+  },
   methods: {
+    loadArtworks: function (numberToLoad) {
+      ethService.loadArtworks(numberToLoad, this.loadArtwork)
+    },
+
+    loadArtwork: function (blockchainItem) {
+      let $self = this
+      provenanceService.findArtworkFromBlockChainData(blockchainItem, function (record) {
+        let saleData = record.indexData.saleData
+        $self.artworks.push({
+          id: String(record.indexData.id),
+          title: record.indexData.title,
+          caption: record.profile.displayName,
+          // caption: record.indexData.uploader,
+          forSale: (saleData && saleData.soid === 1),
+          forAuction: (saleData && saleData.soid === 2),
+          image: record.image
+        })
+      })
+    },
+
     updateFilters (filters) {
       this.filters = filters
     },

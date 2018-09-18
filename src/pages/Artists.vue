@@ -15,6 +15,9 @@
 
 <script>
 import ArtistsList from '../components/artists/ArtistsList'
+import ethService from '@/services/experimental/ethApiService'
+import provenanceService from '@/services/provenance/provenanceService'
+import _ from 'lodash'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -22,19 +25,40 @@ export default {
   components: { ArtistsList },
   data () {
     return {
-      artists: [
-        { id: '1', image: '/static/images/artist_preview.png', title: 'First Last (name)' },
-        { id: '2', image: '/static/images/artist_preview.png', title: 'First Last (name)' },
-        { id: '3', image: '/static/images/artist_preview.png', title: 'First Last (name)' },
-        { id: '4', image: '/static/images/artist_preview.png', title: 'First Last (name)' },
-        { id: '5', image: '/static/images/artist_preview.png', title: 'First Last (name)' },
-        { id: '6', image: '/static/images/artist_preview.png', title: 'First Last (name)' },
-        { id: '7', image: '/static/images/artist_preview.png', title: 'First Last (name)' },
-        { id: '8', image: '/static/images/artist_preview.png', title: 'First Last (name)' },
-        { id: '9', image: '/static/images/artist_preview.png', title: 'First Last (name)' },
-        { id: '10', image: '/static/images/artist_preview.png', title: 'First Last (name)' },
-        { id: '11', image: '/static/images/artist_preview.png', title: 'First Last (name)' },
-      ]
+      artists: []
+    }
+  },
+
+  mounted () {
+    this.loadArtworks(50)
+  },
+
+  methods: {
+
+    loadArtworks: function (numberToLoad) {
+      ethService.loadArtworks(numberToLoad, this.loadArtwork)
+    },
+
+    loadArtwork: function (blockchainItem) {
+      let $self = this
+      provenanceService.findArtworkFromBlockChainData(blockchainItem, function (record) {
+        let index = _.findIndex($self.artists, {title: record.profile.name})
+        if (index === -1) {
+          let blockstackId = record.indexData.uploader.replace(/\./g, '_')
+          $self.artists.push({
+            id: blockstackId,
+            title: record.profile.name,
+            image: record.profile.image
+          })
+        }
+      })
+    },
+
+    updateFilters (filters) {
+      this.filters = filters
+    },
+    loadMore () {
+      //
     }
   }
 }
