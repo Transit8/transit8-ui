@@ -1,5 +1,7 @@
 <template>
   <div>
+
+  <div class="pdp-top-sections">
     <section id="pdp-slider" class="pb-0 black-bg white pdp-slider pt-60 pb-60">
       <div class="container wide">
         <div class="row">
@@ -25,12 +27,15 @@
     </section>
     <!-- /#pdp slider -->
 
+    <about-artwork :artwork="artwork" ref="about"/>
+    <!-- /#about-artwork-->
+
     <buy-artwork-form :artwork="artwork" @buy="buyArtwork()" v-if="artwork.forSale"/>
     <bid-artwork-form :artwork="artwork" @bid="bidArtwork($event)" v-if="artwork.forAuction"/>
     <!-- /#pdp-action -->
 
-    <about-artwork :artwork="artwork" ref="about"/>
-    <!-- /#about-artwork-->
+    </div>
+    <!-- end top sections with sticky footer -->
 
     <div class="divider divider-white"></div>
     <about-artist :artist="artist"/>
