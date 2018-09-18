@@ -1,7 +1,7 @@
 <template>
   <div id="filter-art">
     <ul>
-      <li data-type-filter="all">All Types</li>
+      <li data-type-filter="all" class="active">All Types</li>
       <li data-type-filter="photography">Photography</li>
       <li data-type-filter="illustration">Illustration</li>
       <li data-type-filter="3d">3D</li>
@@ -17,8 +17,8 @@
     <div class="hr-spacer"></div>
     <div id="priceRange">
       <span class="left">Price</span>
-      <span class="right">€ 50-50.000</span>
-      <input type="range" min="50" max="50000" class="slider" :value="filters.price" @change="updateFilter()">
+      <span class="right">€ {{ filters.price }}-50.000 </span>
+      <input type="range" min="50" max="50000" class="slider" @change="updateFilter()" v-model="filters.price">  <!-- :value="filters.price" -->
     </div>
   </div>
 </template>
@@ -33,7 +33,7 @@ export default {
         type: null,
         auction: false,
         price: 0
-      }
+      },
     }
   },
   methods: {

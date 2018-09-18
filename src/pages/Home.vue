@@ -3,7 +3,7 @@
     <!-- Content -->
     <slider :slides="slides"/>
     <last-artworks :artworks="artworks"/>
-    <div class="divider"></div>
+    <div class="divider divider-grey"></div>
     <latest-stories :stories="stories"/>
     <!-- /Content-->
   </div>

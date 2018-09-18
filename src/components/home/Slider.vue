@@ -9,10 +9,10 @@
                           v-model="slide" v-if="slides.length">
               <uiv-slide v-for="(sld, index) in slides" :key="index">
                 <div class="slider-background" :style="{backgroundImage: 'url(' + sld.data.image.url + ')'}"></div>
-                <div class="slider-content">
+                <div class="slider-content black">
                   <h2 class="title-big">{{$prismic.richTextAsPlain(sld.data.title)}}</h2>
                   <h3 class="subtitle">{{$prismic.richTextAsPlain(sld.data.subtitle)}}</h3>
-                  <prismic-link class="button btn btn-sm black-bg white" :field="sld.data.link">Explore</prismic-link>
+                  <prismic-link class="button" :field="sld.data.link">Explore</prismic-link>
                 </div>
               </uiv-slide>
             </uiv-carousel>
