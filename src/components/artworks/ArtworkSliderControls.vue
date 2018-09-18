@@ -3,10 +3,10 @@
     <span class="image-count">{{displayed + 1}}/{{images.length}} images</span>
     <span class="slider-arrows">
         <a href="#" @click.prevent="previous()" class="slider-prev">
-            <span class="glyphicon glyphicon-arrow-left"></span>
+            <span class="icon-arrow-left"></span>
         </a>
         <a href="#" @click.prevent="next()" class="slider-next">
-            <span class="glyphicon glyphicon-arrow-right"></span>
+            <span class="icon-arrow-right"></span>
         </a>
     </span>
   </div>

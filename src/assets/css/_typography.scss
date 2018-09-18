@@ -38,7 +38,6 @@ html, body {
 h1, .h1 {
   font-size: 60px;
   line-height: 1;
-  letter-spacing: 4px;
   margin-bottom: 50px;
   @media all and (max-width: 1366px) {
     font-size: 50px;
@@ -47,7 +46,6 @@ h1, .h1 {
 
 h2, .h2, .subtitle {
   font-size: 50px;
-  letter-spacing: 2px;
   line-height: 1;
   margin-top: 0;
   margin-bottom: 0;
@@ -55,12 +53,10 @@ h2, .h2, .subtitle {
 
 h3, .h3 {
   font-size: 40px;
-  letter-spacing: 3px;
 }
 
 h4, .h4 {
   font-size: 36px;
-  letter-spacing: 2px;
 }
 
 h5, .h5 {
@@ -102,7 +98,6 @@ h5, .h5 {
 
 .product-title {
   font-size: 36px;
-  letter-spacing: 1px;
   margin-bottom: 28px;
 }
 
