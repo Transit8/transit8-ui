@@ -45,7 +45,7 @@ export default {
         $self.artworks.push({
           id: record.indexData.id,
           title: record.indexData.title,
-          caption: record.profile.displayName,
+          caption: record.profile.name,
           // caption: record.indexData.uploader,
           image: record.image
         })

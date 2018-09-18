@@ -111,10 +111,10 @@ export default {
     provenanceService.getRecordFromSearchIndexById(recordId).then((record) => {
       ethService.fetchArtworkByHash(record.indexData.timestamp, function (data) {
         if (data && !data.failed) {
-          $elfie.record.indexData.scData = data
+          $elfie.artwork.scData = data
           $elfie.purchaseState = {
-            ownedBy: record.scData[1],
-            canBuy: record.scData[1] !== $elfie.user.username,
+            ownedBy: data[1],
+            canBuy: data[1] !== $elfie.user.username,
           }
         }
       })
@@ -152,7 +152,7 @@ export default {
           $self.artworks.push({
             id: String(record.indexData.id),
             title: record.indexData.title,
-            caption: record.profile.displayName,
+            caption: record.profile.name,
             // caption: record.indexData.uploader,
             forSale: (saleData && saleData.soid === 1),
             forAuction: (saleData && saleData.soid === 2),
@@ -188,7 +188,7 @@ export default {
 
           provenanceService.createOrUpdateRecord(this.record.indexData, this.record.provData).then((records) => {
             console.log('records *******', records)
-            this.spinner = false
+            location.reload()
           }).catch(e => {
             console.log('ProvenanceVue: Unable to lookup ', e)
           })
@@ -224,7 +224,7 @@ export default {
         name: record.indexData.title,
         description: record.indexData.description,
         keywords: record.indexData.keywords,
-        uploadedBy: this.artist.displayName,
+        uploadedBy: this.artist.name,
         image: images[0],
         category: record.indexData.itemType,
         images: images,

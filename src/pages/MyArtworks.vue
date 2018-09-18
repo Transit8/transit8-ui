@@ -36,22 +36,53 @@ export default {
     loadMyArtworks: function () {
       provenanceService.loadMyArtworks(this.loadMyArtwork)
     },
-
     loadMyArtwork: function (record) {
+      let user = provenanceService.getUserProfile()
       let $self = this
-      this.artworks.push({
+      let isOwner = user.username === record.indexData.owner
+      let artwork = {
         id: record.indexData.id,
         title: record.indexData.title,
         timestamp: record.indexData.timestamp,
+        owner: record.indexData.owner,
+        uploader: record.indexData.uploader,
         caption: record.indexData.uploader,
-        canRegister: (record.provData.artwork && record.provData.artwork[0].dataUrl),
+        canRegister: (isOwner && record.provData.artwork && record.provData.artwork[0].dataUrl),
         image: (record.provData.artwork && record.provData.artwork[0].dataUrl) ? record.provData.artwork[0].dataUrl : '/static/images/artwork1.jpg'
-      })
+      }
+      artwork.canSetPrice = false
+      artwork.canEdit = false
+      if (user.username === record.indexData.owner) {
+        artwork.canSetPrice = true
+        artwork.canEdit = true
+        this.artworks.push(artwork)
+      } else {
+        this.soldArtworks.push(artwork)
+      }
       ethService.fetchArtworkByHash(record.indexData.timestamp, function (data) {
         if (data && !data.failed) {
+          if (data[1] !== record.indexData.owner) {
+            record.indexData.owner = data[1]
+            provenanceService.createOrUpdateRecord(record.indexData, record.provData).then((records) => {
+              console.log('records *******', records)
+              location.reload()
+            }).catch(e => {
+              console.log('record: error ', e)
+            })
+          }
+
           let index = _.findIndex($self.artworks, {id: record.indexData.id})
           if (index > -1) {
             $self.artworks[index].scData = data
+            $self.artworks[index].canSetPrice = true
+            $self.artworks[index].canEdit = true
+          } else {
+            index = _.findIndex($self.soldArtworks, {id: record.indexData.id})
+            if (index > -1) {
+              $self.artworks[index].canSetPrice = false
+              $self.artworks[index].canEdit = false
+              $self.soldArtworks[index].scData = data
+            }
           }
         }
       })

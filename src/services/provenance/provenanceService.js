@@ -338,7 +338,6 @@ const provenanceService = {
             username: record.indexData.uploader,
             description: profile.description,
             name: profile.name,
-            displayName: profile.name,
             image: (profile.image && profile.image[0]) ? profile.image[0].contentUrl : '/static/images/artist_preview.png',
           }
           resolve(profile)
@@ -346,7 +345,7 @@ const provenanceService = {
       } else {
         profile = {
           username: 'unknown artist',
-          displayName: 'unknown artist',
+          name: 'unknown artist',
           description: 'unknown artist',
           image: '/static/images/artist_preview.png',
         }

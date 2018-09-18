@@ -73,7 +73,7 @@ export default {
                     $self.results.push({
                       id: String(record.indexData.id),
                       title: record.indexData.title,
-                      caption: profile.displayName,
+                      caption: profile.name,
                       image: dataUrl,
                       forSale: (record.indexData.saleData && record.indexData.saleData.soid === 1),
                       forAuction: (record.indexData.saleData && record.indexData.saleData.soid === 2)

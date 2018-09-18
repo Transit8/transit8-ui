@@ -4,22 +4,23 @@
     <!-- TO DO: in design, artwork caption is artist name -->
     <p class="artwork-caption">{{artwork.caption}}</p>
     <p class="art-title">{{artwork.title}}</p>
+    <p class="artwork-caption">Owner: {{artwork.owner}}</p>
     <!--
-    <p class="artwork-caption">{{artwork.owner}}</p>
     <p class="artwork-caption">{{artwork.state}}</p>
     -->
     <div v-if="artwork.canRegister">
-      <router-link :to="registerUrl" class="artwork-action" v-if="!canSetPrice">Register</router-link>
+      <router-link :to="registerUrl" class="artwork-action" v-if="!artwork.canSetPrice">Register</router-link>
       <router-link :to="registerUrl" class="artwork-action" v-else>Set Price</router-link>
     </div>
-    <router-link :to="editUrl" class="artwork-action">Edit</router-link>
+    <router-link :to="editUrl" class="artwork-action" v-if="artwork.canEdit">Edit</router-link>
     <router-link :to="url" class="artwork-action" v-if="artwork.forSale">Buy</router-link>
     <router-link :to="url" class="artwork-action" v-if="artwork.forAuction">Bid</router-link>
   </router-link>
 </template>
 
 <script>
-import ethService from '@/services/experimental/ethApiService'
+// import ethService from '@/services/experimental/ethApiService'
+// import provenanceService from '@/services/provenance/provenanceService'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -38,16 +39,16 @@ export default {
   },
   data () {
     return {
-      canSetPrice: false
     }
   },
   mounted () {
-    let $self = this
-    ethService.fetchArtworkByHash(this.artwork.timestamp, function (data) {
-      if (data && !data.failed) {
-        $self.canSetPrice = true
-      }
-    })
+    // let $self = this
+    // let user = provenanceService.getUserProfile()
+    // ethService.fetchArtworkByHash(this.artwork.timestamp, function (data) {
+    //  if (data && !data.failed) {
+    //    $self.canSetPrice = user.username === data[1]
+    //  }
+    // })
   },
   computed: {
     artworkWidth () {

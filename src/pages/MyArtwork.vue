@@ -7,8 +7,8 @@
             <div class="pull-left">
               <h1 class="product-title">{{artist.name}}, {{artwork.name}}</h1>
               <p class="mb-0">
-                <register-artwork-form :artwork="artwork" :artist="artist" @register-artwork="registerArtwork()" v-if="artwork.timestamp && !artwork.scData"/>
-                <set-price-artwork-form :record="record" @set-price="setPriceArtwork()" v-if="artwork.scData"/>
+                <register-artwork-form :artwork="artwork" :artist="artist" @register-artwork="registerArtwork()" v-if="showRegister"/>
+                <set-price-artwork-form :record="record" @set-price="setPriceArtwork()" v-if="showSetPrice"/>
               </p>
             </div>
              <artwork-slider-controls :images="artwork.images" @change="sliderImageChanged($event)"
@@ -51,31 +51,36 @@ export default {
       record: {},
       artist: {},
       artwork: {},
+      showSetPrice: false,
+      showRegister: false,
     }
   },
 
   mounted () {
     let recordId = this.$route.params.artworkId
-    this.artist = provenanceService.getUserProfile()
     provenanceService.loadMyArtwork(recordId, this.loadMyArtwork)
   },
   methods: {
     loadMyArtwork: function (record) {
       let $self = this
       this.record = record
+      this.artist = provenanceService.getUserProfile(record.indexData.uploader)
+      if (record.provData.artwork && record.provData.artwork.length > 0 && record.provData.artwork[0].dataUrl) {
+        $self.showRegister = true
+      }
       this.artwork = {
         id: record.indexData.id,
         name: record.indexData.title,
-        caption: record.indexData.uploader,
+        caption: this.artist.name,
         timestamp: record.indexData.timestamp,
         saleData: record.indexData.saleData,
-        scData: null,
         image: (record.provData.artwork && record.provData.artwork[0].dataUrl) ? record.provData.artwork[0].dataUrl : '/static/images/artwork1.jpg'
       }
       ethService.fetchArtworkByHash(record.indexData.timestamp, function (data) {
         if (data && !data.failed) {
           $self.artwork.scData = data
-          $self.record.scData = data
+          $self.showSetPrice = true
+          $self.showRegister = false
         }
       })
     },
