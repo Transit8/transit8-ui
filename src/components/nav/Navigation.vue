@@ -1,8 +1,10 @@
 <template>
+<div>
   <!-- Navbar -->
   <nav class="navbar navbar-default">
+    <div class="container wide">
     <div class="navbar-header col-md-4 col-xs-12">
-      <button id="menu-toggle" type="button" class="navbar-toggle" @click="toggleNavigation()">
+    <button id="menu-toggle" type="button" class="navbar-toggle" @click="toggleNavigation()">
         <!-- data-toggle="collapse" data-target="#menu"  -->
         <span class="sr-only">Toggle navigation</span>
         <span class="icon-menu"></span>
@@ -14,7 +16,10 @@
       <user-menu :user-data="userData" class="pull-right col-md-1"/>
       <languages :languages="languages" @change="changeLanguage($event)" class="pull-right"/>
     </div>
-    <div id="menu" class="menu" :class="{'open': showNavigation}">
+    </div>
+  </nav>
+
+   <div id="menu" class="menu" :class="{'open': showNavigation}">
       <ul>
         <li>
           <router-link to="/artworks">Artworks</router-link>
@@ -33,7 +38,7 @@
         </li>
       </ul>
     </div>
-  </nav>
+</div>
   <!-- End navbar -->
 </template>
 

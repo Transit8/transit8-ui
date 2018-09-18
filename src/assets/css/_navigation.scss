@@ -22,6 +22,8 @@
     height: 100%;
     display: flex;
     align-items: center;
+    padding-left: 94px;
+    padding-top: 5px;
 
     .icon-menu {
       font-size: 24px;
@@ -33,6 +35,9 @@
     margin-right: 0;
   }
   .navbar-toggle {
+    position: absolute;
+    left: 0;
+    z-index: 2;
     display: block;
     float: left;
     border: none;
@@ -50,7 +55,7 @@
 }
 
   .language-menu {
-    padding: 20px 0;
+    padding: 25px 0 20px 0;
     text-align: right;
     color: $grey;
     li {
@@ -73,19 +78,23 @@
     input {
       color: $grey_medium;
       background: transparent;
-      height: 70px;
-      line-height: 70px;
+      padding: 37px 50px 31px 20px;
       border-radius: 0;
       font-size: 18px;
-      padding-right: 50px;
       position: relative;
+
+      @include placeholder {
+        color: inherit;
+        padding: 37px 50px 31px 0;
+        font-size: inherit;
+      }
     }
 
     button {
       border: 0;
       background: transparent;
       position: absolute;
-      top: 50%;
+      top: calc(50% + 2px);
       right: 24px;
       transform: translateY(-50%);
       margin-top: 0;
@@ -116,16 +125,21 @@
 
 .menu {
   width: 0;
+  height: 100vh;
   position: absolute;
   z-index: 1;
-  top: 190px;
+  top: 0;
   left: 0;
   background-color: $black;
   transition: 0.5s;
   text-align: center;
 
   &.open {
-    width: 100%
+    left:0;
+    right: 0;
+    top:0;
+    bottom: 0;
+    width: 100%;
   }
 
   ul {
@@ -133,6 +147,8 @@
     overflow: hidden;
     padding-left: 0;
     background-color: $black;
+    top: 100%;
+    transform: translateY(100%);
     li {
       display: block;
       a {
@@ -158,6 +174,7 @@
 }
 
 .user-menu {
+  padding-top:5px;
   button {
     color: #999999;
     background: transparent;
@@ -203,8 +220,6 @@
 @media (max-width: 1024px) {
 
   .navbar.navbar-default {
-    padding-top: 20px;
-    padding-bottom: 20px;
     .navbar-header {
       height: 50px;
     }
@@ -221,14 +236,13 @@
   .navbar-short {
     height: 170px;
     padding-bottom: 35px;
-    .menu {
-      top: 170px;
-    }
   }
 }
 
 @media (max-width: 992px) {
   .navbar.navbar-default {
+    padding-top: 20px;
+    padding-bottom: 20px;
     height: 240px;
     .navbar-header {
       margin-bottom: 30px;
@@ -242,7 +256,6 @@
     }
   }
   .menu {
-    top: 220px;
     ul {
       height: auto;
       position: relative;
