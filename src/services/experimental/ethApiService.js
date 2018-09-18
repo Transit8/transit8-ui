@@ -25,7 +25,7 @@ import Web3 from 'web3'
 const ethApiService = {
   ETHEREUM_URI: 'http://localhost:8545',
   ETHEREUM_ABI: process.env.ETHEREUM_ABI,
-  ETHEREUM_CONTRACT_ADDRESS: '0x3C534b0c2b9773ee0FE9D28d906DB3a2751d798f',
+  ETHEREUM_CONTRACT_ADDRESS: '0xbe01afbd05eb2e4ebc2a6021df202986dc1c08ab',
   getNetworkType: function () {
     let networkId = this.getWeb3().version.network
     let networkName = ''
@@ -185,13 +185,6 @@ const ethApiService = {
           resolve({registered: false, failed: true, reason: err})
         }
         resolve(item)
-        // ethApiService.myContract.getItemOwner(index, ownerIndex, function (err, owner) {
-        //  if (err) {
-        //    resolve(err)
-        //  }
-        //  console.log(owner)
-        //  resolve(item)
-        // })
       })
     })
   },
@@ -228,6 +221,9 @@ const ethApiService = {
               }
             })
           }, 50)
+          if ($elfist.index === numberOfItems - 1) {
+            resolve({})
+          }
         }
         // resolve({registered: false, failed: true, reason: 'No item matching hash: ' + artHash})
       })
@@ -247,13 +243,34 @@ const ethApiService = {
       })
     })
   },
+  fetchArtworkByHash: function (artHash, callback) {
+    let $elfist = this
+    $elfist.callback = callback
+    ethApiService.fetchNumberOfItems().then((numberOfItems) => {
+      let found = false
+      for (let index = numberOfItems; index >= 0; index--) {
+        ethApiService.fetchItemByIndex(index, 0).then((item) => {
+          let bcHash = item[2]
+          if (bcHash === artHash) {
+            found = true
+            $elfist.callback(item)
+          }
+          if (numberOfItems === index && !found) {
+            $elfist.callback({failed: true, message: 'Record not found.'})
+          }
+        }).catch(function (e) {
+          $elfist.callback({failed: true, message: 'Record not found.'})
+        })
+      }
+    })
+  },
   loadArtworks: function (numberOfArtworks, callback) {
     let $elfist = this
     $elfist.callback = callback
     $elfist.numberOfArtworks = numberOfArtworks
     $elfist.counter = 0
     if (!callback && ethApiService.blockchainResults && ethApiService.blockchainResults.length >= numberOfArtworks) {
-      for (let index = ethApiService.blockchainResults.length; index >= 0; index--) {
+      for (let index = ethApiService.blockchainResults.length - 1; index >= 0; index--) {
         if ($elfist.counter < numberOfArtworks) {
           if (ethApiService.blockchainResults[index]) {
             $elfist.callback(ethApiService.blockchainResults[index])

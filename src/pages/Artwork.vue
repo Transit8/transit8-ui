@@ -25,11 +25,11 @@
     </section>
     <!-- /#pdp slider -->
 
-    <buy-artwork-form :artwork="artwork" @buy="buyArtwork()" v-if="artwork.forSale"/>
-    <bid-artwork-form :artwork="artwork" @bid="bidArtwork($event)" v-if="artwork.forAuction"/>
+    <buy-artwork-form :purchaseState="purchaseState" :artwork="artwork" @buy="buyArtwork()" v-if="artwork.forSale"/>
+    <bid-artwork-form :purchaseState="purchaseState" :artwork="artwork" @bid="bidArtwork($event)" v-if="artwork.forAuction"/>
     <!-- /#pdp-action -->
 
-    <about-artwork :artwork="artwork" ref="about"/>
+    <about-artwork :artwork="artwork" :purchaseState="purchaseState" ref="about"/>
     <!-- /#about-artwork-->
 
     <div class="divider divider-white"></div>
@@ -89,6 +89,8 @@ export default {
     return {
       userMessages: messagingService.messages,
       messageSignal: {time: 'then', message: 'happy?'},
+      user: {},
+      purchaseState: {},
       webrtcState: 0,
       artworkId: (this.$route && this.$route.params.artworkId) ? parseInt(this.$route.params.artworkId) : undefined,
       sliderImage: 0,
@@ -103,9 +105,19 @@ export default {
   },
   created () {
     let $elfie = this
+    this.user = provenanceService.getUserProfile()
     window.addEventListener('beforeunload', this.stopPublishing)
     let recordId = (this.$route && this.$route.params.artworkId) ? parseInt(this.$route.params.artworkId) : undefined
     provenanceService.getRecordFromSearchIndexById(recordId).then((record) => {
+      ethService.fetchArtworkByHash(record.indexData.timestamp, function (data) {
+        if (data && !data.failed) {
+          $elfie.record.indexData.scData = data
+          $elfie.purchaseState = {
+            ownedBy: record.scData[1],
+            canBuy: record.scData[1] !== $elfie.user.username,
+          }
+        }
+      })
       provenanceService.getArtistProfile(record).then((profile) => {
         $elfie.record = record
         this.artist = profile
@@ -213,10 +225,8 @@ export default {
         description: record.indexData.description,
         keywords: record.indexData.keywords,
         uploadedBy: this.artist.displayName,
-        ownedBy: record.scData[1],
-        category: record.indexData.itemType,
-        canBuy: record.indexData.owner !== user.username,
         image: images[0],
+        category: record.indexData.itemType,
         images: images,
         year: '',
         saleData: record.indexData.saleData,

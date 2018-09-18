@@ -4,16 +4,26 @@
     <!-- TO DO: in design, artwork caption is artist name -->
     <p class="artwork-caption">{{artwork.caption}}</p>
     <p class="art-title">{{artwork.title}}</p>
-
+    <!--
+    <p class="artwork-caption">{{artwork.owner}}</p>
+    <p class="artwork-caption">{{artwork.state}}</p>
+    -->
+    <div v-if="artwork.canRegister">
+      <router-link :to="registerUrl" class="artwork-action" v-if="!canSetPrice">Register</router-link>
+      <router-link :to="registerUrl" class="artwork-action" v-else>Set Price</router-link>
+    </div>
+    <router-link :to="editUrl" class="artwork-action">Edit</router-link>
     <router-link :to="url" class="artwork-action" v-if="artwork.forSale">Buy</router-link>
     <router-link :to="url" class="artwork-action" v-if="artwork.forAuction">Bid</router-link>
   </router-link>
 </template>
 
 <script>
+import ethService from '@/services/experimental/ethApiService'
+
 // noinspection JSUnusedGlobalSymbols
 export default {
-  name: 'SingleArtwork',
+  name: 'MySingleArtwork',
   props: {
     artwork: {
       type: Object,
@@ -26,12 +36,25 @@ export default {
       default: 4
     }
   },
+  data () {
+    return {
+      canSetPrice: false
+    }
+  },
+  mounted () {
+    let $self = this
+    ethService.fetchArtworkByHash(this.artwork.timestamp, function (data) {
+      if (data && !data.failed) {
+        $self.canSetPrice = true
+      }
+    })
+  },
   computed: {
     artworkWidth () {
       return `col-sm-${this.width}`
     },
     registerUrl () {
-      return `/provenance/register/${this.artwork.id}`
+      return `/my-artworks/${this.artwork.id}`
     },
     editUrl () {
       return `/provenance/edit/${this.artwork.id}`

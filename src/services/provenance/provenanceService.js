@@ -415,6 +415,8 @@ const provenanceService = {
           owner: indexData.uploader,
           saleData: indexData.saleData,
         }]
+      } else {
+        provData.owners[provData.owners.length - 1] = indexData.saleData
       }
       // provenanceService.setRegData({indexData: indexData, provData: provData})
       if (index > -1) {
@@ -449,15 +451,16 @@ const provenanceService = {
     return searchIndexService.searchIndex('art', 'id', id).then((records) => {
       return provenanceService.getRecordForSearch(records[0]).then((record) => {
         let hash = utils.buildArtworkHash(record.provData.artwork[0].dataUrl)
-
+        record.indexData.timestamp = hash
+        return record
         // console.log('hash****', hash)
 
-        return ethService.fetchItemByArtHash(hash).then((data) => {
-          record.scData = data
+        // return ethService.fetchItemByArtHash(hash).then((data) => {
+        //  record.scData = data
 
-          // console.log('record*********', record)
-          return record
-        })
+        // console.log('record*********', record)
+        //  return record
+        // })
       })
     })
   },
@@ -488,6 +491,93 @@ const provenanceService = {
       })
     }).catch(e => {
       console.log('Unable to contact search index.', e)
+    })
+  },
+  loadMyArtworks: function (callback) {
+    let $self = this
+    $self.callback = callback
+    getFile(provenanceService.ROOT_FILE_GAIA_NAME, {decrypt: false}).then(function (file) {
+      if (!file) {
+        if (!callback) {
+          provenanceService.makeRootFile().then(function (message) {
+            getFile(provenanceService.ROOT_FILE_GAIA_NAME, {decrypt: false}).then(function (file) {
+              provenanceService.rootFile = JSON.parse(file)
+              console.log('root file **********', JSON.parse(file))
+            }).catch(function (e) {
+              console.log('Failed fetch new new root file after making it: ')
+            })
+          })
+        }
+      } else {
+        console.log('root file 2 **********', JSON.parse(file))
+        provenanceService.rootFile = JSON.parse(file)
+        let newData = provenanceService.rootFile.records
+        newData = _.unionBy(provenanceService.rootFile.records, newData, 'id')
+        provenanceService.rootFile.records = newData
+        provenanceService.provDataList = []
+        _.forEach(provenanceService.rootFile.records, function (indexData) {
+          let fileToFetch = provenanceService.PROVENANCE_FILE_GAIA_SUBPATH + indexData.id + '.json'
+          getFile(fileToFetch, {decrypt: false}).then(function (file) {
+            if (file) {
+              let provData = JSON.parse(file)
+              provData.id = indexData.id
+              provenanceService.provDataList.push(provData)
+              if (provData && provData.artwork && provData.artwork[0] && provData.artwork[0].dataUrl.length > 0) {
+                let timestamp = utils.buildArtworkHash(provData.artwork[0].dataUrl)
+                indexData.timestamp = timestamp
+                $self.callback({indexData: indexData, provData: provData})
+              } else {
+                $self.callback({indexData: indexData, provData: provData})
+              }
+            } else {
+              console.log('Failed fetch new new root file after making it: ')
+            }
+          }).catch(function (e) {
+            console.log('Failed fetch new new root file after making it: ', e)
+          })
+        })
+      }
+    }).catch(function (e) {
+      console.log('Unable to make root file: ', e)
+    })
+  },
+  loadMyArtwork: function (artworkId, callback) {
+    let $self = this
+    $self.callback = callback
+    if (typeof artworkId === 'string') {
+      artworkId = Number(artworkId)
+    }
+    getFile(provenanceService.ROOT_FILE_GAIA_NAME, {decrypt: false}).then(function (file) {
+      if (file) {
+        console.log('root file 2 **********', JSON.parse(file))
+        provenanceService.rootFile = JSON.parse(file)
+        let index = _.findIndex(provenanceService.rootFile.records, {id: artworkId})
+        if (index === -1) {
+          $self.callback({failed: true, message: 'No match for artwork: ' + artworkId})
+        } else {
+          let indexData = provenanceService.rootFile.records[index]
+          let fileToFetch = provenanceService.PROVENANCE_FILE_GAIA_SUBPATH + indexData.id + '.json'
+          getFile(fileToFetch, {decrypt: false}).then(function (file) {
+            if (file) {
+              let provData = JSON.parse(file)
+              provData.id = indexData.id
+              if (provData && provData.artwork && provData.artwork[0] && provData.artwork[0].dataUrl.length > 0) {
+                let timestamp = utils.buildArtworkHash(provData.artwork[0].dataUrl)
+                indexData.timestamp = timestamp
+                $self.callback({indexData: indexData, provData: provData})
+              } else {
+                $self.callback({indexData: indexData, provData: provData})
+              }
+            } else {
+              $self.callback({failed: true, message: 'No match for artwork: ' + artworkId})
+            }
+          }).catch(function (e) {
+            $self.callback({failed: true, message: 'No match for artwork: ' + artworkId})
+          })
+        }
+      }
+    }).catch(function (e) {
+      $self.callback({failed: true, message: 'No match for artwork: ' + artworkId})
     })
   },
   getRecordForSearch: function (indexData) {

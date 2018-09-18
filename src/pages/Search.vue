@@ -71,11 +71,12 @@ export default {
                   }
                   provenanceService.getArtistProfile(record).then((profile) => {
                     $self.results.push({
-                      id: record.indexData.id,
+                      id: String(record.indexData.id),
                       title: record.indexData.title,
                       caption: profile.displayName,
                       image: dataUrl,
-                      forAuction: false
+                      forSale: (record.indexData.saleData && record.indexData.saleData.soid === 1),
+                      forAuction: (record.indexData.saleData && record.indexData.saleData.soid === 2)
                     })
                     $self.$emit('update:numbResults', $self.provenanceRecords.length)
                   })

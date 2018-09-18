@@ -11,7 +11,7 @@
           <div v-html="artwork.description"></div>
           <p>
             Uploaded by: {{artwork.uploadedBy}}<br />
-            Owned by: {{artwork.ownedBy}}
+            Owned by: {{purchaseState.ownedBy}}
           </p>
           <p class="keywords">Keywords ︱ {{keywords}}</p>
         </div>
@@ -29,6 +29,7 @@
 export default {
   name: 'AboutArtwork',
   props: {
+    purchaseState: {},
     artwork: {
       type: Object,
       default () {

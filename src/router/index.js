@@ -10,6 +10,7 @@ import Artist from '../pages/Artist'
 import HowItWorks from '../pages/HowItWorks'
 import Resources from '../pages/Resources'
 import Search from '../pages/Search'
+import MyArtwork from '../pages/MyArtwork'
 import MyArtworks from '../pages/MyArtworks'
 import Story from '../pages/Story'
 import Privacy from '../pages/Privacy'
@@ -239,6 +240,12 @@ const router = new Router({
       path: '/my-artworks',
       name: 'my-artworks',
       component: MyArtworks,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/my-artworks/:artworkId',
+      name: 'myArtwork',
+      component: MyArtwork,
       meta: { requiresAuth: true },
     },
     {

@@ -15,14 +15,8 @@
             <p>At vero eos et accusamus et iusto odio dignissimos...</p>
             <p class="grey-medium">Keywords:</p> -->
     </div>
-        <!--
-        <p class="artwork-caption">{{artwork.owner}}</p>
-        <p class="artwork-caption">{{artwork.state}}</p>
-        -->
-      <!--  <router-link :to="'provenance/register/'+artwork.id" class="artwork-action" v-if="artwork.showRegistration">Register</router-link>
-        <router-link :to="editUrl" class="artwork-action" v-if="artwork.showRegistration">Edit</router-link>
-        <router-link :to="artwork.id" class="artwork-action" v-if="artwork.forSale">Buy</router-link>
-        <router-link :to="artwork.id" class="artwork-action" v-if="artwork.forAuction">Bid</router-link> -->
+        <router-link :to="url" class="artwork-action" v-if="artwork.forSale">Buy</router-link>
+        <router-link :to="url" class="artwork-action" v-if="artwork.forAuction">Bid</router-link>
    </div>
    </div>
      <div class="divider divider-grey"></div>
