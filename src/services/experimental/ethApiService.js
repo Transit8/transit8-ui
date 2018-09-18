@@ -25,7 +25,7 @@ import Web3 from 'web3'
 const ethApiService = {
   ETHEREUM_URI: 'http://localhost:8545',
   ETHEREUM_ABI: process.env.ETHEREUM_ABI,
-  ETHEREUM_CONTRACT_ADDRESS: '0x3C534b0c2b9773ee0FE9D28d906DB3a2751d798f',
+  ETHEREUM_CONTRACT_ADDRESS: process.env.ETHEREUM_CONTRACT_ADDRESS,
   getNetworkType: function () {
     let networkId = this.getWeb3().version.network
     let networkName = ''

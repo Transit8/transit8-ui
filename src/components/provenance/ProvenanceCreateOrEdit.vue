@@ -262,11 +262,7 @@ export default {
       } else if (this.provenanceId) {
         this.indexData.id = this.provenanceId
         if (!this.indexData.owner) {
-          if (this.provData.owners && this.provData.owners.length > 0) {
-            this.indexData.owner = this.provData.owners[this.provData.owners.length - 1].owner
-          } else {
-            this.indexData.owner = this.indexData.uploader
-          }
+          this.indexData.owner = this.indexData.uploader
         }
         this.provData.auditData.push({
           event: 'edited',

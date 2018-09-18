@@ -103,12 +103,19 @@ export default {
     webrtcService.unpublish()
     eventBus.$off('signal-in-message')
   },
-  created () {
+  mounted () {
     let $elfie = this
     this.user = provenanceService.getUserProfile()
     window.addEventListener('beforeunload', this.stopPublishing)
     let recordId = (this.$route && this.$route.params.artworkId) ? parseInt(this.$route.params.artworkId) : undefined
     provenanceService.getRecordFromSearchIndexById(recordId).then((record) => {
+      if (!record.indexData.owner) {
+        record.indexData.owner = record.indexData.uploader
+      }
+      $elfie.purchaseState = {
+        ownedBy: record.indexData.owner,
+        canBuy: record.indexData.owner !== $elfie.user.username,
+      }
       ethService.fetchArtworkByHash(record.indexData.timestamp, function (data) {
         if (data && !data.failed) {
           $elfie.artwork.scData = data
