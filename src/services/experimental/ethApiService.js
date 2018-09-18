@@ -247,17 +247,17 @@ const ethApiService = {
     let $elfist = this
     $elfist.callback = callback
     ethApiService.fetchNumberOfItems().then((numberOfItems) => {
-      let found = false
+      // let found = false
       for (let index = numberOfItems; index >= 0; index--) {
         ethApiService.fetchItemByIndex(index, 0).then((item) => {
           let bcHash = item[2]
           if (bcHash === artHash) {
-            found = true
+            // found = true
             $elfist.callback(item)
           }
-          if (numberOfItems === index && !found) {
-            $elfist.callback({failed: true, message: 'Record not found.'})
-          }
+          // if (numberOfItems === index && !found) {
+          //  $elfist.callback({failed: true, message: 'Record not found.'})
+          // }
         }).catch(function (e) {
           $elfist.callback({failed: true, message: 'Record not found.'})
         })
