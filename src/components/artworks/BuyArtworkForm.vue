@@ -6,9 +6,7 @@
           <span class="price inline-block">&euro; {{artwork.saleData.amount}} {{ artwork.saleData.fiatCurrency }}</span>
           <span class="price-small inline-block grey-medium">ETH {{ artwork.saleData.amountInEther }}</span>
         </div>
-        <div class="col-md-3 col-xs-12 p-0">
-          <button class="btn btn-block black action-button text-uppercase" :disabled="!purchaseState.canBuy" v-bind:class="{ 'yellow-bg': purchaseState.canBuy, 'grey-bg': !purchaseState.canBuy }"  @click="buyArtwork()">buy</button>
-        </div>
+        <button class="btn btn-block black action-button text-uppercase" :disabled="!purchaseState.canBuy" v-bind:class="{ 'yellow-bg': purchaseState.canBuy, 'grey-bg': !purchaseState.canBuy }"  @click="buyArtwork()">buy</button>
       </div>
     </div>
   </section>
