@@ -118,6 +118,7 @@ export default {
       }
       ethService.fetchArtworkByHash(record.indexData.timestamp, function (data) {
         if (data && !data.failed) {
+          $elfie.artwork.owner = data[1]
           $elfie.artwork.scData = data
           $elfie.purchaseState = {
             ownedBy: data[1],
@@ -171,7 +172,7 @@ export default {
 
     buyArtwork () {
       let buyer = this.user.username
-      let seller = this.artist.username
+      let seller = this.artwork.owner
       if (!buyer || !seller || buyer === seller) {
         return
       }
