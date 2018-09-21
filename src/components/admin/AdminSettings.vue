@@ -8,10 +8,13 @@
     <div class="col-sm-12 pt-1">Domain: {{ domain }}</div>
   </div>
   <div class="row">
-    <div class="col-sm-12 pt-5">Contract Address: {{ contract }}</div>
+    <div class="col-sm-12 pt-5">Contract Deployed: {{ contract }}</div>
   </div>
   <div class="row">
-    <div class="col-sm-12 pt-5">Network {{ network.networkId }} ({{ network.networkName }})</div>
+    <div class="col-sm-12 pt-5">Meta Mask Network {{ network.networkId }} ({{ network.networkName }})</div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 pt-5">Expected Network {{ networkExpected }})</div>
   </div>
   <div class="row">
     <div class="col-sm-12 pt-5">Shape Shift Url: {{ shapeShiftUrl }}</div>
@@ -37,6 +40,7 @@ export default {
       searchUrl: '',
       contract: '',
       network: '',
+      networkExpected: '',
       domain: '',
     }
   },
@@ -47,6 +51,7 @@ export default {
     this.searchUrl = process.env.SEARCH_INDEX_URL
     this.contract = process.env.ETHEREUM_CONTRACT_ADDRESS
     this.network = ethService.getNetworkType()
+    this.networkExpected = process.env.ETHEREUM_NETWORK
     this.domain = location.origin
   },
   methods: {
