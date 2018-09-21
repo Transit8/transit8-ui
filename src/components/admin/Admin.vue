@@ -1,10 +1,10 @@
 <template>
 <section class="main-page">
-  <div class="columns">
-    <div class="column is-one-fifth" style="padding: 30px">
+  <div class="row">
+    <div class="col-sm-2">
       <admin-actions/>
     </div>
-    <div class="column">
+    <div class="col-sm-10">
       <router-view></router-view>
     </div>
   </div>

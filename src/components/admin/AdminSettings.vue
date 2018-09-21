@@ -2,10 +2,16 @@
 <div class="container wide">
   <h1 class="title is-2">Settings</h1>
   <div class="row">
-    <div class="col-sm-12 pt-1">Environment: {{ environment }} (Target env: {{ releaseTarget }})</div>
+    <div class="col-sm-12 pt-1">Environment: {{ environment }}</div>
   </div>
   <div class="row">
-    <div class="col-sm-12 pt-5">Contract Address: {{ contract }} on network {{ network.networkId }} ({{ network.networkName }})</div>
+    <div class="col-sm-12 pt-1">Domain: {{ domain }}</div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 pt-5">Contract Address: {{ contract }}</div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 pt-5">Network {{ network.networkId }} ({{ network.networkName }})</div>
   </div>
   <div class="row">
     <div class="col-sm-12 pt-5">Shape Shift Url: {{ shapeShiftUrl }}</div>
@@ -27,21 +33,21 @@ export default {
     return {
       apiKey: '',
       environment: '',
-      releaseTarget: '',
       shapeShiftUrl: '',
       searchUrl: '',
       contract: '',
       network: '',
+      domain: '',
     }
   },
   mounted () {
     this.apiKey = process.env.TOK_BOX_API_KEY
-    this.releaseTarget = process.env.RELEASE_TARGET
     this.environment = process.env.NODE_ENV
     this.shapeShiftUrl = process.env.SHAPE_SHIFT_URL
     this.searchUrl = process.env.SEARCH_INDEX_URL
     this.contract = process.env.ETHEREUM_CONTRACT_ADDRESS
     this.network = ethService.getNetworkType()
+    this.domain = location.origin
   },
   methods: {
     findAll: function () {
