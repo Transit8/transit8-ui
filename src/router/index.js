@@ -33,7 +33,6 @@ import AccountFiles from 'bright-block-auth/src/components/account/AccountFiles'
 import Market from '../components/market/Market'
 import MarketSearch from '../components/market/MarketSearch'
 
-import Iota from '../components/experimental/iota/Iota'
 import Eth from '../components/experimental/eth/Eth'
 import DataTypes from '../components/experimental/eth/DataTypes'
 
@@ -141,11 +140,6 @@ const router = new Router({
           component: MarketSearch
         }
       ]
-    }, {
-      path: '/iota',
-      name: 'iota',
-      meta: { requiresAuth: false },
-      component: Iota,
     }, {
       path: '/types',
       name: 'types',

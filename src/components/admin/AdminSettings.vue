@@ -8,6 +8,15 @@
     <div class="col-sm-12 pt-1">Domain: {{ domain }}</div>
   </div>
   <div class="row">
+    <div class="col-sm-12 pt-1">Node: {{ nodeInfo }}</div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 pt-1">Items: {{ numberOfItems }}</div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 pt-5">Contract Address: {{ contractAddress }}</div>
+  </div>
+  <div class="row">
     <div class="col-sm-12 pt-5">Contract Deployed: {{ contract }}</div>
   </div>
   <div class="row">
@@ -30,6 +39,7 @@
 
 <script>
 import ethService from '@/services/experimental/ethApiService'
+import ethereumService from '@/services/ethereumService'
 
 export default {
   data () {
@@ -38,10 +48,13 @@ export default {
       environment: '',
       shapeShiftUrl: '',
       searchUrl: '',
-      contract: '',
+      contractAddress: '',
       network: '',
       networkExpected: '',
       domain: '',
+      nodeInfo: '',
+      contract: '',
+      numberOfItems: '',
     }
   },
   mounted () {
@@ -49,10 +62,19 @@ export default {
     this.environment = process.env.NODE_ENV
     this.shapeShiftUrl = process.env.SHAPE_SHIFT_URL
     this.searchUrl = process.env.SEARCH_INDEX_URL
-    this.contract = process.env.ETHEREUM_CONTRACT_ADDRESS
+    this.contractAddress = process.env.ETHEREUM_CONTRACT_ADDRESS
     this.network = ethService.getNetworkType()
     this.networkExpected = process.env.ETHEREUM_NETWORK
     this.domain = location.origin
+    ethereumService.getNodeInfo().then((result) => {
+      this.nodeInfo = result
+    })
+    ethereumService.loadContract().then((result) => {
+      this.contract = result
+      ethereumService.getNumberOfItems().then((result) => {
+        this.numberOfItems = result
+      })
+    })
   },
   methods: {
     findAll: function () {
