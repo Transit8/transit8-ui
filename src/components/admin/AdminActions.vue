@@ -8,6 +8,9 @@
       <a href="#/admin/settings">Settings</a>
     </li>
     <li>
+      <a href="#/admin/registrations">Fetch Registrations</a>
+    </li>
+    <li>
       <a href="#/admin/search/names">Names Index</a>
     </li>
     <li>
@@ -15,12 +18,6 @@
     </li>
     <li>
       <a href="#/admin/user/records">User Records</a>
-    </li>
-    <li>
-      <a href="#/lightning">Lightning Settings</a>
-    </li>
-    <li>
-      <a href="#/admin/registrations">Fetch Registrations</a>
     </li>
   </ul>
 </aside>

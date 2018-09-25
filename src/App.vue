@@ -18,6 +18,7 @@ import Login from 'bright-block-auth/src/components/auth/Login'
 import ethService from '@/services/experimental/ethApiService'
 import AppFooter from './components/common/AppFooter'
 import provenanceService from '@/services/provenance/provenanceService'
+// import ethereumService from '@/services/ethereumService'
 
 export default {
   name: 'App',
@@ -29,7 +30,7 @@ export default {
       accounts: {},
     }
   },
-  mounted () {
+  created () {
     console.log('Running App version ', process.env)
     provenanceService.initRootFile()
       .then((result) => {

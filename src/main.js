@@ -8,8 +8,11 @@ import Notifications from 'vue-notification'
 import * as uiv from 'uiv'
 import PrismicVue from 'prismic-vue'
 import linkResolver from './prismic/linkResolver'
-
+import Vuex from 'vuex'
 import '@/assets/css/main.scss'
+// import { sync } from 'vuex-router-sync'
+import store from '@/storage/store'
+import { CONSTANTS } from '@/storage/constants'
 
 // import Vuelidate from 'vuelidate'
 Vue.config.productionTip = false
@@ -18,20 +21,25 @@ Vue.filter('truncate', function (value) {
   return truncate(value, { length: 45, omission: '...' })
 })
 Vue.prototype.$appName = 'My App'
+Vue.use(Vuex)
 Vue.use(Notifications)
-// Vue.use(Vuelidate)
-
 Vue.use(uiv, {prefix: 'uiv'})
-
 Vue.use(PrismicVue, {
   endpoint: 'https://sybellaio.cdn.prismic.io/api/v2',
   linkResolver
 })
+store.commit('constants', CONSTANTS)
+store.dispatch('getClientState')
+store.dispatch('getMyArtworks')
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  // provide the store using the "store" option.
+  // this will inject the store instance to all child components.
+  store,
   components: { App },
   template: '<App/>'
 })
+store.dispatch('getSlides')
