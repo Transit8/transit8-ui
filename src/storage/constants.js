@@ -6,6 +6,6 @@ export const CONSTANTS = {
   contractAddress: process.env.ETHEREUM_CONTRACT_ADDRESS,
   networkExpected: process.env.ETHEREUM_NETWORK,
   domain: location.origin,
-  gaiaRootFileName: 'records_v01.json',
+  blockstackRootFileName: 'records_v01.json',
   gaiaArtworkFileName: 'record_',
 }

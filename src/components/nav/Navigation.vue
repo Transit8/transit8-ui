@@ -13,7 +13,7 @@
     </div>
     <div class="navbar-right col-md-8 col-xs-12">
       <search-form @submit="searchIndex($event)"/>
-      <user-menu :user-data="userData" class="pull-right col-md-1"/>
+      <user-menu class="pull-right col-md-1"/>
       <languages :languages="languages" @change="changeLanguage($event)" class="pull-right"/>
     </div>
     </div>
@@ -43,11 +43,6 @@
 </template>
 
 <script>
-import BrightBlockAuth from 'bright-block-auth/src/components/auth/BrightBlockAuth'
-import authorization from 'bright-block-auth'
-import provenanceService from '@/services/provenance/provenanceService'
-import messagingService from '@/services/webrtc/messagingService'
-import AuthLinks from './AuthLinks'
 import Languages from './Languages'
 import SearchForm from './SearchForm'
 import UserMenu from './UserMenu'
@@ -57,13 +52,8 @@ export default {
   name: 'Navigation',
   data: () => {
     return {
-      username: '',
-      isActive: false,
-      loggedIn: false,
-      showAdmin: false,
       isModalActive: true,
       debug: false,
-      peers: messagingService.peers,
       showNavigation: false,
       queryString: null,
       languages: [
@@ -71,28 +61,12 @@ export default {
         // { name: 'Korean', iso: 'ko' },
         // { name: 'Arabic', iso: 'ar' },
       ],
-      userData: {},
     }
   },
   mounted () {
-    let userData = provenanceService.getUserData()
-    this.userData = userData
-
-    if (userData) {
-      this.username = userData.username
-      this.showAdmin = true
-    }
     if (this.$route.query && this.$route.query.debug) {
       this.debug = true
     }
-    let $elfie = this
-    let myTimer = setInterval(function () {
-      let newloggedInState = authorization.isLoggedIn()
-      if ($elfie.loggedIn !== newloggedInState) {
-        $elfie.loggedIn = authorization.isLoggedIn()
-        clearInterval(myTimer)
-      }
-    }, 500)
   },
   watch: {
     '$route' () {
@@ -115,8 +89,6 @@ export default {
     UserMenu,
     SearchForm,
     Languages,
-    AuthLinks,
-    BrightBlockAuth,
   }
 }
 </script>

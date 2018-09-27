@@ -1,26 +1,22 @@
 <template>
-  <router-link :to="url" :class="[artworkWidth]" class="col-xs-12 grid-item">
-    <img :src="artwork.image" :alt="artwork.title">
+  <section>
+    <router-link :to="url" :class="[artworkWidth]" class="col-xs-12 grid-item">
+      <img :src="artwork.image" :alt="artwork.title">
+    </router-link>
     <!-- TO DO: in design, artwork caption is artist name -->
-    <p class="artwork-caption">{{artwork.caption}}</p>
     <p class="art-title">{{artwork.title}}</p>
-    <p class="artwork-caption">Owner: {{artwork.owner}}</p>
-    <!--
-    <p class="artwork-caption">{{artwork.state}}</p>
-    -->
-    <div v-if="artwork.canRegister">
-      <router-link :to="registerUrl" class="artwork-action" v-if="!artwork.canSetPrice">Register</router-link>
-      <router-link :to="registerUrl" class="artwork-action" v-else>Set Price</router-link>
-    </div>
-    <router-link :to="editUrl" class="artwork-action" v-if="artwork.canEdit">Edit</router-link>
+    <p class="artwork-caption">{{artwork.caption}}</p>
+    <p class="artwork-caption">Artist: {{artistProfile.name}}</p>
+    <p class="artwork-caption">Owner: {{ownerProfile.name}}</p>
+    <router-link :to="registerUrl" class="artwork-action" v-if="showRegister">Register</router-link>
+    <router-link :to="editUrl" class="artwork-action" v-if="editable">Edit</router-link>
     <router-link :to="url" class="artwork-action" v-if="artwork.forSale">Buy</router-link>
     <router-link :to="url" class="artwork-action" v-if="artwork.forAuction">Bid</router-link>
-  </router-link>
+    <button class="button" @click="deleteArtwork(artwork.id)">Delete</button>
+  </section>
 </template>
 
 <script>
-// import ethService from '@/services/experimental/ethApiService'
-// import provenanceService from '@/services/provenance/provenanceService'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -50,7 +46,25 @@ export default {
     //  }
     // })
   },
+  methods: {
+    deleteArtwork (id) {
+      this.$store.dispatch('myArtworksStore/deleteMyArtwork', id)
+    }
+  },
   computed: {
+    editable (id) {
+      return this.$store.getters['myArtworksStore/editable'](this.artwork.id)
+    },
+    showRegister () {
+      let userProfile = this.$store.getters['myAccountStore/getProfile']
+      return (this.artwork.timestamp && this.artwork.timestamp.length > 0 && userProfile.username === this.artwork.ownerUid)
+    },
+    artistProfile () {
+      return this.$store.getters['userProfilesStore/getProfile'](this.artwork.artistUid)
+    },
+    ownerProfile () {
+      return this.$store.getters['userProfilesStore/getProfile'](this.artwork.ownerUid)
+    },
     artworkWidth () {
       return `col-sm-${this.width}`
     },

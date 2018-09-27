@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import myAccountService from '@/services/myAccountService'
 
 import Home from '../pages/Home'
 import About from '../pages/About'
@@ -24,11 +25,11 @@ import AdminRegistrations from '../components/admin/AdminRegistrations'
 import AdminSearchNames from '../components/admin/AdminSearchNames'
 import AdminSearchArt from '../components/admin/AdminSearchArt'
 import AdminUserRecords from '../components/admin/AdminUserRecords'
-import Account from 'bright-block-auth/src/components/account/Account'
-import AccountUserData from 'bright-block-auth/src/components/account/AccountUserData'
-import AccountLookup from 'bright-block-auth/src/components/account/AccountLookup'
-import AccountDisplay from 'bright-block-auth/src/components/account/AccountDisplay'
-import AccountFiles from 'bright-block-auth/src/components/account/AccountFiles'
+import Account from '../components/account/Account'
+import AccountUserData from '../components/account/AccountUserData'
+import AccountLookup from '../components/account/AccountLookup'
+import AccountDisplay from '../components/account/AccountDisplay'
+import AccountFiles from '../components/account/AccountFiles'
 
 import Market from '../components/market/Market'
 import MarketSearch from '../components/market/MarketSearch'
@@ -45,9 +46,6 @@ import ProvenanceItem from '../components/provenance/ProvenanceItem'
 
 import Lightning from '@/components/lightning/Lightning'
 // import LightningNodes from '@/components/lightning/LightningNodes'
-
-import authorization from 'bright-block-auth'
-import Login from 'bright-block-auth/src/components/auth/Login'
 
 Vue.use(Router)
 
@@ -176,15 +174,6 @@ const router = new Router({
         }
       ]
     }, {
-      path: '/login',
-      name: 'login',
-      component: Login
-    }, {
-      path: '/getBrowser',
-      name: 'getBrowser',
-      component: Login
-    },
-    {
       path: '/about',
       name: 'about',
       component: About,
@@ -228,7 +217,6 @@ const router = new Router({
       path: '/search',
       name: 'search',
       component: Search,
-      meta: { requiresAuth: true },
     },
     {
       path: '/my-artworks',
@@ -278,9 +266,9 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     // this route requires auth, check if logged in
     // if not, redirect to login page.
-    if (!authorization.isLoggedIn()) {
+    if (!myAccountService.myProfile().loggedIn) {
       next({
-        path: '/login',
+        path: '/',
         query: { redirect: to.fullPath }
       })
     } else {

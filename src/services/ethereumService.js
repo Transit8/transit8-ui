@@ -24,7 +24,7 @@ const ethereumService = {
   getNumberOfItems: function () {
     xhrService.makeGetCall(API_SERVER_URL + '/numberOfItems')
       .then(function (result) {
-        store.commit('ethereumNumbItems', result)
+        store.commit('ethStore/ethereumNumbItems', result)
       }).catch(function (e) {
         console.log('Unable to connect to ethereum node')
       })

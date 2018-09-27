@@ -1,9 +1,8 @@
 <template>
 <div>
-  <notifications group="foo" />
+  <notifications group="artwork-actions" />
   <div class="main">
     <navigation/>
-    <login />
     <settings-blockchain v-if="error" v-on:continue-onward="continueOnward" v-bind:metamask="metamask"></settings-blockchain>
     <router-view v-else></router-view>
   </div>
@@ -14,7 +13,6 @@
 <script>
 import SettingsBlockchain from '@/components/settings/SettingsBlockchain'
 import Navigation from '@/components/nav/Navigation'
-import Login from 'bright-block-auth/src/components/auth/Login'
 import ethService from '@/services/experimental/ethApiService'
 import AppFooter from './components/common/AppFooter'
 import provenanceService from '@/services/provenance/provenanceService'
@@ -64,7 +62,6 @@ export default {
   components: {
     AppFooter,
     Navigation,
-    Login,
     SettingsBlockchain,
   }
 }

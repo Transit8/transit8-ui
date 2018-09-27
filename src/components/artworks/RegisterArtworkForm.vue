@@ -1,16 +1,11 @@
 <template>
-  <section id="pdp-action" class="pdp-action pb-0">
+  <section id="pdp-action" class="pdp-action black pb-0">
     <div class="container-fluid p-0">
-      <h2 class="title is-3">Register Your Ownership on Chain</h2>
-      <div class="row  m-0" v-if="message">
-        <div class="col-md-12 col-xs-12 p-0">
-          {{ message }}
+      <div class="row  m-0">
+        <div class="col-md-9 col-xs-12 product-price">
+          <span class="price inline-block">Register Your Ownership</span>
         </div>
-      </div>
-      <div class="row  m-0" v-else>
-        <div class="col-md-12 col-xs-12 p-0">
-          <button class="btn btn-block black action-button text-uppercase yellow-bg"  @click="registerArtwork()">register</button>
-        </div>
+        <button class="btn btn-block black action-button text-uppercase yellow-bg"  @click="registerArtwork()">register</button>
       </div>
     </div>
   </section>

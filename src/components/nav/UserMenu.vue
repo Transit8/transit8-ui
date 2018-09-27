@@ -5,7 +5,7 @@
         <uiv-btn><span class="icon-user"></span></uiv-btn>
         <template v-if="loggedIn" slot="dropdown">
           <li class="delimited">
-            <span>{{username}}</span>
+            <span>{{ username }}</span>
           </li>
           <li>
             <router-link to="/my-artworks" class="navbar-item">
@@ -40,21 +40,16 @@
         </template>
 
         <template v-if="!loggedIn" slot="dropdown">
-          <li v-if="!cantLogIn">
+          <li>
             <a href="#" @click.prevent="openModal()">
               Login
             </a>
-          </li>
-          <li v-if="cantLogIn">
-            <router-link to="/getBrowser">
-              Download the Blockstack Browser
-            </router-link>
           </li>
         </template>
       </uiv-dropdown>
     </div>
 
-    <div v-if="!cantLogIn">
+    <div>
       <uiv-modal :value="isModalActive" :append-to-body="true">
         <div slot="title"><h1 class="login-modal-title">Login</h1></div>
         <div class="login-modal-body">
@@ -75,89 +70,41 @@
         </div>
       </uiv-modal>
     </div>
-    <div v-else>
-      <uiv-modal v-model="isModalActive" :append-to-body="true">
-        <div slot="title"><i class="glyphicon glyphicon-heart"></i> Download Blockstack - Own Your Online Identity</div>
-
-        <ol>
-          <li><a href="#" v-on:click="login">Download Blockstack</a></li>
-          <li>Buy you're own online identity (requires bitcoin)</li>
-          <li>Switch back to this tab and login</li>
-        </ol>
-        <p>Why? Good question. Blockstack are re-imagining the internet. A place where we own our own online
-          identities.
-          Where we control our own posts and art work and media and decide with whom and how and when to share them.
-          In effect Blockstack
-          are pulling then internet inside so rather than a small number of enormous companies owning and controlling
-          everything the
-          actual makers and creators on the internet have control!
-        </p>
-        <p>After all isn't this the original dream?</p>
-
-        <div slot="footer">
-          <button @click="closeModal" class="btn btn-primary">Cancel</button>
-          <button class="btn btn-success" v-on:click="openModal">Get Started</button>
-
-          <p class="is-size-7"><a v-on:click="openModal">Signin</a> without multiplayer support if your zone file is
-            linked to dropbox or you have an anonymous address.</p>
-        </div>
-      </uiv-modal>
-    </div>
   </div>
 </template>
 
 <script>
-import authorization from 'bright-block-auth'
+import myAccountService from '@/services/myAccountService'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
   name: 'UserMenu',
   data () {
     return {
-      loggedIn: false,
-      showAdmin: false,
-      cantLogIn: false,
-      name: null,
-      username: null,
       isModalActive: false,
     }
   },
-  mounted () {
-    if (authorization.isLoggedIn()) {
-      this.setLoginData()
-    } else if (authorization.isPending()) {
-      authorization.handlePending().then(() => {
-        this.setLoginData()
-      })
+  created () {
+    if (myAccountService.isPending()) {
+      myAccountService.handlePending()
     }
-    authorization.canLogIn().then((data) => {
-      if (!data) {
-        this.cantLogIn = true
-      }
-    })
+  },
+  computed: {
+    username () {
+      return this.$store.state.myAccountStore.myProfile.name
+    },
+    showAdmin () {
+      return this.$store.state.myAccountStore.myProfile.showAdmin
+    },
+    loggedIn () {
+      return this.$store.state.myAccountStore.myProfile.loggedIn
+    },
   },
   methods: {
-    setLoginData () {
-      authorization.getUserData().then((account) => {
-        /*
-        this.avatarUrl = account.avatarUrl
-        if (this.avatarUrl && this.avatarUrl.length > 0) {
-          this.hasAvatar = true
-        }
-        */
-        this.name = account.name
-        if (!this.name || this.name.length === 0) {
-          this.name = account.username
-        }
-        this.username = account.username
-        this.showAdmin = true
-        this.loggedIn = true
-      })
-    },
     logout () {
       localStorage.clear()
       sessionStorage.clear()
-      authorization.logout()
+      myAccountService.logout()
     },
     openModal () {
       this.isModalActive = true
@@ -166,10 +113,10 @@ export default {
       this.isModalActive = false
     },
     login: () => {
-      return authorization.login()
+      return myAccountService.login()
     },
     loginMultiPlayer: () => {
-      return authorization.loginMultiPlayer()
+      return myAccountService.loginMultiPlayer()
     },
   }
 }

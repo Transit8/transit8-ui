@@ -17,6 +17,7 @@ export default {
   methods: {
     submit () {
       if (this.queryString) {
+        this.$store.dispatch('artworkSearchStore/fetchSearchArtworks', {term: 'title', query: this.queryString}, {root: true})
         this.$emit('submit', this.queryString)
       }
     }

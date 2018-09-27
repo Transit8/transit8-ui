@@ -1,5 +1,9 @@
 <template>
   <div>
+    <form class="search-form col-md-6 col-md-offset-2 col-sm-12 col-sm-offset-0 col-xs-12" @submit.prevent="submit()">
+      <input type="text" class="form-control" placeholder="Search" v-model="queryString">
+      <button type="submit"><span class="icon-search"></span></button>
+    </form>
     <section id="pdp-slider" class="pb-0 black-bg white pdp-slider pt-60 pb-60">
       <div class="container wide">
         <div class="row">

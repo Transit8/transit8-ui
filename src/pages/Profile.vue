@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import authorization from 'bright-block-auth'
+import myAccountService from '@/services/myAccountService'
 import ProfileDetail from '../components/profile/ProfileDetail'
 import RecentApps from '../components/profile/RecentApps'
 
@@ -38,9 +38,7 @@ export default {
     }
   },
   mounted () {
-    authorization.getUserData().then((userData) => {
-      this.userData = userData
-    })
+    this.userData = myAccountService.myProfile()
   },
 }
 </script>

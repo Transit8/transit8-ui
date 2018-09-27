@@ -1,9 +1,12 @@
 import xhrService from '@/services/xhrService'
+import store from '@/storage/store'
+import _ from 'lodash'
+import utils from './utils'
 
 /**
  *  The service is a client to the brightblock sever side grpc client.
 **/
-const searchIndexService = {
+const artworkSearchService = {
   reindexRecord: function (indexData) {
     return new Promise(function (resolve) {
       xhrService.makePostCall('/art/index/indexData', indexData)
@@ -95,15 +98,31 @@ const searchIndexService = {
         })
     })
   },
-  searchIndex: function (index, term, query) {
-    return new Promise(function (resolve) {
-      xhrService.makeGetCall('/' + index + '/search/' + term + '?q=' + query)
-        .then(function (result) {
-          resolve(result)
-        }).catch(function (e) {
-          resolve({error: 'Error searching index for query: ' + query})
-        })
-    })
+  findArtworks: function (query, success, failure) {
+    xhrService.makeGetCall('/art/search/' + query.term + '?q=' + query.query)
+      .then(function (results) {
+        if (!results || results.length === 0) {
+          success()
+        } else {
+          let gaiaArtworkFileName = store.state.constants.gaiaArtworkFileName
+          _.forEach(results, function (indexData) {
+            store.dispatch('userProfilesStore/addUserProfile', {username: indexData.uploader}, {root: true})
+            store.dispatch('userProfilesStore/addUserProfile', {username: indexData.owner}, {root: true})
+            let urlLastSlash = indexData.gaiaUrl.lastIndexOf('/') + 1
+            let url = indexData.gaiaUrl.substring(0, urlLastSlash)
+            url = url + gaiaArtworkFileName + indexData.id + '.json'
+            xhrService.makeDirectCall(url)
+              .then(function (provData) {
+                success(utils.convertFromBlockstack({indexData: indexData, provData: provData}))
+              }).catch(function (e) {
+                console.log('Unable to add record: ' + indexData.id, e)
+                failure({error: 1, message: 'no artworks found'})
+              })
+          })
+        }
+      }).catch(function (e) {
+        failure({error: 2, message: 'no artworks found'})
+      })
   },
 }
-export default searchIndexService
+export default artworkSearchService

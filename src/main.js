@@ -29,8 +29,9 @@ Vue.use(PrismicVue, {
   linkResolver
 })
 store.commit('constants', CONSTANTS)
-store.dispatch('getClientState')
-store.dispatch('getMyArtworks')
+store.dispatch('ethStore/getClientState')
+store.dispatch('myAccountStore/fetchMyAccount')
+store.dispatch('myArtworksStore/fetchMyArtworks')
 
 /* eslint-disable no-new */
 new Vue({
@@ -42,4 +43,3 @@ new Vue({
   components: { App },
   template: '<App/>'
 })
-store.dispatch('getSlides')
