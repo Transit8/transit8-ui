@@ -6,8 +6,8 @@
      <img :src="artwork.image" :alt="artwork.title" class="img-responsive">
     </div>
     <div class="col-sm-3">
-        <p class="artwork-caption">{{artwork.caption}}</p>
         <p class="art-title">{{artwork.title}}</p>
+        <p class="artwork-caption">{{artwork.description}}</p>
     </div>
     <div class="col-sm-7 col-description">
       <!--  TO DO: add real decription with keywords -->

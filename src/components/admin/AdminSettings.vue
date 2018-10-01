@@ -24,7 +24,7 @@
     <div class="col-sm-12 pt-5">Client: {{ clientState.client }}</div>
   </div>
   <div class="row">
-    <div class="col-sm-12 pt-5">Meta Mask Network {{ network.networkId }} ({{ network.networkName }})</div>
+    <div class="col-sm-12 pt-5">Meta Mask Network {{ clientState.metaMaskNetwork.networkId }} ({{ clientState.metaMaskNetwork.networkName }})</div>
   </div>
   <div class="row">
     <div class="col-sm-12 pt-5">Expected Network {{ networkExpected }})</div>
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import ethService from '@/services/experimental/ethApiService'
+import ethereumService from '@/services/ethereumService'
 import { mapState } from 'vuex'
 
 export default {
@@ -49,7 +49,7 @@ export default {
     }
   },
   created () {
-    this.network = ethService.getNetworkType()
+    this.network = ethereumService.getNetworkType()
     this.networkExpected = process.env.ETHEREUM_NETWORK
   },
   methods: {
@@ -61,7 +61,8 @@ export default {
   },
   computed: {
     clientState () {
-      return this.$store.state.ethStore.ethereum.clientState
+      let clientState = this.$store.state.ethStore.clientState
+      return clientState
     },
     constants () {
       return this.$store.state.constants

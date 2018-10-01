@@ -10,6 +10,9 @@ const userProfilesStore = {
   },
   getters: {
     getProfile: (state) => (username) => {
+      if (!username) {
+        return {}
+      }
       let matches = state.userProfiles.filter(profile => profile.username === username)
       if (matches.length > 0) {
         return matches[0]
@@ -31,22 +34,27 @@ const userProfilesStore = {
   },
   actions: {
     addUserProfile ({ commit, state }, user) {
-      let userProfiles = state.userProfiles
-      let index = _.findIndex(userProfiles, function (o) {
-        return o.username === user.username
-      })
-      if (index === -1) {
-        userProfilesService.fetchUserProfile(user.username, function (userProfile) {
-          commit('addUser', userProfile)
-          // Vue.notify({group: 'artwork-actions', title: 'User Profiles', text: 'Fetched profile for: <br>' + user.username})
-        },
-        function (error) {
-          // Vue.notify({type: 'error', group: 'artwork-actions', title: 'User Profiles ' + user.username, text: 'Error deleting your file: <br>' + error.message})
-          console.log('Error deleting artwork.', error)
+      return new Promise((resolve, reject) => {
+        if (!user.username || user.username.length === 0 || user.username.indexOf('not given') > -1) {
+          resolve()
+        }
+        let userProfiles = state.userProfiles
+        let index = _.findIndex(userProfiles, function (o) {
+          return o.username === user.username
         })
-      } else {
-        // Vue.notify({type: 'warn', group: 'artwork-actions', title: 'User Profiles ', text: 'Already Fetched User ' + user.username})
-      }
+        if (index === -1) {
+          userProfilesService.fetchUserProfile(user.username, function (userProfile) {
+            commit('addUser', userProfile)
+            resolve(userProfile)
+          },
+          function (error) {
+            console.log('Error fetching user profile for: ' + user.username, error)
+            resolve()
+          })
+        } else {
+          resolve(userProfiles[index])
+        }
+      })
     },
   }
 }

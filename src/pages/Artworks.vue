@@ -24,8 +24,6 @@
 <script>
 import Filters from '../components/artworks/Filters'
 import ArtworksList from '../components/artworks/ArtworksList'
-import ethService from '@/services/experimental/ethApiService'
-import provenanceService from '@/services/provenance/provenanceService'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -33,34 +31,17 @@ export default {
   components: { ArtworksList, Filters },
   data () {
     return {
-      artworks: [],
       filters: {}
     }
   },
   mounted () {
-    this.loadArtworks(9)
+  },
+  computed: {
+    artworks () {
+      return this.$store.getters['artworkSearchStore/getArtworksPageArtworks']
+    },
   },
   methods: {
-    loadArtworks: function (numberToLoad) {
-      ethService.loadArtworks(numberToLoad, this.loadArtwork)
-    },
-
-    loadArtwork: function (blockchainItem) {
-      let $self = this
-      provenanceService.findArtworkFromBlockChainData(blockchainItem, function (record) {
-        let saleData = record.indexData.saleData
-        $self.artworks.push({
-          id: String(record.indexData.id),
-          title: record.indexData.title,
-          caption: record.profile.name,
-          // caption: record.indexData.uploader,
-          forSale: (saleData && saleData.soid === 1),
-          forAuction: (saleData && saleData.soid === 2),
-          image: record.image
-        })
-      })
-    },
-
     updateFilters (filters) {
       this.filters = filters
     },

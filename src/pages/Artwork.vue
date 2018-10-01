@@ -5,7 +5,7 @@
         <div class="row">
           <div class="col-sm-12 clearfix">
             <div class="pull-left">
-              <h1 class="product-title">{{artist.name}}, {{artwork.name}}</h1>
+              <h1 class="product-title">{{artist.name}}, {{artwork.title}}</h1>
               <p class="mb-0">
                 1/1 Edition, {{artwork.category}}<br/>
                 <a href="#" @click.prevent="scrollToAboutSection()"><u>About artwork</u></a>
@@ -160,8 +160,6 @@ export default {
           $self.artworks.push({
             id: String(record.indexData.id),
             title: record.indexData.title,
-            caption: record.profile.name,
-            // caption: record.indexData.uploader,
             forSale: (saleData && saleData.soid === 1),
             forAuction: (saleData && saleData.soid === 2),
             image: record.image

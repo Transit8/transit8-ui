@@ -11,21 +11,24 @@ const myArtworksStore = {
     blockstackRootFile: {}
   },
   getters: {
+    bcstatus: (state, getters) => (id) => {
+      let artwork = getters.myArtwork(id)
+      if (artwork.bcitem) {
+        return artwork.bcitem.status
+      } else {
+        return 'unknown'
+      }
+    },
     numberArtworksSold: (state, getters) => {
       return getters.sold.length
     },
     numberArtworksUnsold: (state, getters) => {
       return getters.unsold.length
     },
-    showRegister ({state, getters}, id) {
+    editable: (state, getters) => (id) => {
       let artwork = getters.myArtwork(id)
-      let userProfile = this.$store.getters['myAccountStore/getProfile']
-      return (artwork.timestamp && artwork.timestamp.length > 0 && userProfile.username === artwork.ownerUid)
-    },
-    editable: (state) => (id) => {
-      let artworks = state.myArtworks.filter(myArtwork => myArtwork.id === id)
-      let username = store.state.myAccountStore.myProfile.username
-      return artworks.length > 0 && username === artworks[0].ownerUid
+      let userProfile = store.getters['myAccountStore/getMyProfile']
+      return (userProfile.username === artwork.owner)
     },
     myArtwork: (state) => (id) => {
       let artworks = state.myArtworks.filter(myArtwork => myArtwork.id === id)
@@ -36,10 +39,10 @@ const myArtworksStore = {
       }
     },
     unsold: (state) => {
-      return state.myArtworks.filter(myArtwork => myArtwork.artistUid === myArtwork.ownerUid)
+      return state.myArtworks.filter(myArtwork => myArtwork.artist === myArtwork.owner)
     },
     sold: state => {
-      return state.myArtworks.filter(myArtwork => myArtwork.artistUid !== myArtwork.ownerUid)
+      return state.myArtworks.filter(myArtwork => myArtwork.artist !== myArtwork.owner)
     }
   },
   mutations: {
@@ -53,7 +56,14 @@ const myArtworksStore = {
       if (!state.myArtworks) {
         state.myArtworks = []
       }
-      state.myArtworks.push(myArtwork)
+      let index = _.findIndex(state.myArtworks, function (o) {
+        return o.id === myArtwork.id
+      })
+      if (index === -1) {
+        state.myArtworks.splice(0, 0, myArtwork)
+      } else {
+        state.myArtworks.splice(index, 1, myArtwork)
+      }
     }
   },
   actions: {
@@ -75,10 +85,53 @@ const myArtworksStore = {
     fetchMyArtworks ({ commit, state }) {
       myArtworksService.getMyArtworks(function (myArtwork) {
         commit('addMyArtwork', myArtwork)
-      },
-      function (error) {
-        // Vue.notify({type: 'error', group: 'artwork-actions', title: 'Delete Artworks.', text: 'Error fetching artwork files. <br>' + error.message})
-        console.log('Error fetching artworks: ', error)
+        store.dispatch('ethStore/fetchBlockchainItem', {timestamp: myArtwork.timestamp}, {root: true}).then((blockchainItem) => {
+          if (blockchainItem && blockchainItem.itemIndex > -1) {
+            myArtwork.bcitem.status = 'registered'
+            _.merge(myArtwork.bcitem, blockchainItem)
+            commit('addMyArtwork', myArtwork)
+          }
+        })
+      })
+    },
+    fetchMyArtwork ({ commit, state }, artworkId) {
+      return new Promise((resolve, reject) => {
+        myArtworksService.getMyArtwork(artworkId, function (myArtwork) {
+          let blockchainItem = store.getters['ethStore/getBlockchainItem'](myArtwork.timestamp)
+          myArtwork.blockchainItem = blockchainItem
+          commit('addMyArtwork', myArtwork)
+          resolve(myArtwork)
+        },
+        function (error) {
+          console.log('Error fetching artwork: ' + artworkId, error)
+          resolve()
+        })
+      })
+    },
+    uploadArtwork ({ commit, state }, artwork) {
+      return new Promise((resolve, reject) => {
+        myArtworksService.uploadArtwork(artwork, function (artwork) {
+          commit('addMyArtwork', artwork)
+          resolve(artwork)
+        },
+        function (error) {
+          // Vue.notify({type: 'error', group: 'artwork-actions', title: 'Delete Artworks.', text: 'Error fetching artwork files. <br>' + error.message})
+          console.log('Error uploading artwork: ', error)
+          resolve()
+        })
+      })
+    },
+    updateArtwork ({ commit, state }, artwork) {
+      return new Promise((resolve, reject) => {
+        myArtworksService.updateArtwork(artwork, function (artwork) {
+          commit('addMyArtwork', artwork)
+          resolve(artwork)
+        },
+        function (error) {
+          // Vue.notify({type: 'error', group: 'artwork-actions', title: 'Delete Artworks.', text: 'Error fetching artwork files. <br>' + error.message})
+          console.log('Error uploading artwork: ', error)
+          resolve()
+        })
       })
     },
   }

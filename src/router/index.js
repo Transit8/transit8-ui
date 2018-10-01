@@ -11,8 +11,11 @@ import Artist from '../pages/Artist'
 import HowItWorks from '../pages/HowItWorks'
 import Resources from '../pages/Resources'
 import Search from '../pages/Search'
-import MyArtwork from '../pages/MyArtwork'
+import MyArtworkSetPrice from '../pages/MyArtworkSetPrice'
+import MyArtworkRegister from '../pages/MyArtworkRegister'
 import MyArtworks from '../pages/MyArtworks'
+import MyArtworkUpload from '../pages/MyArtworkUpload'
+import MyArtworkUpdate from '../pages/MyArtworkUpdate'
 import Story from '../pages/Story'
 import Privacy from '../pages/Privacy'
 import Profile from '../pages/Profile'
@@ -219,15 +222,33 @@ const router = new Router({
       component: Search,
     },
     {
+      path: '/my-artwork/update/:artworkId',
+      name: 'myArtworkUpdate',
+      component: MyArtworkUpdate,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/my-artwork/upload',
+      name: 'myArtworkUpload',
+      component: MyArtworkUpload,
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/my-artworks',
       name: 'my-artworks',
       component: MyArtworks,
       meta: { requiresAuth: true },
     },
     {
-      path: '/my-artworks/:artworkId',
-      name: 'myArtwork',
-      component: MyArtwork,
+      path: '/my-artworks/register/:artworkId',
+      name: 'myArtworkRegister',
+      component: MyArtworkRegister,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/my-artworks/set-price/:artworkId',
+      name: 'myArtworkSetPrice',
+      component: MyArtworkSetPrice,
       meta: { requiresAuth: true },
     },
     {

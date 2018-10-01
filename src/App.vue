@@ -13,10 +13,8 @@
 <script>
 import SettingsBlockchain from '@/components/settings/SettingsBlockchain'
 import Navigation from '@/components/nav/Navigation'
-import ethService from '@/services/experimental/ethApiService'
+import ethereumService from '@/services/ethereumService'
 import AppFooter from './components/common/AppFooter'
-import provenanceService from '@/services/provenance/provenanceService'
-// import ethereumService from '@/services/ethereumService'
 
 export default {
   name: 'App',
@@ -29,23 +27,17 @@ export default {
     }
   },
   created () {
-    console.log('Running App version ', process.env)
-    provenanceService.initRootFile()
-      .then((result) => {
-        provenanceService.initProvenanceRecords()
-      })
-      .catch(e => {
-        console.log(e)
-      })
-    let web3 = ethService.getWeb3()
+    let web3 = ethereumService.getWeb3()
     if (!web3) {
       this.error = 'no meta mask - routing to settings'
       return
     }
     let $elfie = this
-    ethService.connectToBlockChain().then((result) => {
+    ethereumService.connectToBlockChain().then((result) => {
       if (result.failed) {
         $elfie.error = result.reason
+      } else if (Array.isArray(result.accounts) && result.accounts.length === 0) {
+        console.log('no accounts returned - probably not logged in.')
       } else {
         $elfie.metamask = result
       }

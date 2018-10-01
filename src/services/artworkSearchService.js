@@ -7,7 +7,7 @@ import utils from './utils'
  *  The service is a client to the brightblock sever side grpc client.
 **/
 const artworkSearchService = {
-  reindexRecord: function (indexData) {
+  addRecordToIndex: function (indexData) {
     return new Promise(function (resolve) {
       xhrService.makePostCall('/art/index/indexData', indexData)
         .then(function (result) {
@@ -106,17 +106,23 @@ const artworkSearchService = {
         } else {
           let gaiaArtworkFileName = store.state.constants.gaiaArtworkFileName
           _.forEach(results, function (indexData) {
-            store.dispatch('userProfilesStore/addUserProfile', {username: indexData.uploader}, {root: true})
             store.dispatch('userProfilesStore/addUserProfile', {username: indexData.owner}, {root: true})
-            let urlLastSlash = indexData.gaiaUrl.lastIndexOf('/') + 1
-            let url = indexData.gaiaUrl.substring(0, urlLastSlash)
-            url = url + gaiaArtworkFileName + indexData.id + '.json'
-            xhrService.makeDirectCall(url)
-              .then(function (provData) {
-                success(utils.convertFromBlockstack({indexData: indexData, provData: provData}))
-              }).catch(function (e) {
-                console.log('Unable to add record: ' + indexData.id, e)
-                failure({error: 1, message: 'no artworks found'})
+            store.dispatch('userProfilesStore/addUserProfile', {username: indexData.uploader}, {root: true})
+              .then((userProfile) => {
+                let url = null
+                if (userProfile && userProfile.gaiaUrl) {
+                  url = userProfile.gaiaUrl + indexData.id + '.json'
+                }
+                let urlLastSlash = indexData.gaiaUrl.lastIndexOf('/') + 1
+                url = indexData.gaiaUrl.substring(0, urlLastSlash)
+                url = url + gaiaArtworkFileName + indexData.id + '.json'
+                xhrService.makeDirectCall(url)
+                  .then(function (provData) {
+                    success(utils.convertFromBlockstack({indexData: indexData, provData: provData}))
+                  }).catch(function (e) {
+                    console.log('Unable to add record: ' + indexData.id, e)
+                    failure({error: 1, message: 'no artworks found'})
+                  })
               })
           })
         }

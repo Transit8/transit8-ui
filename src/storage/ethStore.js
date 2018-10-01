@@ -1,33 +1,75 @@
 // ethStore.js
 import ethereumService from '@/services/ethereumService'
+import Vue from 'vue'
 
 const ethStore = {
   namespaced: true,
   state: {
-    ethereum: {
-      clientState: {},
-    },
+    clientState: {},
+    blockchainItems: [],
   },
   getters: {
+    getClientState: (state) => {
+      return state.clientState
+    },
+    getBlockchainItem: (state, getters) => (timestamp) => {
+      if (timestamp && timestamp.length > 0) {
+        let items = state.blockchainItems.filter(blockchainItem => blockchainItem.timestamp === timestamp)
+        if (items && items.length === 1) {
+          return items[0]
+        }
+      }
+    },
+    getBlockchainItems: (state) => {
+      return state.blockchainItems.slice(0, 6)
+    },
   },
   mutations: {
-    ethereum (state, clientState) {
-      state.ethereum.clientState = clientState
+    ethereumClientState (state, clientState) {
+      state.clientState = clientState
     },
-    ethereumNumbItems (state, numbItems) {
-      state.ethereum.clientState.numbItems = numbItems
+    blockchainItems (state, blockchainItems) {
+      state.blockchainItems = blockchainItems
+    },
+    blockchainItem (state, blockchainItem) {
+      state.blockchainItems.splice(0, 0, blockchainItem)
+    },
+    numbItems (state, numbItems) {
+      state.clientState.numbItems = numbItems
     },
   },
   actions: {
     getClientState ({ commit, state }) {
-      const savedClientState = [...state.ethereum.clientState]
-      commit('ethereum', {})
+      commit('ethereumClientState', {})
       ethereumService.getClientState(function (clientState) {
-        commit('ethereum', clientState)
+        commit('ethereumClientState', clientState)
       },
       function (error) {
-        commit('ethereum', savedClientState)
-        alert('Error saving data: ' + error)
+        Vue.notify({type: 'info', group: 'artwork-actions', title: 'Blockchain Client', text: 'Error fetching blockchain state.<br>' + error})
+      })
+    },
+    fetchBlockchainItems ({ commit, state }) {
+      return new Promise((resolve, reject) => {
+        ethereumService.fetchBlockchainItems(function (blockchainItems) {
+          commit('blockchainItems', blockchainItems)
+          resolve(blockchainItems)
+        },
+        function (error) {
+          Vue.notify({type: 'info', group: 'artwork-actions', title: 'Blockchain Client', text: 'Error fetching blockchain items.<br>' + error})
+          resolve([])
+        })
+      })
+    },
+    fetchBlockchainItem ({ commit, state }, data) {
+      return new Promise((resolve, reject) => {
+        ethereumService.fetchBlockchainItem(data, function (blockchainItem) {
+          if (blockchainItem) {
+            commit('blockchainItem', blockchainItem)
+            resolve(blockchainItem)
+          } else {
+            resolve()
+          }
+        })
       })
     },
   }

@@ -78,8 +78,6 @@ export default {
           $self.artworks.push({
             id: String(record.indexData.id),
             title: record.indexData.title,
-            caption: record.profile.name,
-            // caption: record.indexData.uploader,
             forSale: (saleData && saleData.soid === 1),
             forAuction: (saleData && saleData.soid === 2),
             image: record.image

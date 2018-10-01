@@ -14,6 +14,13 @@ const userProfilesService = {
             avatarUrl: (account.image && account.image.length > 0) ? account.image[0].contentUrl : '',
             apps: account.apps
           }
+          let domain = location.origin
+          for (var key in userProfile.apps) {
+            if (key.indexOf(domain) > -1) {
+              userProfile.appUrl = key
+              userProfile.gaiaUrl = userProfile.apps[key]
+            }
+          }
           success(userProfile)
         } else {
           failure({error: 1, message: 'Unable to find user: ' + username})

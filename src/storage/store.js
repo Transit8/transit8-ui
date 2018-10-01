@@ -6,6 +6,7 @@ import myArtworksStore from './myArtworksStore'
 import myAccountStore from './myAccountStore'
 import userProfilesStore from './userProfilesStore'
 import artworkSearchStore from './artworkSearchStore'
+import conversionStore from './conversionStore'
 import ethStore from './ethStore'
 
 Vue.use(Vuex)
@@ -16,6 +17,7 @@ const store = new Vuex.Store({
     myAccountStore: myAccountStore,
     userProfilesStore: userProfilesStore,
     artworkSearchStore: artworkSearchStore,
+    conversionStore: conversionStore,
     ethStore: ethStore,
   },
   state: {

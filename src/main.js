@@ -30,8 +30,12 @@ Vue.use(PrismicVue, {
 })
 store.commit('constants', CONSTANTS)
 store.dispatch('ethStore/getClientState')
-store.dispatch('myAccountStore/fetchMyAccount')
-store.dispatch('myArtworksStore/fetchMyArtworks')
+store.dispatch('conversionStore/fetchShapeShiftCryptoRate', 'eth_btc')
+store.dispatch('ethStore/fetchBlockchainItems').then(() => {
+  store.dispatch('myAccountStore/fetchMyAccount')
+  store.dispatch('myArtworksStore/fetchMyArtworks')
+  store.dispatch('artworkSearchStore/fetchRecentArtworks')
+})
 
 /* eslint-disable no-new */
 new Vue({

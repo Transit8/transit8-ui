@@ -13,7 +13,7 @@
             </router-link>
           </li>
           <li>
-            <router-link to="/provenance/create" class="navbar-item">
+            <router-link to="/my-artwork/upload" class="navbar-item">
               Upload Artwork
             </router-link>
           </li>

@@ -13,8 +13,6 @@
 import Slider from '../components/home/Slider'
 import LastArtworks from '../components/home/LastArtworks'
 import LatestStories from '../components/home/LatestStories'
-import ethService from '@/services/experimental/ethApiService'
-import provenanceService from '@/services/provenance/provenanceService'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -23,34 +21,19 @@ export default {
   data () {
     return {
       stories: [],
-      artworks: [],
       slides: []
     }
   },
   mounted () {
-    this.loadArtworks(6)
     this.fetchStories()
     this.fetchSlides()
   },
+  computed: {
+    artworks () {
+      return this.$store.getters['artworkSearchStore/getHomePageArtworks']
+    },
+  },
   methods: {
-
-    loadArtworks: function (numberToLoad) {
-      this.artworks = []
-      ethService.loadArtworks(numberToLoad, this.loadArtwork)
-    },
-
-    loadArtwork: function (blockchainItem) {
-      let $self = this
-      provenanceService.findArtworkFromBlockChainData(blockchainItem, function (record) {
-        $self.artworks.push({
-          id: record.indexData.id,
-          title: record.indexData.title,
-          caption: record.profile.name,
-          // caption: record.indexData.uploader,
-          image: record.image
-        })
-      })
-    },
 
     /**
      * Fetch 3 stories from prismic CMS

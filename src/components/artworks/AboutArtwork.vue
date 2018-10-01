@@ -5,7 +5,7 @@
         <div class="col-sm-6">
           <h2 class="h4 mb-40">About artwork</h2>
           <p>
-            {{artwork.name}}, {{artwork.year}}<br />
+            {{artwork.title}}, {{artwork.year}}<br />
             Edition 1/1, {{artwork.category}}
           </p>
           <div v-html="artwork.description"></div>

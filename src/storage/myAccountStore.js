@@ -11,7 +11,7 @@ const myAccountStore = {
     },
   },
   getters: {
-    getProfile: (state) => {
+    getMyProfile: (state) => {
       return state.myProfile
     },
   },

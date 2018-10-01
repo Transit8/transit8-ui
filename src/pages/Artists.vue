@@ -15,9 +15,6 @@
 
 <script>
 import ArtistsList from '../components/artists/ArtistsList'
-import ethService from '@/services/experimental/ethApiService'
-import provenanceService from '@/services/provenance/provenanceService'
-import _ from 'lodash'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -25,35 +22,17 @@ export default {
   components: { ArtistsList },
   data () {
     return {
-      artists: []
     }
   },
 
   mounted () {
-    this.loadArtworks(50)
   },
-
+  computed: {
+    artists () {
+      return this.$store.getters['artworkSearchStore/getArtistsPageArtworks']
+    },
+  },
   methods: {
-
-    loadArtworks: function (numberToLoad) {
-      ethService.loadArtworks(numberToLoad, this.loadArtwork)
-    },
-
-    loadArtwork: function (blockchainItem) {
-      let $self = this
-      provenanceService.findArtworkFromBlockChainData(blockchainItem, function (record) {
-        let index = _.findIndex($self.artists, {title: record.profile.name})
-        if (index === -1) {
-          let blockstackId = record.indexData.uploader.replace(/\./g, '_')
-          $self.artists.push({
-            id: blockstackId,
-            title: record.profile.name,
-            image: record.profile.image
-          })
-        }
-      })
-    },
-
     updateFilters (filters) {
       this.filters = filters
     },

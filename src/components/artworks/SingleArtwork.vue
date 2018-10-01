@@ -2,7 +2,7 @@
   <router-link :to="url" :class="[artworkWidth]" class="col-xs-12 grid-item">
     <img :src="artwork.image" :alt="artwork.title">
     <!-- TO DO: in design, artwork caption is artist name -->
-    <p class="artwork-caption">{{artwork.caption}}</p>
+    <p class="artwork-caption">{{artwork.description}}</p>
     <p class="art-title">{{artwork.title}}</p>
 
     <router-link :to="url" class="artwork-action" v-if="artwork.forSale">Buy</router-link>
