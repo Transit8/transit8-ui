@@ -63,6 +63,8 @@ import BidArtworkForm from '../components/artworks/BidArtworkForm'
 import ArtworkSlider from '../components/artworks/ArtworkSlider'
 import ArtworkSliderControls from '../components/artworks/ArtworkSliderControls'
 import ethereumService from '@/services/ethereumService'
+import notify from '@/services/notify'
+import utils from '@/services/utils'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -141,33 +143,39 @@ export default {
   methods: {
     buyArtwork () {
       let artwork = this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
-      let seller = artwork.owner
+      // let seller = artwork.owner
+      let seller = artwork.bcitem.blockstackId
       let buyer = this.$store.getters['myAccountStore/getMyProfile'].username
       if (!buyer || !seller || buyer === seller) {
         return
       }
-      ethereumService.buy(this.artwork.title, seller, buyer).then((item) => {
-        console.log('buying item ********', item)
-        if (item.failed !== true) {
-          this.record.indexData.gaiaUrl = null
-          this.record.indexData.appUrl = null
-          this.record.indexData.owner = buyer
 
-          if (!this.record.provData.owners) {
-            this.record.provData.owners = [{
-              owner: this.record.indexData.uploader,
-              saleData: this.record.indexData.saleData,
-            }]
-          }
-          this.record.provData.owners.push({
-            owner: this.record.indexData.owner,
-            saleData: this.record.indexData.saleData,
-          })
+      if (artwork.title !== artwork.bcitem.title) {
+        return
+      }
 
-          this.$store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
-            this.message = 'User storage has been updated...'
+      let purchaseData = {
+        itemIndex: artwork.bcitem.itemIndex,
+        price: artwork.bcitem.price,
+        buyer: buyer
+      }
+
+      let $self = this
+      ethereumService.purchase(purchaseData, function (result) {
+        notify.inform({title: 'Purchase Artwork.', text: 'Artwork purchase order sent to blockchain.'})
+        artwork.owner = buyer
+        artwork.bcitem.blockstackId = buyer
+        artwork.saleData = utils.buildInitialSaleData()
+        $self.$store.dispatch('myArtworksStore/transferArtwork', artwork).then((artwork) => {
+          notify.inform({title: 'Purchase Artwork.', text: 'Artwork info has been moved to new users storage.'})
+          $self.$store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
+            if (blockchainItem) {
+              notify.inform({title: 'Purchase Artwork.', text: 'Congratulations - artwork purchase complete.'})
+            }
           })
-        }
+        })
+      }, function (error) {
+        notify.error({title: 'Purchase Artwork.', text: 'Error setting price for your item.' + error.message})
       })
     },
 

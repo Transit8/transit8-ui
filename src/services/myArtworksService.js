@@ -64,13 +64,21 @@ const myArtworksService = {
     })
   },
 
+  transferArtwork: function (artwork, success, failure) {
+    myArtworksService.uploadOrTransferArtwork(artwork, success, failure)
+  },
+
   uploadArtwork: function (artwork, success, failure) {
-    let blockstackRootFileName = store.state.constants.blockstackRootFileName
-    let gaiaArtworkFileName = store.state.constants.gaiaArtworkFileName
     artwork.id = moment({}).valueOf()
     artwork.bcitem = {
       status: 'new'
     }
+    myArtworksService.uploadOrTransferArtwork(artwork, success, failure)
+  },
+
+  uploadOrTransferArtwork: function (artwork, success, failure) {
+    let blockstackRootFileName = store.state.constants.blockstackRootFileName
+    let gaiaArtworkFileName = store.state.constants.gaiaArtworkFileName
     let provFile = gaiaArtworkFileName + artwork.id + '.json'
     let record = utils.convertToBlockstack(artwork)
     getFile(blockstackRootFileName, {decrypt: false}).then(function (file) {

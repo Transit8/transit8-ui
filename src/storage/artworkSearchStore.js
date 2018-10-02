@@ -128,10 +128,9 @@ const artworkSearchStore = {
         let blockchainItem = blockchainItems[index]
         artworkSearchService.findArtworks({term: 'title', query: blockchainItem.title}, function (artwork) {
           if (artwork) {
-            // NOTE: this loads the most recent 6 images for the homepage/artworks page but in
-            // no particular order. An alternative would be to load 6 dummy images
-            // and then replace them bt the correct index or to load them into a temp
-            // array and load them all at once in the right order.
+            if (artwork.owner !== blockchainItem.blockstackId) {
+              artwork.owner = blockchainItem.blockstackId
+            }
             commit('addArtwork', artwork)
             let userProfile = store.getters['userProfilesStore/getProfile'](artwork.artist)
             commit('addArtist', userProfile)

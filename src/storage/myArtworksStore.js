@@ -40,10 +40,12 @@ const myArtworksStore = {
       }
     },
     unsold: (state) => {
-      return state.myArtworks.filter(myArtwork => myArtwork.artist === myArtwork.owner)
+      let username = store.getters['myAccountStore/getMyProfile'].username
+      return state.myArtworks.filter(artwork => username === artwork.owner)
     },
     sold: state => {
-      return state.myArtworks.filter(myArtwork => myArtwork.artist !== myArtwork.owner)
+      let username = store.getters['myAccountStore/getMyProfile'].username
+      return state.myArtworks.filter(artwork => username !== artwork.owner)
     }
   },
   mutations: {
@@ -92,6 +94,11 @@ const myArtworksStore = {
               myArtwork.bcitem = {}
             }
             myArtwork.bcitem.status = 'registered'
+            if (myArtwork.owner !== blockchainItem.blockstackId) {
+              _.merge(myArtwork.bcitem, blockchainItem)
+              myArtwork.owner = blockchainItem.blockstackId
+              store.dispatch('ethStore/updateArtwork', myArtwork)
+            }
             _.merge(myArtwork.bcitem, blockchainItem)
             commit('addMyArtwork', myArtwork)
           }
@@ -103,6 +110,11 @@ const myArtworksStore = {
         myArtworksService.getMyArtwork(artworkId, function (myArtwork) {
           let blockchainItem = store.getters['ethStore/getBlockchainItem'](myArtwork.timestamp)
           myArtwork.blockchainItem = blockchainItem
+          if (myArtwork.owner !== blockchainItem.blockstackId) {
+            _.merge(myArtwork.bcitem, blockchainItem)
+            myArtwork.owner = blockchainItem.blockstackId
+            store.dispatch('ethStore/updateArtwork', myArtwork)
+          }
           commit('addMyArtwork', myArtwork)
           resolve(myArtwork)
         },
@@ -125,6 +137,21 @@ const myArtworksStore = {
         })
       })
     },
+
+    transferArtwork ({ commit, state }, artwork) {
+      return new Promise((resolve, reject) => {
+        myArtworksService.transaferArtwork(artwork, function (artwork) {
+          commit('addMyArtwork', artwork)
+          resolve(artwork)
+        },
+        function (error) {
+          // Vue.notify({type: 'error', group: 'artwork-actions', title: 'Delete Artworks.', text: 'Error fetching artwork files. <br>' + error.message})
+          console.log('Error uploading artwork: ', error)
+          resolve()
+        })
+      })
+    },
+
     updateArtwork ({ commit, state }, artwork) {
       return new Promise((resolve, reject) => {
         myArtworksService.updateArtwork(artwork, function (artwork) {

@@ -20,6 +20,19 @@ const ethereumService = {
     }
     console.log('No connection to ethereum!')
   },
+  loggedIn: function (success, failure) {
+    let web3 = ethereumService.getWeb3()
+    web3.eth.getAccounts(function (error, accounts) {
+      if (error) {
+        failure({failed: true, reason: error})
+      } else if (!accounts || accounts.length === 0) {
+        failure({failed: true, reason: 'No accounts - not logged in to wallet'})
+      } else {
+        web3.eth.defaultAccount = accounts[0]
+        success({failed: false, accounts: accounts})
+      }
+    })
+  },
   connectToBlockChain: function () {
     let web3 = ethereumService.getWeb3()
     return new Promise(resolve => {
@@ -97,6 +110,16 @@ const ethereumService = {
             success({txId: txId})
           }
         })
+      }
+    })
+  },
+  purchase: function (priceData, success, failure) {
+    ethereumService.myContract.buy(priceData.itemIndex, priceData.buyer, {value: priceData.price}, function (err, txId) {
+      if (err) {
+        console.log(err)
+        failure({failed: true, message: err})
+      } else {
+        success({txId: txId})
       }
     })
   },
