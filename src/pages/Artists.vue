@@ -29,7 +29,7 @@ export default {
   },
   computed: {
     artists () {
-      return this.$store.getters['artworkSearchStore/getArtistsPageArtworks']
+      return this.$store.getters['artworkSearchStore/getArtistsPage']
     },
   },
   methods: {

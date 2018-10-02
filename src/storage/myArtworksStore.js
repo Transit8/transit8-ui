@@ -13,11 +13,12 @@ const myArtworksStore = {
   getters: {
     bcstatus: (state, getters) => (id) => {
       let artwork = getters.myArtwork(id)
-      if (artwork.bcitem) {
-        return artwork.bcitem.status
-      } else {
-        return 'unknown'
+      if (!artwork.bcitem) {
+        artwork.bcitem = {
+          status: 'new'
+        }
       }
+      return artwork.bcitem.status
     },
     numberArtworksSold: (state, getters) => {
       return getters.sold.length
@@ -87,6 +88,9 @@ const myArtworksStore = {
         commit('addMyArtwork', myArtwork)
         store.dispatch('ethStore/fetchBlockchainItem', {timestamp: myArtwork.timestamp}, {root: true}).then((blockchainItem) => {
           if (blockchainItem && blockchainItem.itemIndex > -1) {
+            if (!myArtwork.bcitem) {
+              myArtwork.bcitem = {}
+            }
             myArtwork.bcitem.status = 'registered'
             _.merge(myArtwork.bcitem, blockchainItem)
             commit('addMyArtwork', myArtwork)

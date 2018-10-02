@@ -20,8 +20,6 @@
         <div slot="title"><h1 class="login-modal-title">Updating Data</h1></div>
         <div class="login-modal-body">
           <p>{{message}}</p>
-          <p>Meta Mask Network: {{clientState.metaMaskNetwork}}</p>
-          <p>Expected Network: {{clientState.network}}</p>
         </div>
         <div slot="footer">
           <div class="login-modal-footer">
@@ -48,6 +46,8 @@
 <script>
 import ethereumService from '@/services/ethereumService'
 import _ from 'lodash'
+import Vue from 'vue'
+import utils from '@/services/utils'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -92,27 +92,34 @@ export default {
       this.openModal()
       let artwork = this.$store.getters['myArtworksStore/myArtwork'](this.artworkId)
       let uploader = this.$store.getters['myAccountStore/getMyProfile'].username
-      ethereumService.registerOnChain(artwork.title, artwork.timestamp, uploader).then((result) => {
-        if (result.failed) {
-          this.message = 'Registration failed - ' + result.reason
-        } else {
-          artwork.bcitem = {
-            registerTxId: result.txId,
-            status: 'pending-register'
-          }
-          this.$store.commit('myArtworksStore/addMyArtwork', artwork)
-          this.$store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
-            if (blockchainItem) {
-              _.merge(artwork.bcitem, blockchainItem)
-              this.message = 'Registration of your artwork is now complete...'
-              this.$store.commit('myArtworksStore/addMyArtwork', artwork)
-            }
-          })
-          this.message = 'Your artwork has been registered - please allow a few minutes for the transaction to complete...'
+      let regData = {
+        title: artwork.title,
+        timestamp: utils.buildArtworkHash(artwork.artwork[0].dataUrl),
+        uploader: uploader,
+      }
+      let $self = this
+      ethereumService.registerOnChain(regData, function (result) {
+        artwork.bcitem = {
+          registerTxId: result.txId,
+          status: 'pending-register'
         }
-      }).catch(e => {
-        this.message = 'Registration failed - ' + e
-        console.log('Error: ', e)
+        this.$store.commit('myArtworksStore/addMyArtwork', artwork)
+        Vue.notify({type: 'info', group: 'artwork-actions', title: 'Register Artwork.', text: 'Transaction sent to the blockchain...'})
+        this.$store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
+          if (blockchainItem) {
+            _.merge(artwork.bcitem, blockchainItem)
+            this.message = 'Registration of your artwork is now complete...'
+            this.$store.commit('myArtworksStore/addMyArtwork', artwork)
+          }
+        })
+        this.message = 'Your artwork has been registered - please allow a few minutes for the transaction to complete...'
+        this.$store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
+          $self.message = 'User storage has been updated...'
+          Vue.notify({type: 'info', group: 'artwork-actions', title: 'Register Artwork.', text: 'User storage has been updated...'})
+        })
+      }, function (error) {
+        Vue.notify({type: 'error', group: 'artwork-actions', title: 'Register Artwork.', text: 'Error setting price for your item. <br>' + error.message})
+        $self.message = 'Error setting price for your item. <br>' + error.message
       })
     },
     openModal () {

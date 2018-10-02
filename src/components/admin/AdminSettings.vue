@@ -53,11 +53,6 @@ export default {
     this.networkExpected = process.env.ETHEREUM_NETWORK
   },
   methods: {
-    todoById (id) {
-      return this.$store.getters.getTodoById(id)
-    },
-    findAll: function () {
-    },
   },
   computed: {
     clientState () {

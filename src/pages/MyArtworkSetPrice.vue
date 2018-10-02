@@ -3,6 +3,7 @@
   <div>
     <uiv-modal :value="isModalActive" :append-to-body="true">
       <div slot="title"><h1 class="login-modal-title">Updating Data</h1></div>
+      <div slot="title"><h2 class="login-modal-title">{{myArtwork.title}}</h2></div>
       <div class="login-modal-body">
         <p>{{message}}</p>
       </div>
@@ -14,22 +15,23 @@
     </uiv-modal>
   </div>
 
-  <div class="row" v-if="saleOptionSoid == 0">
+  <div class="row">
     <div class="col-md12">
-      <h2>Listing Only</h2>
+      <h2>{{myArtwork.title}}</h2>
+    </div>
+  </div>
+  <div class="row" v-if="saleData.soid == 0">
+    <div class="col-md12">
       <p>This item will be listed on the site but will not be for sale.</p>
     </div>
   </div>
-  <div class="row" v-else-if="saleOptionSoid == 1">
+  <div class="row" v-else-if="saleData.soid == 1">
     <div class="col-md12">
-      <h2>Buy Now Enabled</h2>
       <p>This item can be bought for the price you specify.</p>
-      <p>Registered in transaction: {{myArtwork.bcitem.registerTxId}} at index {{myArtwork.bcitem.itemIndex}}.</p>
     </div>
   </div>
-  <div class="row" v-else-if="saleOptionSoid == 2">
+  <div class="row" v-else-if="saleData.soid == 2">
     <div class="col-md12">
-      <h2>Bidding Enabled</h2>
       <p>This item can be bought via online bidding - the reserve is the minimum price you will accept.</p>
     </div>
   </div>
@@ -45,20 +47,20 @@
 
     <div class="radio-inline">
       <label>
-        <input type="radio" name="saleOptionSoid" value="0" v-model="saleOptionSoid" @click="errors = []">Listing</label>
+        <input type="radio" name="saleData.soid" value="0" v-model="saleData.soid" @click="errors = []">Listing</label>
     </div>
     <div class="radio-inline">
       <label>
-        <input type="radio" name="saleOptionSoid" value="1" v-model="saleOptionSoid" @click="errors = []">Buy Now</label>
+        <input type="radio" name="saleData.soid" value="1" v-model="saleData.soid" @click="errors = []">Buy Now</label>
     </div>
     <div class="radio-inline">
       <label>
-        <input type="radio" name="saleOptionSoid" value="2" v-model="saleOptionSoid" @click="errors = []">Bidding</label>
+        <input type="radio" name="saleData.soid" value="2" v-model="saleData.soid" @click="errors = []">Bidding</label>
     </div>
 
     <hr/>
 
-    <div class="form-group" v-if="saleOptionSoid > 0">
+    <div class="form-group" v-if="saleData.soid > 0">
       <label for="currencyHelpBlock">Select Currency</label>
       <select class="form-control" v-model="currency">
         <option v-for="(value,key) in fiatRates" :key="key">{{ key }}</option>
@@ -68,7 +70,7 @@
       </p>
     </div>
 
-    <div v-if="saleOptionSoid == 1">
+    <div v-if="saleData.soid == 1">
       <div class="form-group">
         <label>Amount {{currentSymbol}}</label>
         <input class="form-control" type="number" step="50" placeholder="Sale value of artwork" v-model="saleData.amount"  aria-describedby="amountHelpBlock">
@@ -78,7 +80,7 @@
       </div>
     </div>
 
-    <div v-if="saleOptionSoid == 2">
+    <div v-if="saleData.soid == 2">
       <div class="form-group">
         <label>Reserve {{currentSymbol}}</label>
         <input class="form-control" type="number" step="50" placeholder="Reserve price" v-model="saleData.reserve"  aria-describedby="reserveHelpBlock">
@@ -107,6 +109,7 @@
 <script>
 import ethereumService from '@/services/ethereumService'
 import _ from 'lodash'
+import Vue from 'vue'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -114,13 +117,6 @@ export default {
   data () {
     return {
       errors: [],
-      saleData: {
-        soid: 0,
-        amount: 0,
-        reserve: 0,
-        increment: 0
-      },
-      saleOptionSoid: 0,
       currency: 'EUR',
       message: 'Please wait - we are updating the price of your item on the blockchain.',
       isModalActive: false,
@@ -128,11 +124,21 @@ export default {
   },
   created () {
     this.artworkId = Number(this.$route.params.artworkId)
-    let artwork = this.$store.getters['myArtworksStore/myArtwork'](this.artworkId)
-    this.saleData = artwork.saleData
-    this.saleOptionSoid = this.saleData.soid
   },
   computed: {
+    saleData () {
+      let artwork = this.$store.getters['myArtworksStore/myArtwork'](this.artworkId)
+      let saleData = artwork.saleData
+      if (!saleData) {
+        saleData = {
+          soid: 0,
+          amount: 0,
+          reserve: 0,
+          increment: 0
+        }
+      }
+      return saleData
+    },
     fiatRates () {
       return this.$store.getters['conversionStore/getFiatRates']
     },
@@ -202,7 +208,7 @@ export default {
       }
     },
     setPrice: function () {
-      this.saleData.soid = Number(this.saleOptionSoid)
+      this.saleData.soid = Number(this.saleData.soid)
       this.saleData.amount = Number(this.saleData.amount)
       this.saleData.reserve = Number(this.saleData.reserve)
       this.saleData.increment = Number(this.saleData.increment)
@@ -231,31 +237,32 @@ export default {
 
       let artwork = this.$store.getters['myArtworksStore/myArtwork'](this.artworkId)
       artwork.saleData = this.saleData
-      let uploader = this.$store.getters['myAccountStore/getMyProfile'].username
       this.message = 'Updating your user storage...'
       this.openModal()
-      let amountInWei = Math.trunc(artwork.saleData.amountInEther * 1000000000000000000)
-      let itemIndex = artwork.bcitem.itemIndex
-      this.message = 'Updating blockchain info...'
-      ethereumService.setPriceOnChain(itemIndex, artwork.title, uploader, amountInWei).then((result) => {
-        if (result.failed) {
-          this.message = 'Set price failed - ' + result.reason
-        } else {
-          this.message = 'New price has been set on your item - please allow a few minutes for the blockchain to update...'
-          artwork.bcitem.setPriceTxId = result.txId
-          artwork.bcitem.status = 'price-set'
-          this.$store.commit('myArtworksStore/addMyArtwork', artwork)
-          this.$store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
-            if (blockchainItem) {
-              _.merge(artwork.bcitem, blockchainItem)
-              this.message = 'Registration of your artwork is now complete...'
-            }
-            this.$store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
-              this.message = 'User storage has been updated...'
-            })
+      this.message = 'Calling blockchain to set the price...'
+      let priceData = {
+        itemIndex: artwork.bcitem.itemIndex,
+        amountInWei: Math.trunc(artwork.saleData.amountInEther * 1000000000000000000)
+      }
+      let $self = this
+      ethereumService.setPriceOnChain(priceData, function (result) {
+        $self.message = 'Price has been set on your item - please allow a few minutes for the blockchain to update...'
+        artwork.bcitem.setPriceTxId = result.txId
+        artwork.bcitem.status = 'price-set'
+        $self.$store.commit('myArtworksStore/addMyArtwork', artwork)
+        $self.$store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
+          if (blockchainItem) {
+            _.merge(artwork.bcitem, blockchainItem)
+            $self.message = 'Registration of your artwork is now complete...'
+          }
+          $self.$store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
+            $self.message = 'User storage has been updated...'
           })
-          this.message = 'Your artwork has been registered - please allow a few minutes for the transaction to complete...'
-        }
+        })
+        $self.message = 'Your artwork has been registered - please allow a few minutes for the transaction to complete...'
+      }, function (error) {
+        Vue.notify({type: 'error', group: 'artwork-actions', title: 'Error Setting Price.', text: 'Error setting price for your item. <br>' + error.message})
+        $self.message = 'Error setting price for your item. <br>' + error.message
       })
       // this.$router.push('/my-artworks')
     }

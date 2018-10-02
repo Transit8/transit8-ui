@@ -1,11 +1,14 @@
 // ethStore.js
 import ethereumService from '@/services/ethereumService'
 import Vue from 'vue'
+import _ from 'lodash'
 
 const ethStore = {
   namespaced: true,
   state: {
-    clientState: {},
+    clientState: {
+      metaMaskNetwork: {}
+    },
     blockchainItems: [],
   },
   getters: {
@@ -21,7 +24,7 @@ const ethStore = {
       }
     },
     getBlockchainItems: (state) => {
-      return state.blockchainItems.slice(0, 6)
+      return state.blockchainItems
     },
   },
   mutations: {
@@ -29,7 +32,7 @@ const ethStore = {
       state.clientState = clientState
     },
     blockchainItems (state, blockchainItems) {
-      state.blockchainItems = blockchainItems
+      state.blockchainItems = _.sortBy(blockchainItems, ['itemIndex'])
     },
     blockchainItem (state, blockchainItem) {
       state.blockchainItems.splice(0, 0, blockchainItem)
@@ -40,7 +43,6 @@ const ethStore = {
   },
   actions: {
     getClientState ({ commit, state }) {
-      commit('ethereumClientState', {})
       ethereumService.getClientState(function (clientState) {
         commit('ethereumClientState', clientState)
       },
@@ -64,7 +66,7 @@ const ethStore = {
       return new Promise((resolve, reject) => {
         ethereumService.fetchBlockchainItem(data, function (blockchainItem) {
           if (blockchainItem) {
-            commit('blockchainItem', blockchainItem)
+            // commit('blockchainItem', blockchainItem)
             resolve(blockchainItem)
           } else {
             resolve()

@@ -44,13 +44,6 @@ export default {
     }
   },
   mounted () {
-    // let $self = this
-    // let user = provenanceService.getUserProfile()
-    // ethService.fetchArtworkByHash(this.artwork.timestamp, function (data) {
-    //  if (data && !data.failed) {
-    //    $self.canSetPrice = user.username === data[1]
-    //  }
-    // })
   },
   methods: {
     deleteArtwork (id) {

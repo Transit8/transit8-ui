@@ -7,7 +7,7 @@
             <div class="pull-left">
               <h1 class="product-title">{{artist.name}}, {{artwork.title}}</h1>
               <p class="mb-0">
-                1/1 Edition, {{artwork.category}}<br/>
+                1/1 Edition, {{artwork.description}}<br/>
                 <a href="#" @click.prevent="scrollToAboutSection()"><u>About artwork</u></a>
               </p>
             </div>
@@ -25,11 +25,11 @@
     </section>
     <!-- /#pdp slider -->
 
-    <buy-artwork-form :purchaseState="purchaseState" :artwork="artwork" @buy="buyArtwork()" v-if="artwork.forSale"/>
-    <bid-artwork-form :purchaseState="purchaseState" :artwork="artwork" @bid="bidArtwork($event)" v-if="artwork.forAuction"/>
+    <buy-artwork-form :purchaseState="purchaseState" :artwork="artwork" @buy="buyArtwork()" v-if="forSale"/>
+    <bid-artwork-form :purchaseState="purchaseState" :artwork="artwork" @bid="bidArtwork($event)" v-if="forAuction"/>
     <!-- /#pdp-action -->
 
-    <about-artwork :artwork="artwork" :purchaseState="purchaseState" ref="about"/>
+    <about-artwork :aboutArtwork="aboutArtwork" ref="about"/>
     <!-- /#about-artwork-->
 
     <div class="divider divider-white"></div>
@@ -62,16 +62,7 @@ import BuyArtworkForm from '../components/artworks/BuyArtworkForm'
 import BidArtworkForm from '../components/artworks/BidArtworkForm'
 import ArtworkSlider from '../components/artworks/ArtworkSlider'
 import ArtworkSliderControls from '../components/artworks/ArtworkSliderControls'
-import webrtcService from '@/services/webrtc/webrtcService'
-import provenanceService from '@/services/provenance/provenanceService'
-// import ProvenanceBuyersInfo from '@/components/provenance/sales/ProvenanceBuyersInfo'
-// import ProvenanceSellersInfo from '@/components/provenance/sales/ProvenanceSellersInfo'
-// import moment from 'moment'
-import messagingService from '@/services/webrtc/messagingService'
-import eventBus from '@/services/eventBus'
-// import cacheService from '@/services/cacheService'
-import _ from 'lodash'
-import ethService from '@/services/experimental/ethApiService'
+import ethereumService from '@/services/ethereumService'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -87,94 +78,75 @@ export default {
   },
   data () {
     return {
-      userMessages: messagingService.messages,
-      messageSignal: {time: 'then', message: 'happy?'},
-      user: {},
-      purchaseState: {},
-      webrtcState: 0,
-      artworkId: (this.$route && this.$route.params.artworkId) ? parseInt(this.$route.params.artworkId) : undefined,
+      message: '',
       sliderImage: 0,
-      artist: {},
-      artwork: {},
-      artworks: [],
     }
   },
-  beforeDestroy () {
-    webrtcService.unpublish()
-    eventBus.$off('signal-in-message')
+  created () {
+    this.artworkId = Number(this.$route.params.artworkId)
+    this.$store.dispatch('artworkSearchStore/fetchArtwork', this.artworkId)
+  },
+  computed: {
+    artist () {
+      return this.$store.getters['userProfilesStore/getProfile'](this.artwork.artist)
+    },
+    artwork () {
+      return this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
+    },
+    forSale () {
+      let artwork = this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
+      if (artwork.bcitem && artwork.saleData) {
+        return (artwork.bcitem.itemIndex > -1 && artwork.bcitem.price > 0 && artwork.saleData.soid === 1)
+      } else {
+        return false
+      }
+    },
+    forAuction () {
+      let artwork = this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
+      if (artwork.bcitem && artwork.saleData) {
+        return (artwork.bcitem.itemIndex > -1 && artwork.bcitem.price > 0 && artwork.saleData.soid === 2)
+      } else {
+        return false
+      }
+    },
+    aboutArtwork () {
+      let artist = this.$store.getters['userProfilesStore/getProfile'](this.artwork.artist)
+      let owner = this.$store.getters['userProfilesStore/getProfile'](this.artwork.owner)
+      return {
+        artist: artist,
+        owner: owner,
+        title: this.artwork.title,
+        keywords: this.artwork.keywords,
+        year: this.artwork.year,
+        image: this.artwork.image
+      }
+    },
+    purchaseState () {
+      let username = this.$store.getters['myAccountStore/getMyProfile'].username
+      let ownedBySomeElse = this.artwork.owner !== username
+      let artwork = this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
+      let priceSet = artwork.bcitem.price > 0
+      let forSale = artwork.saleData.soid === 1
+      let purchaseState = {
+        canBuy: (forSale && priceSet && ownedBySomeElse)
+      }
+      return purchaseState
+    },
+    artworks () {
+      return this.$store.getters['artworkSearchStore/getArtworksByArtist'](this.artwork.artist)
+    },
   },
   mounted () {
-    let $elfie = this
-    this.user = provenanceService.getUserProfile()
-    window.addEventListener('beforeunload', this.stopPublishing)
-    let recordId = (this.$route && this.$route.params.artworkId) ? parseInt(this.$route.params.artworkId) : undefined
-    provenanceService.getRecordFromSearchIndexById(recordId).then((record) => {
-      if (!record.indexData.owner) {
-        record.indexData.owner = record.indexData.uploader
-      }
-      $elfie.purchaseState = {
-        ownedBy: record.indexData.owner,
-        canBuy: record.indexData.owner !== $elfie.user.username,
-      }
-      ethService.fetchArtworkByHash(record.indexData.timestamp, function (data) {
-        if (data && !data.failed) {
-          $elfie.artwork.owner = data[1]
-          $elfie.artwork.scData = data
-          $elfie.purchaseState = {
-            ownedBy: data[1],
-            canBuy: data[1] !== $elfie.user.username,
-          }
-        }
-      })
-      provenanceService.getArtistProfile(record).then((profile) => {
-        $elfie.record = record
-        this.artist = profile
-        this.user = provenanceService.getUserProfile(record)
-        this.setRecord(record)
-        this.loadArtworks(50)
-      })
-    })
-    // eventBus.$on('signal-in-message', function (payLoad) {
-    //  $elfie.userMessages.push(payLoad)
-    // })
-    eventBus.$on('signal-in-bid', function (payLoad) {
-      $elfie.userMessages.push(payLoad)
-    })
-    eventBus.$on('auction-connected', function (payLoad) {
-      $elfie.webrtcState = 1
-    })
-    eventBus.$on('item-edit', function (payLoad) {
-      window.location.reload()
-    })
   },
   methods: {
-    loadArtworks: function (numberToLoad) {
-      ethService.loadArtworks(numberToLoad, this.loadArtwork)
-    },
-
-    loadArtwork: function (blockchainItem) {
-      let $self = this
-      provenanceService.findArtworkFromBlockChainData(blockchainItem, function (record) {
-        if (record.indexData.uploader === $self.record.indexData.uploader) {
-          let saleData = record.indexData.saleData
-          $self.artworks.push({
-            id: String(record.indexData.id),
-            title: record.indexData.title,
-            forSale: (saleData && saleData.soid === 1),
-            forAuction: (saleData && saleData.soid === 2),
-            image: record.image
-          })
-        }
-      })
-    },
-
     buyArtwork () {
-      let buyer = this.user.username
-      let seller = this.artwork.owner
+      let artwork = this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
+      let seller = artwork.owner
+      let buyer = this.$store.getters['myAccountStore/getMyProfile'].username
       if (!buyer || !seller || buyer === seller) {
         return
       }
-      ethService.buy(this.record.indexData.title, seller, buyer).then((item) => {
+      ethereumService.buy(this.artwork.title, seller, buyer).then((item) => {
         console.log('buying item ********', item)
         if (item.failed !== true) {
           this.record.indexData.gaiaUrl = null
@@ -192,19 +164,10 @@ export default {
             saleData: this.record.indexData.saleData,
           })
 
-          provenanceService.createOrUpdateRecord(this.record.indexData, this.record.provData).then((records) => {
-            console.log('records *******', records)
-            location.reload()
-          }).catch(e => {
-            console.log('ProvenanceVue: Unable to lookup ', e)
+          this.$store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
+            this.message = 'User storage has been updated...'
           })
         }
-      })
-    },
-
-    setRegData: function (record, artwork) {
-      provenanceService.setRegData(record).then((regData) => {
-        record.indexData.regData = regData
       })
     },
 
@@ -212,49 +175,9 @@ export default {
       console.log(value)
     },
 
-    setRecord (record) {
-      let $elfist = this
-      $elfist.record = record
-      let user = provenanceService.getUserProfile()
-      webrtcService.startSession(user.username, $elfist.artworkId)
-      let images = []
-      if (record.provData && record.provData.artwork && record.provData.artwork.length > 0) {
-        _.forEach(record.provData.artwork, function (artwork) {
-          images.push(record.provData.artwork[0].dataUrl)
-        })
-      } else {
-        images.push('/static/images/artwork1.jpg')
-      }
-      $elfist.artwork = {
-        id: record.indexData.id,
-        name: record.indexData.title,
-        description: record.indexData.description,
-        keywords: record.indexData.keywords,
-        uploadedBy: this.artist.name,
-        image: images[0],
-        category: record.indexData.itemType,
-        images: images,
-        year: '',
-        saleData: record.indexData.saleData,
-        forSale: record.indexData.saleData.soid === 1,
-        forAuction: record.indexData.saleData.soid === 2,
-        amount: record.indexData.saleData.amount,
-        minBidIncrement: record.indexData.saleData.increment,
-        reservedPrice: record.indexData.saleData.reserve,
-      }
-      $elfist.setRegData(record, $elfist.artwork)
-      // $elfist.artworks.push({
-      //  id: record.indexData.id,
-      //  caption: record.indexData.uploader,
-      //  title: record.indexData.title,
-      //  image: dataUrl,
-      // })
-    },
-
     scrollToAboutSection () {
       const element = this.$refs.about
       const top = element.$el.offsetTop
-
       window.scrollTo(0, top)
     },
 

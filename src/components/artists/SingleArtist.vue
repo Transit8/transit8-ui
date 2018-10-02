@@ -19,7 +19,7 @@ export default {
   },
   computed: {
     url () {
-      return '/artists/' + this.artist.id
+      return '/artists/' + this.artist.username
     }
   }
 }

@@ -5,18 +5,18 @@
         <div class="col-sm-6">
           <h2 class="h4 mb-40">About artwork</h2>
           <p>
-            {{artwork.title}}, {{artwork.year}}<br />
-            Edition 1/1, {{artwork.category}}
+            {{aboutArtwork.title}}, {{aboutArtwork.year}}<br />
+            Edition 1/1, {{aboutArtwork.description}}
           </p>
-          <div v-html="artwork.description"></div>
+          <div v-html="aboutArtwork.description"></div>
           <p>
-            Uploaded by: {{artwork.uploadedBy}}<br />
-            Owned by: {{purchaseState.ownedBy}}
+            Artist: {{aboutArtwork.artist.name}}<br />
+            Owner: {{aboutArtwork.owner.name}}
           </p>
-          <p class="keywords">Keywords ︱ {{keywords}}</p>
+          <p class="keywords">Keywords ︱ {{aboutArtwork.keywords}}</p>
         </div>
         <div class="col-sm-6">
-          <img class="img-responsive" :src="artwork.image">
+          <img class="img-responsive" :src="aboutArtwork.image">
         </div>
       </div>
 
@@ -29,18 +29,9 @@
 export default {
   name: 'AboutArtwork',
   props: {
-    purchaseState: {},
-    artwork: {
-      type: Object,
-      default () {
-        return {}
-      }
-    }
+    aboutArtwork: {},
   },
   computed: {
-    keywords () {
-      return this.artwork.keywords
-    }
   }
 }
 </script>

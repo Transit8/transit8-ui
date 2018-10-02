@@ -20,6 +20,7 @@ const artworkSearchService = {
         })
     })
   },
+
   indexUser: function (username) {
     return new Promise(function (resolve) {
       xhrService.makeGetCall('/art/index/user/' + username)
@@ -30,6 +31,7 @@ const artworkSearchService = {
         })
     })
   },
+
   buildArtIndex: function () {
     return new Promise(function (resolve) {
       xhrService.makeGetCall('/art/index/build')
@@ -40,6 +42,7 @@ const artworkSearchService = {
         })
     })
   },
+
   buildIndexByNames: function (names) {
     return new Promise(function (resolve) {
       xhrService.makeGetCall('/names/index/build', [names])
@@ -50,6 +53,7 @@ const artworkSearchService = {
         })
     })
   },
+
   buildIndexByPages: function (from, to) {
     return new Promise(function (resolve) {
       xhrService.makeGetCall('/names/index/build', [from, to])
@@ -60,6 +64,7 @@ const artworkSearchService = {
         })
     })
   },
+
   fetchAll: function () {
     return new Promise(function (resolve) {
       xhrService.makeGetCall('/art/fetch')
@@ -70,6 +75,7 @@ const artworkSearchService = {
         })
     })
   },
+
   clearAll: function () {
     return new Promise(function (resolve) {
       xhrService.makeGetCall('/art/index/clear')
@@ -80,6 +86,7 @@ const artworkSearchService = {
         })
     })
   },
+
   remove: function (field, value) {
     xhrService.makeGetCall('/art/index/remove/' + field + '/' + value)
       .then(function (result) {
@@ -88,6 +95,7 @@ const artworkSearchService = {
         console.log('Unable to remove ' + value + ' from search index')
       })
   },
+
   sizeOfIndex: function (index) {
     return new Promise(function (resolve) {
       xhrService.makeGetCall('/' + index + '/index/size')
@@ -98,33 +106,60 @@ const artworkSearchService = {
         })
     })
   },
+
   findArtworks: function (query, success, failure) {
     xhrService.makeGetCall('/art/search/' + query.term + '?q=' + query.query)
       .then(function (results) {
         if (!results || results.length === 0) {
           success()
         } else {
-          let gaiaArtworkFileName = store.state.constants.gaiaArtworkFileName
           _.forEach(results, function (indexData) {
             store.dispatch('userProfilesStore/addUserProfile', {username: indexData.owner}, {root: true})
             store.dispatch('userProfilesStore/addUserProfile', {username: indexData.uploader}, {root: true})
-              .then((userProfile) => {
-                let url = null
-                if (userProfile && userProfile.gaiaUrl) {
-                  url = userProfile.gaiaUrl + indexData.id + '.json'
+            xhrService.makeDirectCall(utils.buildGaiaUrl(indexData.gaiaUrl, indexData.id))
+              .then(function (provData) {
+                if (provData && provData.artwork && provData.artwork[0] && provData.artwork[0].dataUrl.length > 0) {
+                  let timestamp = utils.buildArtworkHash(provData.artwork[0].dataUrl)
+                  let blockchainItem = store.getters['ethStore/getBlockchainItem'](timestamp)
+                  if (blockchainItem) {
+                    provData.bcitem = _.merge(provData.bcitem, blockchainItem)
+                  }
                 }
-                let urlLastSlash = indexData.gaiaUrl.lastIndexOf('/') + 1
-                url = indexData.gaiaUrl.substring(0, urlLastSlash)
-                url = url + gaiaArtworkFileName + indexData.id + '.json'
-                xhrService.makeDirectCall(url)
-                  .then(function (provData) {
-                    success(utils.convertFromBlockstack({indexData: indexData, provData: provData}))
-                  }).catch(function (e) {
-                    console.log('Unable to add record: ' + indexData.id, e)
-                    failure({error: 1, message: 'no artworks found'})
-                  })
+                success(utils.convertFromBlockstack({indexData: indexData, provData: provData}))
+              }).catch(function (e) {
+                console.log('Unable to add record: ' + indexData.id, e)
+                failure({error: 1, message: 'no artworks found'})
               })
           })
+        }
+      }).catch(function (e) {
+        failure({error: 2, message: 'no artworks found'})
+      })
+  },
+
+  findArtwork: function (artworkId, success, failure) {
+    xhrService.makeGetCall('/art/search/id?q=' + artworkId)
+      .then(function (results) {
+        if (!results || results.length === 0 || results.length > 1) {
+          failure({ERR_CODE: 400, message: 'Failed to find in search index: ' + artworkId})
+        } else {
+          let indexData = results[0]
+          store.dispatch('userProfilesStore/addUserProfile', {username: indexData.owner}, {root: true})
+          store.dispatch('userProfilesStore/addUserProfile', {username: indexData.uploader}, {root: true})
+          xhrService.makeDirectCall(utils.buildGaiaUrl(indexData.gaiaUrl, indexData.id))
+            .then(function (provData) {
+              if (provData && provData.artwork && provData.artwork[0] && provData.artwork[0].dataUrl.length > 0) {
+                let timestamp = utils.buildArtworkHash(provData.artwork[0].dataUrl)
+                let blockchainItem = store.getters['ethStore/getBlockchainItem'](timestamp)
+                if (blockchainItem) {
+                  provData.bcitem = _.merge(provData.bcitem, blockchainItem)
+                }
+              }
+              success(utils.convertFromBlockstack({indexData: indexData, provData: provData}))
+            }).catch(function (e) {
+              console.log('Unable to add record: ' + indexData.id, e)
+              failure({error: 1, message: 'no artworks found'})
+            })
         }
       }).catch(function (e) {
         failure({error: 2, message: 'no artworks found'})

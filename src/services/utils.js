@@ -1,11 +1,23 @@
 import SHA256 from 'crypto-js/sha256'
 import _ from 'lodash'
+import store from '@/storage/store'
 
 const utils = {
   buildArtworkHash (artworkUrl) {
     if (artworkUrl && artworkUrl.length > 0) {
       return '0x' + SHA256(artworkUrl).toString()
     }
+  },
+  buildGaiaUrl (gaiaUrl, artworkId) {
+    let gaiaArtworkFileName = store.state.constants.gaiaArtworkFileName
+    // let url = null
+    // building gaiaUrl from userProfile data is possibly more efficient but it seems to give the wrong value..
+    // if (userProfileGaiaUrl) {
+    //  url = userProfile.gaiaUrl + indexData.id + '.json'
+    // }
+    let urlLastSlash = gaiaUrl.lastIndexOf('/') + 1
+    let url = gaiaUrl.substring(0, urlLastSlash)
+    return url + gaiaArtworkFileName + artworkId + '.json'
   },
   buildInitialSaleData () {
     return {
@@ -34,7 +46,7 @@ const utils = {
       artist: (record.indexData.artist) ? record.indexData.artist : record.indexData.uploader,
       owner: (record.indexData.owner) ? record.indexData.owner : record.indexData.uploader,
       saleData: record.indexData.saleData,
-      editions: record.indexData.editions,
+      editions: (record.indexData.editions) ? record.indexData.editions : 1,
     })
   },
 
@@ -51,7 +63,7 @@ const utils = {
       uploader: artwork.uploader,
       owner: artwork.owner,
       artist: artwork.artist,
-      editions: artwork.editions,
+      editions: (artwork.editions) ? artwork.editions : 1,
     }
     if (artwork.saleData) {
       indexData.saleData = artwork.saleData

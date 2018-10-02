@@ -65,25 +65,39 @@ const ethereumService = {
       networkName: networkName
     }
   },
-  registerOnChain: function (title, artHash, blockstackId) {
-    return new Promise(resolve => {
-      ethereumService.myContract.addItem(title, artHash, blockstackId, function (err, txId) {
-        if (err) {
-          resolve({failed: true, reason: err})
-        }
-        resolve({txId: txId})
-      })
+  registerOnChain: function (regData, success, failure) {
+    let web3 = ethereumService.getWeb3()
+    web3.eth.getAccounts(function (error, result) {
+      if (error || !result | result.length === 0) {
+        failure({failed: true, message: 'Please check you are logged in to meta mask - then try again?'})
+      } else {
+        web3.eth.defaultAccount = result[0]
+        ethereumService.myContract.addItem(regData.title, regData.timestamp, regData.uploader, function (err, txId) {
+          if (err) {
+            failure({failed: true, message: err})
+          } else {
+            success({txId: txId})
+          }
+        })
+      }
     })
   },
-  setPriceOnChain: function (itemIndex, title, username, amountInWei) {
-    return new Promise(resolve => {
-      ethereumService.myContract.sell(itemIndex, amountInWei, function (err, txId) {
-        if (err) {
-          console.log(err)
-          resolve({failed: true, reason: err})
-        }
-        resolve({txId: txId})
-      })
+  setPriceOnChain: function (priceData, success, failure) {
+    let web3 = ethereumService.getWeb3()
+    web3.eth.getAccounts(function (error, result) {
+      if (error || !result | result.length === 0) {
+        failure({failed: true, message: 'Please check you are logged in to meta mask - then try again?'})
+      } else {
+        web3.eth.defaultAccount = result[0]
+        ethereumService.myContract.sell(priceData.itemIndex, priceData.amountInWei, function (err, txId) {
+          if (err) {
+            console.log(err)
+            failure({failed: true, message: err})
+          } else {
+            success({txId: txId})
+          }
+        })
+      }
     })
   },
   getClientState: function (success, failure) {
