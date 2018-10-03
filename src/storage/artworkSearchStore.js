@@ -1,6 +1,5 @@
 // artworkSearchStore.js
 import artworkSearchService from '@/services/artworkSearchService'
-import store from '@/storage/store'
 import _ from 'lodash'
 
 const artworkSearchStore = {
@@ -71,13 +70,15 @@ const artworkSearchStore = {
       }
     },
     addArtist (state, userProfile) {
-      let index = _.findIndex(state.artists, function (o) {
-        return o.username === userProfile.username
-      })
-      if (index === -1) {
-        state.artists.push(userProfile)
-      } else {
-        state.artists.splice(index, 1, userProfile)
+      if (userProfile && userProfile.username) {
+        let index = _.findIndex(state.artists, function (o) {
+          return o.username === userProfile.username
+        })
+        if (index === -1) {
+          state.artists.push(userProfile)
+        } else {
+          state.artists.splice(index, 1, userProfile)
+        }
       }
     },
     clearArtwork (state) {
@@ -132,8 +133,6 @@ const artworkSearchStore = {
               artwork.owner = blockchainItem.blockstackId
             }
             commit('addArtwork', artwork)
-            let userProfile = store.getters['userProfilesStore/getProfile'](artwork.artist)
-            commit('addArtist', userProfile)
           }
         },
         function (error) {

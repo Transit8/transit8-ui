@@ -5,7 +5,7 @@
       <div slot="title"><h1 class="login-modal-title">Updating Data</h1></div>
       <div slot="title"><h2 class="login-modal-title">{{myArtwork.title}}</h2></div>
       <div class="login-modal-body">
-        <p>{{message}}</p>
+        <p v-html="message"></p>
       </div>
       <div slot="footer">
         <div class="login-modal-footer">
@@ -109,7 +109,7 @@
 <script>
 import ethereumService from '@/services/ethereumService'
 import _ from 'lodash'
-import Vue from 'vue'
+import notify from '@/services/notify'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -261,7 +261,7 @@ export default {
         })
         $self.message = 'Your artwork has been registered - please allow a few minutes for the transaction to complete...'
       }, function (error) {
-        Vue.notify({type: 'error', group: 'artwork-actions', title: 'Error Setting Price.', text: 'Error setting price for your item. <br>' + error.message})
+        notify.error({title: 'Register Artwork.', text: 'Error setting price for your item. <br>' + error.message})
         $self.message = 'Error setting price for your item. <br>' + error.message
       })
       // this.$router.push('/my-artworks')

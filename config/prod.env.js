@@ -3,6 +3,7 @@ module.exports = {
   NODE_ENV: '"production"',
   TOK_BOX_API_KEY: '46171452',
   SHAPE_SHIFT_URL: '"https://cors.shapeshift.io"',
+  ETH_GATEWAY_URL: '"https://api.brightblock.org"',
   SEARCH_INDEX_URL: '"https://api.brightblock.org"',
   ETHEREUM_NETWORK: '"Ropsten (3)"',
   ETHEREUM_CONTRACT_ADDRESS: '"0x3C534b0c2b9773ee0FE9D28d906DB3a2751d798f"',

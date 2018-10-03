@@ -21,6 +21,9 @@ const userProfilesStore = {
         return {}
       }
     },
+    getProfiles: (state) => {
+      return state.userProfiles
+    },
   },
   mutations: {
     addUser (state, userProfile) {

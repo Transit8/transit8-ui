@@ -10,8 +10,8 @@
         <p class="artwork-caption">{{artwork.description}}</p>
         <p class="artwork-caption">Artist: {{artistProfile.name}}</p>
         <p class="artwork-caption">Owner: {{ownerProfile.name}}</p>
-        <router-link :to="registerUrl" class="artwork-action"  v-if="status === 'new'">Register</router-link>
-        <router-link :to="setPriceUrl" class="artwork-action"  v-if="status !== 'new'">Set Price</router-link>
+        <router-link :to="registerUrl" class="artwork-action"  v-if="status === 'new' && !sold" >Register</router-link>
+        <router-link :to="setPriceUrl" class="artwork-action"  v-if="status !== 'new' && !sold">Set Price</router-link>
         <router-link :to="editUrl" class="artwork-action" v-if="editable">Edit</router-link>
         <router-link :to="url" class="artwork-action" v-if="artwork.forSale">Buy</router-link>
         <router-link :to="url" class="artwork-action" v-if="artwork.forAuction">Bid</router-link>
@@ -28,6 +28,7 @@
 export default {
   name: 'MySingleArtwork',
   props: {
+    sold: true,
     artwork: {
       type: Object,
       default () {

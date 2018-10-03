@@ -4,7 +4,7 @@
       <div class="grid-sizer"></div>
       <div class="row" v-for="(chunkedArtwork, index) of chunkedArtworks" :key="index">
         <my-single-artwork v-for="(artwork, index) of chunkedArtwork" :key="index" :artwork="artwork"
-                        :width="artworkWidth"/>
+                        :width="artworkWidth" :sold="sold"/>
       </div>
     </div>
     <div class="hr-spacer"></div>
@@ -23,6 +23,7 @@ export default {
   name: 'MyArtworksList',
   components: { MySingleArtwork },
   props: {
+    sold: false,
     artworks: {
       type: Array,
       default () {

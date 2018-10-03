@@ -3,6 +3,7 @@ import myArtworksService from '@/services/myArtworksService'
 import _ from 'lodash'
 import Vue from 'vue'
 import store from '@/storage/store'
+import utils from '@/services/utils'
 
 const myArtworksStore = {
   namespaced: true,
@@ -97,7 +98,8 @@ const myArtworksStore = {
             if (myArtwork.owner !== blockchainItem.blockstackId) {
               _.merge(myArtwork.bcitem, blockchainItem)
               myArtwork.owner = blockchainItem.blockstackId
-              store.dispatch('ethStore/updateArtwork', myArtwork)
+              myArtwork.saleData = utils.buildInitialSaleData()
+              store.dispatch('myArtworksStore/updateArtwork', myArtwork)
             }
             _.merge(myArtwork.bcitem, blockchainItem)
             commit('addMyArtwork', myArtwork)
@@ -113,7 +115,8 @@ const myArtworksStore = {
           if (myArtwork.owner !== blockchainItem.blockstackId) {
             _.merge(myArtwork.bcitem, blockchainItem)
             myArtwork.owner = blockchainItem.blockstackId
-            store.dispatch('ethStore/updateArtwork', myArtwork)
+            myArtwork.saleData = utils.buildInitialSaleData()
+            store.dispatch('myArtworksStore/updateArtwork', myArtwork)
           }
           commit('addMyArtwork', myArtwork)
           resolve(myArtwork)
@@ -124,6 +127,7 @@ const myArtworksStore = {
         })
       })
     },
+
     uploadArtwork ({ commit, state }, artwork) {
       return new Promise((resolve, reject) => {
         myArtworksService.uploadArtwork(artwork, function (artwork) {
@@ -140,7 +144,7 @@ const myArtworksStore = {
 
     transferArtwork ({ commit, state }, artwork) {
       return new Promise((resolve, reject) => {
-        myArtworksService.transaferArtwork(artwork, function (artwork) {
+        myArtworksService.transferArtwork(artwork, function (artwork) {
           commit('addMyArtwork', artwork)
           resolve(artwork)
         },

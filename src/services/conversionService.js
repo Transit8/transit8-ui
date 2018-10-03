@@ -3,7 +3,7 @@ import SockJS from 'sockjs-client'
 import Stomp from '@stomp/stompjs'
 import xhrService from '@/services/xhrService'
 
-const SERVER_URL = process.env.SEARCH_INDEX_URL
+const SERVER_URL = process.env.ETH_GATEWAY_URL
 const SHAPE_SHIFT_URL = process.env.SHAPE_SHIFT_URL
 
 const conversionService = {

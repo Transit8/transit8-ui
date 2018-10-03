@@ -13,6 +13,7 @@ import '@/assets/css/main.scss'
 // import { sync } from 'vuex-router-sync'
 import store from '@/storage/store'
 import { CONSTANTS } from '@/storage/constants'
+import notify from '@/services/notify'
 
 // import Vuelidate from 'vuelidate'
 Vue.config.productionTip = false
@@ -36,6 +37,9 @@ store.dispatch('ethStore/fetchBlockchainItems').then((blockchainItems) => {
   store.dispatch('myAccountStore/fetchMyAccount')
   store.dispatch('myArtworksStore/fetchMyArtworks')
   store.dispatch('artworkSearchStore/fetchRegisteredArtworks', blockchainItems)
+})
+store.dispatch('ethStore/receiveBlockchainEvents').then((message) => {
+  notify.info({title: 'Blockchain Events.', text: message})
 })
 
 /* eslint-disable no-new */

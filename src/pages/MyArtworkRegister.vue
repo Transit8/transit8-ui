@@ -19,7 +19,7 @@
       <uiv-modal :value="isModalActive" :append-to-body="true">
         <div slot="title"><h1 class="login-modal-title">Updating Data</h1></div>
         <div class="login-modal-body">
-          <p>{{message}}</p>
+          <p v-html="message"></p>
         </div>
         <div slot="footer">
           <div class="login-modal-footer">
@@ -46,8 +46,8 @@
 <script>
 import ethereumService from '@/services/ethereumService'
 import _ from 'lodash'
-import Vue from 'vue'
 import utils from '@/services/utils'
+import notify from '@/services/notify'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -103,22 +103,22 @@ export default {
           registerTxId: result.txId,
           status: 'pending-register'
         }
-        this.$store.commit('myArtworksStore/addMyArtwork', artwork)
-        Vue.notify({type: 'info', group: 'artwork-actions', title: 'Register Artwork.', text: 'Transaction sent to the blockchain...'})
-        this.$store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
+        $self.$store.commit('myArtworksStore/addMyArtwork', artwork)
+        notify.info({title: 'Register Artwork.', text: 'Transaction sent to the blockchain...'})
+        $self.$store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
           if (blockchainItem) {
             _.merge(artwork.bcitem, blockchainItem)
-            this.message = 'Registration of your artwork is now complete...'
-            this.$store.commit('myArtworksStore/addMyArtwork', artwork)
+            $self.message = 'Registration of your artwork is now complete...'
+            $self.$store.commit('myArtworksStore/addMyArtwork', artwork)
           }
         })
-        this.message = 'Your artwork has been registered - please allow a few minutes for the transaction to complete...'
-        this.$store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
+        $self.message = 'Your artwork has been registered - please allow a few minutes for the transaction to complete...'
+        $self.$store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
           $self.message = 'User storage has been updated...'
-          Vue.notify({type: 'info', group: 'artwork-actions', title: 'Register Artwork.', text: 'User storage has been updated...'})
+          notify.info({title: 'Register Artwork.', text: 'User storage has been updated...'})
         })
       }, function (error) {
-        Vue.notify({type: 'error', group: 'artwork-actions', title: 'Register Artwork.', text: 'Error setting price for your item. <br>' + error.message})
+        notify.error({title: 'Register Artwork.', text: 'Error setting price for your item. <br>' + error.message})
         $self.message = 'Error setting price for your item. <br>' + error.message
       })
     },

@@ -1,11 +1,9 @@
-import axios from 'axios'
 import store from '@/storage/store'
 import xhrService from '@/services/xhrService'
 import Web3 from 'web3'
 
-const API_SERVER_URL = '/api/ethereum'
-
 const ethereumService = {
+  // ETH_GATEWAY_URL: store.state.constants.ethGatewayUrl + '/api/ethereum',
   ETHEREUM_ABI: process.env.ETHEREUM_ABI,
   ETHEREUM_CONTRACT_ADDRESS: process.env.ETHEREUM_CONTRACT_ADDRESS,
   getWeb3: function () {
@@ -24,12 +22,12 @@ const ethereumService = {
     let web3 = ethereumService.getWeb3()
     web3.eth.getAccounts(function (error, accounts) {
       if (error) {
-        failure({failed: true, reason: error})
+        failure({ERR_CODE: 'ES100', message: error})
       } else if (!accounts || accounts.length === 0) {
-        failure({failed: true, reason: 'No accounts - not logged in to wallet'})
+        failure({ERR_CODE: 'ES101', message: 'No accounts - not logged in to wallet'})
       } else {
         web3.eth.defaultAccount = accounts[0]
-        success({failed: false, accounts: accounts})
+        success({accounts: accounts})
       }
     })
   },
@@ -41,7 +39,7 @@ const ethereumService = {
       }
       web3.eth.getAccounts(function (error, result) {
         if (error) {
-          resolve({failed: true, reason: error})
+          resolve({failed: true, message: error})
         }
         web3.eth.defaultAccount = result[0]
         ethereumService.accounts = result
@@ -114,45 +112,49 @@ const ethereumService = {
     })
   },
   purchase: function (priceData, success, failure) {
-    ethereumService.myContract.buy(priceData.itemIndex, priceData.buyer, {value: priceData.price}, function (err, txId) {
-      if (err) {
-        console.log(err)
-        failure({failed: true, message: err})
-      } else {
-        success({txId: txId})
-      }
+    ethereumService.loggedIn(function (result) {
+      ethereumService.myContract.buy(priceData.itemIndex, priceData.buyer, {value: priceData.price}, function (err, txId) {
+        if (err) {
+          console.log(err)
+          failure({ERR_CODE: 'ES110', message: err})
+        } else {
+          success({txId: txId})
+        }
+      })
+    }, function (error) {
+      failure(error)
     })
   },
   getClientState: function (success, failure) {
-    let callInfo = {
-      method: 'get',
-      url: store.state.constants.searchUrl + API_SERVER_URL + '/client',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-    axios.get(callInfo.url, { headers: callInfo.headers })
-      .then(response => {
-        let clientState = response.data.details
+    xhrService.makeDirectCall(store.state.constants.ethGatewayUrl + '/api/ethereum' + '/client')
+      .then(function (response) {
+        let clientState = response.details
         clientState.metaMaskNetwork = ethereumService.getNetworkType()
-        success(response.data.details)
+        success(clientState)
+      }).catch(function (e) {
+        failure(e)
       })
-      .catch(e => {
+  },
+  subscribeBlockchainEvents: function (success, failure) {
+    xhrService.makeDirectCall(store.state.constants.ethGatewayUrl + '/api/ethereum' + '/subscribe/blocks')
+      .then(function (response) {
+        success(response.details)
+      }).catch(function (e) {
         failure(e)
       })
   },
   fetchBlockchainItems: function (success, failure) {
-    xhrService.makeGetCall(API_SERVER_URL + '/fetch')
-      .then(function (result) {
-        success(result)
+    xhrService.makeDirectCall(store.state.constants.ethGatewayUrl + '/api/ethereum' + '/fetch')
+      .then(function (response) {
+        success(response.details)
       }).catch(function (e) {
         failure(e)
       })
   },
   fetchBlockchainItem: function (data, success, failure) {
-    xhrService.makeGetCall(API_SERVER_URL + '/fetch/' + data.timestamp)
-      .then(function (result) {
-        success(result)
+    xhrService.makeDirectCall(store.state.constants.ethGatewayUrl + '/api/ethereum' + '/fetch/' + data.timestamp)
+      .then(function (response) {
+        success(response.details)
       })
   },
 }

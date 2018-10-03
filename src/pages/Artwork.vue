@@ -162,20 +162,20 @@ export default {
 
       let $self = this
       ethereumService.purchase(purchaseData, function (result) {
-        notify.inform({title: 'Purchase Artwork.', text: 'Artwork purchase order sent to blockchain.'})
+        notify.info({title: 'Purchase Artwork.', text: 'Artwork purchase order sent to blockchain.'})
         artwork.owner = buyer
         artwork.bcitem.blockstackId = buyer
         artwork.saleData = utils.buildInitialSaleData()
         $self.$store.dispatch('myArtworksStore/transferArtwork', artwork).then((artwork) => {
-          notify.inform({title: 'Purchase Artwork.', text: 'Artwork info has been moved to new users storage.'})
+          notify.info({title: 'Purchase Artwork.', text: 'Artwork info has been moved to your user storage.'})
           $self.$store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
             if (blockchainItem) {
-              notify.inform({title: 'Purchase Artwork.', text: 'Congratulations - artwork purchase complete.'})
+              notify.info({title: 'Purchase Artwork.', text: 'Congratulations - artwork purchase complete.'})
             }
           })
         })
       }, function (error) {
-        notify.error({title: 'Purchase Artwork.', text: 'Error setting price for your item.' + error.message})
+        notify.error({title: 'Purchase Artwork.', text: 'Error purchasing item. <br>' + error.message})
       })
     },
 

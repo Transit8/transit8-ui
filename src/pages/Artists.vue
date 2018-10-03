@@ -29,7 +29,8 @@ export default {
   },
   computed: {
     artists () {
-      return this.$store.getters['artworkSearchStore/getArtistsPage']
+      return this.$store.getters['userProfilesStore/getProfiles']
+      // return this.$store.getters['artworkSearchStore/getArtistsPage']
     },
   },
   methods: {

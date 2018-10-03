@@ -1,14 +1,14 @@
 import Vue from 'vue'
 
 const notify = {
-  inform (note) {
-    Vue.notify({type: 'success', group: 'artwork-actions', title: note.title, text: note.message})
+  info (note) {
+    Vue.notify({type: 'success', group: 'artwork-actions', title: note.title, text: note.text})
   },
   warn (note) {
-    Vue.notify({type: 'warn', group: 'artwork-actions', title: note.title, text: note.message})
+    Vue.notify({type: 'warn', group: 'artwork-actions', title: note.title, text: note.text})
   },
   error (note) {
-    Vue.notify({type: 'error', group: 'artwork-actions', title: note.title, text: note.message})
+    Vue.notify({type: 'error', group: 'artwork-actions', title: note.title, text: note.text})
   },
 }
 
