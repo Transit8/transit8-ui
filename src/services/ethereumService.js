@@ -157,5 +157,13 @@ const ethereumService = {
         success(response.details)
       })
   },
+  deployContract: function (regData, success, failure) {
+    xhrService.makeDirectCall(store.state.constants.ethGatewayUrl + '/api/ethereum' + '/deploy')
+      .then(function (response) {
+        success(response.details)
+      }).catch(function (e) {
+        failure(e)
+      })
+  },
 }
 export default ethereumService

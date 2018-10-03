@@ -1,18 +1,32 @@
 <template>
-<div class="column">
-  <h1 class="title is-2">On Chain Registrations</h1>
-  <div class="field is-horizontal">
-    <div class="field-label is-normal">
-      <label class="label">{{registrations.length}} Records</label>
+<section class="grey-light-bg black pt-60 about-artwork">
+  <div class="container wide">
+    <div class="row">
+      <div class="col-sm-12">
+        <div v-for="(registration, index) in registrations" :key="index">
+          <p>{{registration}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div v-for="(registration, index) in registrations" :key="index">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+          <vue-json-pretty
+            :response="{ key: 'value' }"
+            :data="registrations">
+      </div>
     </div>
   </div>
-  <div v-for="(registration, index) in registrations" :key="index">
-    <div>{{registration}}</div>
-  </div>
-</div>
+</section>
 </template>
 
 <script>
+import VueJsonPretty from 'vue-json-pretty'
 
 export default {
   data () {
@@ -23,11 +37,6 @@ export default {
     registrations () {
       return this.$store.getters['ethStore/getBlockchainItems']
     },
-  },
-  created () {
-    // this.$store.dispatch('ethStore/fetchBlockchainItems').then((blockchainItems) => {
-    //  console.log('Fetched: ', blockchainItems)
-    // })
   },
   methods: {
   },
