@@ -14,19 +14,11 @@
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-sm-12">
-          <vue-json-pretty
-            :response="{ key: 'value' }"
-            :data="registrations">
-      </div>
-    </div>
   </div>
 </section>
 </template>
 
 <script>
-import VueJsonPretty from 'vue-json-pretty'
 
 export default {
   data () {
