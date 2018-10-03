@@ -14,11 +14,17 @@
     <div class="col-sm-12 pt-5">Search URL: {{ constants.searchUrl }}</div>
   </div>
   <div class="row">
+    <div class="col-sm-12 pt-5">Eth Gateway URL: {{ constants.ethGatewayUrl }}</div>
+  </div>
+  <div class="row">
     <div class="col-sm-12 pt-20">Tokbox api key: {{ constants.apiKey }}</div>
   </div>
   <h1 class="title ptb-1">Ethereum Settings</h1>
   <div class="row">
-    <div class="col-sm-12 pt-5">Contract Address: {{ clientState.contractAddress }}</div>
+    <div class="col-sm-12 pt-5">Contract Address Remote: {{ clientState.contractAddress }}</div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 pt-5">Contract Address Local: {{ constants.contractAddress }}</div>
   </div>
   <div class="row">
     <div class="col-sm-12 pt-5">Client: {{ clientState.client }}</div>
@@ -50,6 +56,7 @@ export default {
   },
   created () {
     this.network = ethereumService.getNetworkType()
+    this.networkExpected = process.env.ETHEREUM_NETWORK
     this.networkExpected = process.env.ETHEREUM_NETWORK
   },
   methods: {

@@ -1,5 +1,18 @@
 <template>
 <div>
+  <div>
+    <uiv-modal :value="isModalActive" :append-to-body="true">
+      <div slot="title"><h1 class="login-modal-title">Updating Data</h1></div>
+      <div class="login-modal-body">
+        <p v-html="message"></p>
+      </div>
+      <div slot="footer">
+        <div class="login-modal-footer">
+          <button class="btn" v-on:click="closeModal">Close</button>
+        </div>
+      </div>
+    </uiv-modal>
+  </div>
   <section id="pdp-slider" class="pb-0 black-bg white pdp-slider pt-60 pb-60">
     <div class="container wide">
       <div class="row">
@@ -15,20 +28,6 @@
     </div>
   </section>
   <section id="pdp-action" class="pdp-action black pb-0">
-    <div>
-      <uiv-modal :value="isModalActive" :append-to-body="true">
-        <div slot="title"><h1 class="login-modal-title">Updating Data</h1></div>
-        <div class="login-modal-body">
-          <p v-html="message"></p>
-        </div>
-        <div slot="footer">
-          <div class="login-modal-footer">
-            <button class="btn" v-on:click="closeModal">Close</button>
-          </div>
-        </div>
-      </uiv-modal>
-    </div>
-
     <div class="container-fluid p-0">
       <div class="row  m-0">
         <div class="col-md-9 col-xs-12 product-price">
@@ -118,7 +117,7 @@ export default {
           notify.info({title: 'Register Artwork.', text: 'User storage has been updated...'})
         })
       }, function (error) {
-        notify.error({title: 'Register Artwork.', text: 'Error setting price for your item. <br>' + error.message})
+        notify.error({title: 'Register Artwork.', text: 'Error registering your item. <br>' + error.message})
         $self.message = 'Error setting price for your item. <br>' + error.message
       })
     },
