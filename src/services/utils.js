@@ -15,8 +15,11 @@ const utils = {
     // if (userProfileGaiaUrl) {
     //  url = userProfile.gaiaUrl + indexData.id + '.json'
     // }
-    let urlLastSlash = gaiaUrl.lastIndexOf('/') + 1
+    let urlLastSlash = gaiaUrl.lastIndexOf('/')
     let url = gaiaUrl.substring(0, urlLastSlash)
+    if (!url.endsWith('/')) {
+      url = url + '/'
+    }
     return url + gaiaArtworkFileName + artworkId + '.json'
   },
   buildInitialSaleData () {
