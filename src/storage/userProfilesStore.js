@@ -1,7 +1,6 @@
 // myAccountStore.js
 import userProfilesService from '@/services/userProfilesService'
 import _ from 'lodash'
-import store from '@/storage/store'
 
 const userProfilesStore = {
   namespaced: true,
@@ -17,7 +16,7 @@ const userProfilesStore = {
       if (matches.length > 0) {
         return matches[0]
       } else {
-        store.dispatch('userProfilesStore/addUserProfile', {username: username}, {root: true})
+        // store.dispatch('userProfilesStore/addUserProfile', {username: username}, {root: true})
         return {}
       }
     },

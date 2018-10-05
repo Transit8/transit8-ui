@@ -78,31 +78,40 @@ const myArtworksService = {
 
   uploadOrTransferArtwork: function (artwork, success, failure) {
     let blockstackRootFileName = store.state.constants.blockstackRootFileName
+    getFile(blockstackRootFileName, {decrypt: false}).then(function (file) {
+      if (!file) {
+        myArtworksService.initBlockstackRootFile().then(function (file) {
+          myArtworksService.uploadProvenanceFile(blockstackRootFileName, file, artwork, success, failure)
+        })
+      } else {
+        myArtworksService.uploadProvenanceFile(blockstackRootFileName, file, artwork, success, failure)
+      }
+    }).catch(function (e) {
+      failure({ERR_CODE: 2, message: 'no root blockstack fole found.'})
+    })
+  },
+
+  uploadProvenanceFile: function (blockstackRootFileName, file, artwork, success, failure) {
+    let blockstackRootFile = file
+    if (typeof file === 'string') {
+      blockstackRootFile = JSON.parse(file)
+    }
     let gaiaArtworkFileName = store.state.constants.gaiaArtworkFileName
     let provFile = gaiaArtworkFileName + artwork.id + '.json'
     let record = utils.convertToBlockstack(artwork)
-    getFile(blockstackRootFileName, {decrypt: false}).then(function (file) {
-      if (!file) {
-        failure({ERR_CODE: 1, message: 'no artworks found'})
-      } else {
-        let blockstackRootFile = JSON.parse(file)
-        blockstackRootFile.records.splice(0, 0, record.indexData)
-        putFile(blockstackRootFileName, JSON.stringify(blockstackRootFile), {encrypt: false})
-          .then(function (message) {
-            putFile(provFile, JSON.stringify(record.provData), {encrypt: false}).then(function (message) {
-              store.commit('myArtworksStore/blockstackRootFile', blockstackRootFile)
-              artworkSearchService.addRecordToIndex(record.indexData)
-              success(utils.convertFromBlockstack(record))
-            }).catch(function (e) {
-              failure({ERR_CODE: 2, message: 'Error saving provenance file: ' + artwork.id})
-            })
-          }).catch(function (e) {
-            failure({ERR_CODE: 3, message: 'Error uploading artwork: ' + artwork.id})
-          })
-      }
-    }).catch(function (e) {
-      failure({ERR_CODE: 2, message: 'no artworks found'})
-    })
+    blockstackRootFile.records.splice(0, 0, record.indexData)
+    putFile(blockstackRootFileName, JSON.stringify(blockstackRootFile), {encrypt: false})
+      .then(function (message) {
+        putFile(provFile, JSON.stringify(record.provData), {encrypt: false}).then(function (message) {
+          store.commit('myArtworksStore/blockstackRootFile', blockstackRootFile)
+          artworkSearchService.addRecordToIndex(record.indexData)
+          success(utils.convertFromBlockstack(record))
+        }).catch(function (e) {
+          failure({ERR_CODE: 2, message: 'Error saving provenance file: ' + artwork.id})
+        })
+      }).catch(function (e) {
+        failure({ERR_CODE: 3, message: 'Error uploading artwork: ' + artwork.id})
+      })
   },
 
   updateArtwork: function (artwork, success, failure) {
@@ -152,9 +161,13 @@ const myArtworksService = {
     let fileToFetch = gaiaArtworkFileName + indexData.id + '.json'
     getFile(fileToFetch, {decrypt: false}).then(function (file) {
       if (file) {
-        let provData = JSON.parse(file)
-        provData.id = indexData.id
-        success(utils.convertFromBlockstack({indexData: indexData, provData: provData}))
+        try {
+          let provData = JSON.parse(file)
+          provData.id = indexData.id
+          success(utils.convertFromBlockstack({indexData: indexData, provData: provData}))
+        } catch (err) {
+          console.error('Corrupt json file - skipping! file: ' + file, err)
+        }
       } else {
         failure({ERR_CODE: 1, message: 'no provenance file found'})
       }

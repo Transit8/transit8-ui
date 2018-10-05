@@ -1,18 +1,5 @@
 <template>
 <div>
-  <div>
-    <uiv-modal :value="isModalActive" :append-to-body="true">
-      <div slot="title"><h1 class="login-modal-title">Updating Data</h1></div>
-      <div class="login-modal-body">
-        <p v-html="message"></p>
-      </div>
-      <div slot="footer">
-        <div class="login-modal-footer">
-          <button class="btn" v-on:click="closeModal">Close</button>
-        </div>
-      </div>
-    </uiv-modal>
-  </div>
   <section id="pdp-slider" class="pb-0 black-bg white pdp-slider pt-60 pb-60">
     <div class="container wide">
       <div class="row">
@@ -39,6 +26,19 @@
       </div>
     </div>
   </section>
+  <div>
+    <uiv-modal :value="isModalActive">
+      <div slot="title"><h1 class="login-modal-title">Updating Data</h1></div>
+      <div class="login-modal-body">
+        <p v-html="message"></p>
+      </div>
+      <div slot="footer">
+        <div class="login-modal-footer">
+          <button class="btn" v-on:click="closeModal">Close</button>
+        </div>
+      </div>
+    </uiv-modal>
+  </div>
 </div>
 </template>
 
