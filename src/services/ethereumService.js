@@ -3,9 +3,6 @@ import xhrService from '@/services/xhrService'
 import Web3 from 'web3'
 
 const ethereumService = {
-  // ETH_GATEWAY_URL: store.state.constants.ethGatewayUrl + '/api/ethereum',
-  ETHEREUM_ABI: process.env.ETHEREUM_ABI,
-  ETHEREUM_CONTRACT_ADDRESS: process.env.ETHEREUM_CONTRACT_ADDRESS,
   getWeb3: function () {
     if (typeof window.web3 !== 'undefined') {
       ethereumService.web3 = new Web3(window.web3.currentProvider)
@@ -31,7 +28,7 @@ const ethereumService = {
       }
     })
   },
-  connectToBlockChain: function () {
+  connectToBlockChain: function (clientState) {
     let web3 = ethereumService.getWeb3()
     return new Promise(resolve => {
       if (ethereumService.accounts && ethereumService.artmarketContract && ethereumService.myContract) {
@@ -41,10 +38,11 @@ const ethereumService = {
         if (error) {
           resolve({failed: true, message: error})
         }
+        store.commit('ethStore/ethereumClientState', clientState)
         web3.eth.defaultAccount = result[0]
         ethereumService.accounts = result
-        ethereumService.artmarketContract = web3.eth.contract(ethereumService.ETHEREUM_ABI)
-        ethereumService.myContract = ethereumService.artmarketContract.at(ethereumService.ETHEREUM_CONTRACT_ADDRESS)
+        ethereumService.artmarketContract = web3.eth.contract(JSON.parse(process.env.ETHEREUM_ABI))
+        ethereumService.myContract = ethereumService.artmarketContract.at(clientState.contractAddress)
         resolve({failed: false, accounts: ethereumService.accounts})
       })
     })
@@ -125,7 +123,7 @@ const ethereumService = {
       failure(error)
     })
   },
-  getClientState: function (success, failure) {
+  fetchClientState: function (success, failure) {
     xhrService.makeDirectCall(store.state.constants.ethGatewayUrl + '/api/ethereum' + '/client')
       .then(function (response) {
         let clientState = response.details

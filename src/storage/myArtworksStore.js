@@ -1,7 +1,7 @@
 // myArtworksStore.js
 import myArtworksService from '@/services/myArtworksService'
 import _ from 'lodash'
-import Vue from 'vue'
+import notify from '@/services/notify'
 import store from '@/storage/store'
 import utils from '@/services/utils'
 
@@ -79,10 +79,10 @@ const myArtworksStore = {
         })
         myArtworks.splice(index, 1)
         commit('myArtworks', myArtworks)
-        Vue.notify({group: 'artwork-actions', title: 'Delete File', text: result.message})
+        notify.info({title: 'Delete File.', text: result.message})
       },
       function (error) {
-        Vue.notify({type: 'error', group: 'artwork-actions', title: 'Delete File ' + error.id, text: 'Error deleting your file: <br>' + error.message})
+        notify.error({title: 'Delete File.', text: 'Error deleting your file: <br>' + error.message})
         console.log('Error deleting artwork.', error)
       })
     },
@@ -135,7 +135,6 @@ const myArtworksStore = {
           resolve(artwork)
         },
         function (error) {
-          // Vue.notify({type: 'error', group: 'artwork-actions', title: 'Delete Artworks.', text: 'Error fetching artwork files. <br>' + error.message})
           console.log('Error uploading artwork: ', error)
           resolve()
         })
@@ -149,7 +148,6 @@ const myArtworksStore = {
           resolve(artwork)
         },
         function (error) {
-          // Vue.notify({type: 'error', group: 'artwork-actions', title: 'Delete Artworks.', text: 'Error fetching artwork files. <br>' + error.message})
           console.log('Error uploading artwork: ', error)
           resolve()
         })
@@ -163,7 +161,6 @@ const myArtworksStore = {
           resolve(artwork)
         },
         function (error) {
-          // Vue.notify({type: 'error', group: 'artwork-actions', title: 'Delete Artworks.', text: 'Error fetching artwork files. <br>' + error.message})
           console.log('Error uploading artwork: ', error)
           resolve()
         })

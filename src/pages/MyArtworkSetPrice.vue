@@ -246,23 +246,23 @@ export default {
       }
       let $self = this
       ethereumService.setPriceOnChain(priceData, function (result) {
-        $self.message = 'Price has been set on your item - please allow a few minutes for the blockchain to update...'
+        $self.closeModal()
         artwork.bcitem.setPriceTxId = result.txId
         artwork.bcitem.status = 'price-set'
         $self.$store.commit('myArtworksStore/addMyArtwork', artwork)
         $self.$store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
           if (blockchainItem) {
             _.merge(artwork.bcitem, blockchainItem)
-            $self.message = 'Registration of your artwork is now complete...'
+            notify.info({title: 'Register Artwork.', text: 'Registration sent to blockchain.'})
           }
           $self.$store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
-            $self.message = 'User storage has been updated...'
+            notify.info({title: 'Register Artwork.', text: 'Your user storage has been updated.'})
           })
         })
         $self.message = 'Your artwork has been registered - please allow a few minutes for the transaction to complete...'
+        notify.info({title: 'Register Artwork.', text: 'Your artwork has been registered - please allow a few minutes for the transaction to complete...'})
       }, function (error) {
         notify.error({title: 'Register Artwork.', text: 'Error setting price for your item. <br>' + error.message})
-        $self.message = 'Error setting price for your item. <br>' + error.message
       })
       // this.$router.push('/my-artworks')
     }

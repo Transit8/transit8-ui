@@ -1,6 +1,6 @@
 // ethStore.js
 import ethereumService from '@/services/ethereumService'
-import Vue from 'vue'
+import notify from '@/services/notify'
 import _ from 'lodash'
 import SockJS from 'sockjs-client'
 import Stomp from '@stomp/stompjs'
@@ -49,12 +49,15 @@ const ethStore = {
     },
   },
   actions: {
-    getClientState ({ commit, state }) {
-      ethereumService.getClientState(function (clientState) {
-        commit('ethereumClientState', clientState)
-      },
-      function (error) {
-        Vue.notify({type: 'info', group: 'artwork-actions', title: 'Blockchain Client', text: 'Error fetching blockchain state.<br>' + error})
+    fetchClientState ({ commit, state }) {
+      return new Promise((resolve, reject) => {
+        ethereumService.fetchClientState(function (clientState) {
+          commit('ethereumClientState', clientState)
+          resolve(clientState)
+        },
+        function (error) {
+          notify.error({title: 'Blockchain Client.', text: 'Error fetching blockchain state.<br>' + error})
+        })
       })
     },
     fetchBlockchainItems ({ commit, state }) {
@@ -64,7 +67,7 @@ const ethStore = {
           resolve(blockchainItems)
         },
         function (error) {
-          Vue.notify({type: 'info', group: 'artwork-actions', title: 'Blockchain Client', text: 'Error fetching blockchain items.<br>' + error})
+          notify.error({title: 'Blockchain Client.', text: 'Error fetching blockchain items.<br>' + error})
           resolve([])
         })
       })

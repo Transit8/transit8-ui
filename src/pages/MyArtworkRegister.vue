@@ -98,27 +98,25 @@ export default {
       }
       let $self = this
       ethereumService.registerOnChain(regData, function (result) {
+        notify.info({title: 'Register Artwork.', text: 'Transaction sent to the blockchain...'})
         artwork.bcitem = {
           registerTxId: result.txId,
           status: 'pending-register'
         }
         $self.$store.commit('myArtworksStore/addMyArtwork', artwork)
-        notify.info({title: 'Register Artwork.', text: 'Transaction sent to the blockchain...'})
-        $self.$store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
-          if (blockchainItem) {
-            _.merge(artwork.bcitem, blockchainItem)
-            $self.message = 'Registration of your artwork is now complete...'
-            $self.$store.commit('myArtworksStore/addMyArtwork', artwork)
-          }
-        })
-        $self.message = 'Your artwork has been registered - please allow a few minutes for the transaction to complete...'
         $self.$store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
-          $self.message = 'User storage has been updated...'
           notify.info({title: 'Register Artwork.', text: 'User storage has been updated...'})
+          $self.closeModal()
+          $self.$store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
+            if (blockchainItem) {
+              _.merge(artwork.bcitem, blockchainItem)
+              $self.$store.commit('myArtworksStore/addMyArtwork', artwork)
+            }
+            notify.info({title: 'Register Artwork.', text: 'Your artwork has been registered - please allow a few minutes for the transaction to complete...'})
+          })
         })
       }, function (error) {
         notify.error({title: 'Register Artwork.', text: 'Error registering your item. <br>' + error.message})
-        $self.message = 'Error setting price for your item. <br>' + error.message
       })
     },
     openModal () {

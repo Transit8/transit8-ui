@@ -4,7 +4,7 @@
       <div class="row">
         <div class="col-sm-12 pt-120">
           <h1 class="innerpage mb-0">Search results for: {{ queryString }} ({{numberArtworks}})</h1>
-            <results-list :artworks="artworks" :show-load-button="false" :chunks="6"/>
+            <results-list :artworks="artworks" :debugMode="debugMode" :show-load-button="false" :chunks="6"/>
         </div>
       </div>
     </div>
@@ -38,6 +38,10 @@ export default {
     },
     numberArtworks () {
       return this.$store.getters['artworkSearchStore/numberArtworks']
+    },
+    debugMode () {
+      let debugMode = this.$store.getters['isDebugMode']
+      return debugMode
     },
   }
 

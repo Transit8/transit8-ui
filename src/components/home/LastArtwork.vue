@@ -3,11 +3,13 @@
     <img :src="artwork.image" :alt="artwork.title">
     <p class="artwork-caption">{{artwork.description}}</p>
     <p class="art-title">{{artwork.title}}</p>
-    <p class="art-title">{{artwork.bcitem.itemIndex}}</p>
+    <p class="art-title" v-if="debugMode">{{artwork.bcitem.itemIndex}}</p>
   </router-link>
 </template>
 
 <script>
+import utils from '@/services/utils'
+
 // noinspection JSUnusedGlobalSymbols
 export default {
   name: 'LastArtwork',
@@ -15,6 +17,11 @@ export default {
     artwork: {
       type: Object,
       required: true,
+    }
+  },
+  computed: {
+    debugMode () {
+      return utils.isDebugMode()
     }
   }
 }

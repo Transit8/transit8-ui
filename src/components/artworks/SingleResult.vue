@@ -9,6 +9,12 @@
         <p class="art-title">{{artwork.title}}</p>
         <p class="artwork-caption">{{artwork.description}}</p>
     </div>
+    <div class="col-sm-3" v-if="debugMode">
+        <p class="art-title">Owner: {{artwork.owner}}</p>
+        <p class="artwork-caption">Uploader: {{artwork.uploader}}</p>
+        <p class="artwork-caption">Artist: {{artwork.artist}}</p>
+        <p class="artwork-caption">Location: {{artwork.gaiaUrl}}</p>
+    </div>
     <div class="col-sm-7 col-description">
       <!--  TO DO: add real decription with keywords -->
      <!--   <p> Edition 1/1, Photography</p>
@@ -28,6 +34,7 @@
 export default {
   name: 'SingleResult',
   props: {
+    debugMode: false,
     artwork: {
       type: Object,
       default () {

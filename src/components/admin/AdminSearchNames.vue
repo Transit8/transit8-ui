@@ -116,7 +116,7 @@
 </template>
 
 <script>
-import searchIndexService from '@/services/searchindex/searchIndexService'
+import artworkSearchService from '@/services/artworkSearchService'
 
 export default {
   data () {
@@ -132,7 +132,7 @@ export default {
     }
   },
   mounted () {
-    searchIndexService.sizeOfIndex('names')
+    artworkSearchService.sizeOfIndex('names')
       .then((result) => {
         this.sizeOfIndex = result.details
       })
@@ -143,7 +143,7 @@ export default {
   methods: {
     buildIndex: function (type) {
       if (type === 'names') {
-        searchIndexService.buildIndexByNames(this.names)
+        artworkSearchService.buildIndexByNames(this.names)
           .then((result) => {
             this.result = result
           })
@@ -151,7 +151,7 @@ export default {
             console.log('Unable to contact search index.', e)
           })
       } else {
-        searchIndexService.buildIndexByPages(this.fromPage, this.toPage)
+        artworkSearchService.buildIndexByPages(this.fromPage, this.toPage)
           .then((result) => {
             this.result = result
           })
@@ -161,7 +161,7 @@ export default {
       }
     },
     searchIndex: function () {
-      searchIndexService.searchIndex('names', this.queryTerm, this.queryString)
+      artworkSearchService.searchIndex('names', this.queryTerm, this.queryString)
         .then((results) => {
           this.results = results.details
         })

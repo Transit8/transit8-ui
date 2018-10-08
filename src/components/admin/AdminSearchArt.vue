@@ -111,7 +111,7 @@
 </template>
 
 <script>
-import searchIndexService from '@/services/searchindex/searchIndexService'
+import artworkSearchService from '@/services/artworkSearchService'
 import moment from 'moment'
 
 export default {
@@ -129,7 +129,7 @@ export default {
     }
   },
   mounted () {
-    searchIndexService.sizeOfIndex('art')
+    artworkSearchService.sizeOfIndex('art')
       .then((result) => {
         this.sizeOfIndex = result
       })
@@ -142,7 +142,7 @@ export default {
       return moment(updated).format('LLLL')
     },
     buildIndex: function () {
-      searchIndexService.buildArtIndex()
+      artworkSearchService.buildArtIndex()
         .then((result) => {
           this.result = result
         })
@@ -151,7 +151,7 @@ export default {
         })
     },
     fetchAll: function () {
-      searchIndexService.fetchAll()
+      artworkSearchService.fetchAll()
         .then((results) => {
           this.results = results
         })
@@ -160,7 +160,7 @@ export default {
         })
     },
     clearAll: function () {
-      searchIndexService.clearAll()
+      artworkSearchService.clearAll()
         .then((result) => {
           this.result = result
         })
@@ -169,7 +169,7 @@ export default {
         })
     },
     indexUser: function () {
-      searchIndexService.indexUser(this.username)
+      artworkSearchService.indexUser(this.username)
         .then((results) => {
           this.results = results
         })
@@ -178,7 +178,7 @@ export default {
         })
     },
     searchIndex: function () {
-      searchIndexService.searchIndex('art', this.queryTerm, this.queryString)
+      artworkSearchService.searchIndex('art', this.queryTerm, this.queryString)
         .then((results) => {
           this.results = results
         })

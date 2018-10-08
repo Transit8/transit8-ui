@@ -51,10 +51,8 @@
 </template>
 
 <script>
-import searchIndexService from '@/services/searchindex/searchIndexService'
-import provenanceService from '@/services/provenance/provenanceService'
+import artworkSearchService from '@/services/artworkSearchService'
 import moment from 'moment'
-import _ from 'lodash'
 
 export default {
   data () {
@@ -71,46 +69,10 @@ export default {
       return moment(updated).format('LLLL')
     },
     findByUser: function () {
-      searchIndexService.searchIndex('names', 'name', this.username)
+      artworkSearchService.searchIndex('names', 'name', this.username)
         .then((results) => {
           let zonefile = results[0]
-          let apps = zonefile.apps.split(' ')
-          this.appurls = []
-          for (var key in apps) {
-            let parts = apps[key].split('=')
-            if (parts[0].indexOf('https://www.brightblock.org') > -1 || parts[0].indexOf('localhost:8081') > -1) {
-              let thisAppUrl = parts[0]
-              let thisGaiaUrl = parts[1]
-              provenanceService.fetchRootfile(thisGaiaUrl)
-                .then((response) => {
-                  let newData = response.data.records
-                  newData = _.unionBy(response.data.records, newData, 'id')
-                  response.data.records = newData
-                  let entry = {
-                    appUrl: thisAppUrl,
-                    gaiaUrl: thisGaiaUrl,
-                    rootFile: response.data
-                  }
-                  this.appurls.push(entry)
-                })
-                .catch(e => {
-                  console.log('Unable to contact search index.', e)
-                })
-            //  this.fetchRootRecord(entry)
-            }
-          }
-        })
-        .catch(e => {
-          console.log('Unable to contact search index.', e)
-        })
-    },
-    fetchRootRecord: function (entry) {
-      provenanceService.fetchRootfile(entry.gaiaUrl)
-        .then((response) => {
-          entry.rootFile = response.data
-        })
-        .catch(e => {
-          console.log('Unable to contact search index.', e)
+          this.appurls.push(zonefile.apps)
         })
     },
   },

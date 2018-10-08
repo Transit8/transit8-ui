@@ -14,6 +14,8 @@ import '@/assets/css/main.scss'
 import store from '@/storage/store'
 import { CONSTANTS } from '@/storage/constants'
 import notify from '@/services/notify'
+import utils from '@/services/utils'
+import ethereumService from '@/services/ethereumService'
 
 // import Vuelidate from 'vuelidate'
 Vue.config.productionTip = false
@@ -30,17 +32,21 @@ Vue.use(PrismicVue, {
   linkResolver
 })
 store.commit('constants', CONSTANTS)
-store.dispatch('ethStore/getClientState')
+store.dispatch('ethStore/fetchClientState').then((clientState) => {
+  ethereumService.connectToBlockChain(clientState)
+  store.dispatch('ethStore/fetchBlockchainItems').then((blockchainItems) => {
+    store.dispatch('ethStore/receiveBlockchainEvents').then((message) => {
+      if (utils.isDebugMode()) {
+        notify.info({title: 'Blockchain Events.', text: message})
+      }
+      store.dispatch('myAccountStore/fetchMyAccount')
+      store.dispatch('myArtworksStore/fetchMyArtworks')
+      store.dispatch('artworkSearchStore/fetchRegisteredArtworks', blockchainItems)
+    })
+  })
+})
 store.dispatch('conversionStore/fetchShapeShiftCryptoRate', 'eth_btc')
-store.dispatch('conversionStore/fetchFiatRates', 'eth_btc')
-store.dispatch('ethStore/fetchBlockchainItems').then((blockchainItems) => {
-  store.dispatch('myAccountStore/fetchMyAccount')
-  store.dispatch('myArtworksStore/fetchMyArtworks')
-  store.dispatch('artworkSearchStore/fetchRegisteredArtworks', blockchainItems)
-})
-store.dispatch('ethStore/receiveBlockchainEvents').then((message) => {
-  notify.info({title: 'Blockchain Events.', text: message})
-})
+store.dispatch('conversionStore/fetchFiatRates')
 
 /* eslint-disable no-new */
 new Vue({

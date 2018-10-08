@@ -3,6 +3,9 @@ import _ from 'lodash'
 import store from '@/storage/store'
 
 const utils = {
+  isDebugMode () {
+    return store.state.constants.environment !== 'production'
+  },
   buildArtworkHash (artworkUrl) {
     if (artworkUrl && artworkUrl.length > 0) {
       return '0x' + SHA256(artworkUrl).toString()
@@ -42,6 +45,7 @@ const utils = {
     return _.merge(artworkData, {
       id: record.indexData.id,
       title: record.indexData.title,
+      gaiaUrl: record.provData.gaiaUrl,
       description: record.indexData.description,
       keywords: record.indexData.keywords,
       itemType: record.indexData.itemType,

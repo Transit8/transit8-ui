@@ -24,7 +24,7 @@ const myArtworksService = {
     const blockstackRootFileName = store.state.constants.blockstackRootFileName
     getFile(blockstackRootFileName, {decrypt: false}).then(function (file) {
       if (!file) {
-        failure({ERR_CODE: 100, message: 'no blockstack root file!'})
+        myArtworksService.initBlockstackRootFile()
       } else {
         let blockstackRootFile = JSON.parse(file)
         store.commit('myArtworksStore/blockstackRootFile', blockstackRootFile)
@@ -47,7 +47,7 @@ const myArtworksService = {
     const blockstackRootFileName = store.state.constants.blockstackRootFileName
     getFile(blockstackRootFileName, {decrypt: false}).then(function (file) {
       if (!file) {
-        failure({ERR_CODE: 100, message: 'no blockstack root file!'})
+        myArtworksService.initBlockstackRootFile()
       } else {
         let blockstackRootFile = JSON.parse(file)
         store.commit('myArtworksStore/blockstackRootFile', blockstackRootFile)

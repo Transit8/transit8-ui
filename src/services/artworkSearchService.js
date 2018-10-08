@@ -7,6 +7,16 @@ import utils from './utils'
  *  The service is a client to the brightblock sever side grpc client.
 **/
 const artworkSearchService = {
+  searchIndex: function (index, term, query) {
+    return new Promise(function (resolve) {
+      xhrService.makeGetCall('/' + index + '/search/' + term + '?q=' + query)
+        .then(function (result) {
+          resolve(result)
+        }).catch(function (e) {
+          resolve({error: 'Error searching index for query: ' + query})
+        })
+    })
+  },
   addRecordToIndex: function (indexData) {
     return new Promise(function (resolve) {
       xhrService.makePostCall('/art/index/indexData', indexData)
@@ -116,7 +126,8 @@ const artworkSearchService = {
           _.forEach(results, function (indexData) {
             store.dispatch('userProfilesStore/addUserProfile', {username: indexData.owner}, {root: true})
             store.dispatch('userProfilesStore/addUserProfile', {username: indexData.uploader}, {root: true})
-            xhrService.makeDirectCall(utils.buildGaiaUrl(indexData.gaiaUrl, indexData.id))
+            let provGaiaUrl = utils.buildGaiaUrl(indexData.gaiaUrl, indexData.id)
+            xhrService.makeDirectCall(provGaiaUrl)
               .then(function (provData) {
                 if (provData && provData.artwork && provData.artwork[0] && provData.artwork[0].dataUrl.length > 0) {
                   let timestamp = utils.buildArtworkHash(provData.artwork[0].dataUrl)
@@ -125,6 +136,7 @@ const artworkSearchService = {
                     provData.bcitem = _.merge(provData.bcitem, blockchainItem)
                   }
                 }
+                provData.gaiaUrl = provGaiaUrl
                 success(utils.convertFromBlockstack({indexData: indexData, provData: provData}))
               }).catch(function (e) {
                 console.log('Unable to add record: ' + indexData.id, e)

@@ -34,19 +34,6 @@ import AccountLookup from '../components/account/AccountLookup'
 import AccountDisplay from '../components/account/AccountDisplay'
 import AccountFiles from '../components/account/AccountFiles'
 
-import Market from '../components/market/Market'
-import MarketSearch from '../components/market/MarketSearch'
-
-import Eth from '../components/experimental/eth/Eth'
-import DataTypes from '../components/experimental/eth/DataTypes'
-
-import Provenance from '../components/provenance/Provenance'
-import ProvenanceEdit from '../components/provenance/ProvenanceEdit'
-import ProvenanceCreate from '../components/provenance/ProvenanceCreate'
-import ProvenanceRegister from '../components/provenance/ProvenanceRegister'
-import ProvenanceList from '../components/provenance/ProvenanceList'
-import ProvenanceItem from '../components/provenance/ProvenanceItem'
-
 import Lightning from '@/components/lightning/Lightning'
 // import LightningNodes from '@/components/lightning/LightningNodes'
 
@@ -58,36 +45,6 @@ const router = new Router({
       path: '/',
       name: 'home',
       component: Home
-    }, {
-      path: '/provenance',
-      name: 'provenance',
-      component: Provenance,
-      children: [
-        {
-          path: '/provenance/register/:provenanceId',
-          meta: { requiresAuth: true },
-          name: 'provenanceRegister',
-          component: ProvenanceRegister
-        }, {
-          path: '/provenance/item/:provenanceId',
-          name: 'provenanceItem',
-          component: ProvenanceItem
-        }, {
-          path: '/provenance/edit/:provenanceId',
-          meta: { requiresAuth: true },
-          name: 'provenanceEdit',
-          component: ProvenanceEdit,
-        }, {
-          path: '/provenance/create',
-          meta: { requiresAuth: true },
-          name: 'provenanceCreate',
-          component: ProvenanceCreate,
-        }, {
-          path: '/provenance/list',
-          name: 'provenanceList',
-          component: ProvenanceList,
-        }
-      ]
     }, {
       path: '/admin',
       name: 'admin',
@@ -122,35 +79,6 @@ const router = new Router({
       meta: { requiresAuth: true },
       props: true,
       component: Lightning,
-      // children: [
-      //  {
-      //    path: '/lightning/nodes/:node/:action',
-      //    name: 'lightningNodes',
-      //    component: LightningNodes
-      //  }
-      // ]
-    }, {
-      path: '/market',
-      name: 'market',
-      meta: { requiresAuth: false },
-      component: Market,
-      children: [
-        {
-          path: '/market/search',
-          name: 'marketSearch',
-          component: MarketSearch
-        }
-      ]
-    }, {
-      path: '/types',
-      name: 'types',
-      meta: { requiresAuth: false },
-      component: DataTypes,
-    }, {
-      path: '/eth',
-      name: 'eth',
-      meta: { requiresAuth: false },
-      component: Eth,
     }, {
       path: '/account',
       name: 'account',

@@ -13,7 +13,6 @@
 <script>
 import SettingsBlockchain from '@/components/settings/SettingsBlockchain'
 import Navigation from '@/components/nav/Navigation'
-import ethereumService from '@/services/ethereumService'
 import AppFooter from './components/common/AppFooter'
 
 export default {
@@ -27,24 +26,6 @@ export default {
     }
   },
   created () {
-    let web3 = ethereumService.getWeb3()
-    if (!web3) {
-      this.error = 'no meta mask - routing to settings'
-      return
-    }
-    let $elfie = this
-    ethereumService.connectToBlockChain().then((result) => {
-      if (result.failed) {
-        $elfie.error = result.reason
-      } else if (Array.isArray(result.accounts) && result.accounts.length === 0) {
-        console.log('no accounts returned - probably not logged in.')
-      } else {
-        $elfie.metamask = result
-      }
-    }).catch(e => {
-      $elfie.spinner = false
-      $elfie.error = 'Record has been successfully registered on the block chain - but an error was thrown saving to user storage. Tx=' + this.provenanceRecord.indexData.regData.result
-    })
   },
   methods: {
     continueOnward: function () {

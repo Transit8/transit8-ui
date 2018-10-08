@@ -24,6 +24,9 @@ const store = new Vuex.Store({
     constants: {},
   },
   getters: {
+    isDebugMode: (state) => {
+      return state.constants['environment'] === 'development'
+    }
   },
   mutations: {
     constants (state, constants) {
