@@ -4,9 +4,9 @@
       <div class="row">
         <div class="col-sm-12 pt-120">
           <h1 class="innerpage">My Artworks <span>Artworks added: {{numberArtworksUnsold}}</span></h1>
-          <my-artworks-list :artworks="unsold" :sold="false" :show-load-button="false" :chunks="6"/>
+          <my-artworks-list :artworks="unsold" :sold="false" :show-load-button="false" :chunks="6" :debugMode="debugMode"/>
           <h1 class="innerpage mt-50">Sold Artworks <span>Artworks sold: {{numberArtworksSold}}</span></h1>
-          <my-artworks-list :artworks="sold" :sold="true" :show-load-button="false" :chunks="6"/>
+          <my-artworks-list :artworks="sold" :sold="true" :show-load-button="false" :chunks="6" :debugMode="debugMode"/>
         </div>
       </div>
     </div>
@@ -40,6 +40,10 @@ export default {
     },
     numberArtworksUnsold () {
       return this.$store.getters['myArtworksStore/numberArtworksUnsold']
+    },
+    debugMode () {
+      let debugMode = this.$store.getters['isDebugMode']
+      return debugMode
     }
   }
 }

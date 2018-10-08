@@ -7,6 +7,7 @@ import _ from 'lodash'
 import utils from './utils'
 import artworkSearchService from '@/services/artworkSearchService'
 import moment from 'moment'
+import notify from '@/services/notify'
 
 const myArtworksService = {
   initBlockstackRootFile: function () {
@@ -65,7 +66,10 @@ const myArtworksService = {
   },
 
   transferArtwork: function (artwork, success, failure) {
-    myArtworksService.uploadOrTransferArtwork(artwork, success, failure)
+    artworkSearchService.remove('id', artwork.id).then(function (message) {
+      notify.info({title: 'Transfer Artwork.', text: 'Removed from search index <br>' + message})
+      myArtworksService.uploadOrTransferArtwork(artwork, success, failure)
+    })
   },
 
   uploadArtwork: function (artwork, success, failure) {
@@ -124,35 +128,38 @@ const myArtworksService = {
         status: 'new'
       }
     }
-    let record = utils.convertToBlockstack(artwork)
-    getFile(blockstackRootFileName, {decrypt: false}).then(function (file) {
-      if (!file) {
-        failure({ERR_CODE: 1, message: 'no artworks found'})
-      } else {
-        let blockstackRootFile = JSON.parse(file)
-        let index = _.findIndex(blockstackRootFile.records, function (o) {
-          return o.id === artwork.id
-        })
-        if (index < 0 || index >= blockstackRootFile.records.length) {
-          failure({ERR_CODE: 2, message: 'Unable to find index data in record.'})
+    artworkSearchService.remove('id', artwork.id).then(function (message) {
+      notify.info({title: 'Transfer Artwork.', text: 'Removed from search index <br>' + message})
+      let record = utils.convertToBlockstack(artwork)
+      getFile(blockstackRootFileName, {decrypt: false}).then(function (file) {
+        if (!file) {
+          failure({ERR_CODE: 1, message: 'no artworks found'})
         } else {
-          blockstackRootFile.records.splice(index, 1, record.indexData)
-          putFile(blockstackRootFileName, JSON.stringify(blockstackRootFile), {encrypt: false})
-            .then(function (message) {
-              putFile(provFile, JSON.stringify(record.provData), {encrypt: false}).then(function (message) {
-                store.commit('myArtworksStore/blockstackRootFile', blockstackRootFile)
-                success(utils.convertFromBlockstack(record))
-                artworkSearchService.addRecordToIndex(record.indexData)
+          let blockstackRootFile = JSON.parse(file)
+          let index = _.findIndex(blockstackRootFile.records, function (o) {
+            return o.id === artwork.id
+          })
+          if (index < 0 || index >= blockstackRootFile.records.length) {
+            failure({ERR_CODE: 2, message: 'Unable to find index data in record.'})
+          } else {
+            blockstackRootFile.records[index] = record.indexData
+            putFile(blockstackRootFileName, JSON.stringify(blockstackRootFile), {encrypt: false})
+              .then(function (message) {
+                putFile(provFile, JSON.stringify(record.provData), {encrypt: false}).then(function (message) {
+                  store.commit('myArtworksStore/blockstackRootFile', blockstackRootFile)
+                  success(utils.convertFromBlockstack(record))
+                  artworkSearchService.addRecordToIndex(record.indexData)
+                }).catch(function (e) {
+                  failure({ERR_CODE: 3, message: 'Error saving provenance file: ' + artwork.id})
+                })
               }).catch(function (e) {
-                failure({ERR_CODE: 3, message: 'Error saving provenance file: ' + artwork.id})
+                failure({ERR_CODE: 4, message: 'Error uploading artwork: ' + artwork.id})
               })
-            }).catch(function (e) {
-              failure({ERR_CODE: 4, message: 'Error uploading artwork: ' + artwork.id})
-            })
+          }
         }
-      }
-    }).catch(function (e) {
-      failure({ERR_CODE: 5, message: 'no artworks found'})
+      }).catch(function (e) {
+        failure({ERR_CODE: 5, message: 'no artworks found'})
+      })
     })
   },
 

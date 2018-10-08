@@ -16,6 +16,14 @@
         <router-link :to="url" class="artwork-action" v-if="artwork.forSale">Buy</router-link>
         <router-link :to="url" class="artwork-action" v-if="artwork.forAuction">Bid</router-link>
         <br/>
+        <div v-if="debugMode">
+            <p class="art-title">Owner: {{artwork.owner}}</p>
+            <p class="artwork-caption">Uploader: {{artwork.uploader}}</p>
+            <p class="artwork-caption">Artist: {{artwork.artist}}</p>
+            <p class="artwork-caption">SaleData: {{artwork.saleData.soid}} / {{artwork.saleData.amount}} {{artwork.saleData.fiatCurrency}} / {{artwork.saleData.amountInEther}}</p>
+            <p class="artwork-caption">BCData: {{artwork.bcitem.owner}} / {{artwork.bcitem.price}}</p>
+            <p class="artwork-caption">Location: {{artwork.gaiaUrl}}</p>
+        </div>
         <button class="button" @click="deleteArtwork(artwork.id)">Delete</button>
       </div>
     </div>
@@ -28,6 +36,7 @@
 export default {
   name: 'MySingleArtwork',
   props: {
+    debugMode: false,
     sold: true,
     artwork: {
       type: Object,

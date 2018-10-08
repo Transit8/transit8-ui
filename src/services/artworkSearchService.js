@@ -98,12 +98,14 @@ const artworkSearchService = {
   },
 
   remove: function (field, value) {
-    xhrService.makeGetCall('/art/index/remove/' + field + '/' + value)
-      .then(function (result) {
-        console.log(result)
-      }).catch(function (e) {
-        console.log('Unable to remove ' + value + ' from search index')
-      })
+    return new Promise(function (resolve) {
+      xhrService.makeGetCall('/art/index/remove/' + field + '/' + value)
+        .then(function (result) {
+          resolve(result)
+        }).catch(function (e) {
+          resolve({error: 'Unable to remove ' + value + ' from search index'})
+        })
+    })
   },
 
   sizeOfIndex: function (index) {

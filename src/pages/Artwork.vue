@@ -98,7 +98,7 @@ export default {
     forSale () {
       let artwork = this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
       if (artwork.bcitem && artwork.saleData) {
-        return (artwork.bcitem.itemIndex > -1 && artwork.bcitem.price > 0 && artwork.saleData.soid === 1)
+        return (artwork.bcitem.itemIndex > -1 && artwork.bcitem.price > 0)
       } else {
         return false
       }
@@ -106,7 +106,7 @@ export default {
     forAuction () {
       let artwork = this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
       if (artwork.bcitem && artwork.saleData) {
-        return (artwork.bcitem.itemIndex > -1 && artwork.bcitem.price > 0 && artwork.saleData.soid === 2)
+        return (artwork.bcitem.itemIndex > -1 && artwork.bcitem.price > 0 && artwork.bcitem.inAuction)
       } else {
         return false
       }

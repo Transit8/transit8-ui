@@ -250,14 +250,14 @@ export default {
         artwork.bcitem.setPriceTxId = result.txId
         artwork.bcitem.status = 'price-set'
         $self.$store.commit('myArtworksStore/addMyArtwork', artwork)
+        $self.$store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
+          notify.info({title: 'Register Artwork.', text: 'Your user storage has been updated.'})
+        })
         $self.$store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
           if (blockchainItem) {
             _.merge(artwork.bcitem, blockchainItem)
             notify.info({title: 'Register Artwork.', text: 'Registration sent to blockchain.'})
           }
-          $self.$store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
-            notify.info({title: 'Register Artwork.', text: 'Your user storage has been updated.'})
-          })
         })
         $self.message = 'Your artwork has been registered - please allow a few minutes for the transaction to complete...'
         notify.info({title: 'Register Artwork.', text: 'Your artwork has been registered - please allow a few minutes for the transaction to complete...'})

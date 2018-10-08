@@ -4,7 +4,7 @@ import store from '@/storage/store'
 
 const utils = {
   isDebugMode () {
-    return store.state.constants.environment !== 'production'
+    return store.state.constants.environment === 'development'
   },
   buildArtworkHash (artworkUrl) {
     if (artworkUrl && artworkUrl.length > 0) {
