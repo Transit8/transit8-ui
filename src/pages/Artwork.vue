@@ -130,7 +130,7 @@ export default {
       let priceSet = artwork.bcitem.price > 0
       let forSale = artwork.saleData.soid === 1
       let purchaseState = {
-        canBuy: (forSale && priceSet && ownedBySomeElse)
+        canBuy: (username && forSale && priceSet && ownedBySomeElse)
       }
       return purchaseState
     },
