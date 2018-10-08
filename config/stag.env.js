@@ -9,5 +9,5 @@ module.exports = {
   ETH_GATEWAY_URL: '"https://staging-api.brightblock.org"',
   SEARCH_INDEX_URL: '"https://staging-api.brightblock.org"',
   ETHEREUM_NETWORK: '"Rinkby (4)"',
-  ETHEREUM_ABI: '\'' + abi + '\'',
+  ETHEREUM_ABI: '\'' + JSON.stringify(abi) + '\'',
 }

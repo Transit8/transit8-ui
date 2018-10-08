@@ -113,25 +113,21 @@ const router = new Router({
       path: '/artworks',
       name: 'artworks',
       component: Artworks,
-      meta: { requiresAuth: true },
     },
     {
       path: '/artworks/:artworkId',
       name: 'artworkDetails',
       component: Artwork,
-      meta: { requiresAuth: true },
     },
     {
       path: '/artists',
       name: 'artists',
       component: Artists,
-      meta: { requiresAuth: true },
     },
     {
       path: '/artists/:artistId',
       name: 'artistDetails',
       component: Artist,
-      meta: { requiresAuth: true },
     },
     {
       path: '/how-it-works',
@@ -142,7 +138,6 @@ const router = new Router({
       path: '/resources',
       name: 'resources',
       component: Resources,
-      meta: { requiresAuth: true },
     },
     {
       path: '/search',

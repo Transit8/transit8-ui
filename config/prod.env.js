@@ -9,5 +9,5 @@ module.exports = {
   ETH_GATEWAY_URL: '"https://api.brightblock.org"',
   SEARCH_INDEX_URL: '"https://api.brightblock.org"',
   ETHEREUM_NETWORK: '"Ropsten (3)"',
-  ETHEREUM_ABI: '\'' + abi + '\'',
+  ETHEREUM_ABI: '\'' + JSON.stringify(abi) + '\'',
 }

@@ -2,8 +2,6 @@
 const merge = require('webpack-merge')
 const prodEnv = require('./prod.env')
 const abi = require('./abi/ArtMarket')
-// const json = require('./abi/ArtMarket')
-// truffleFile = json.load(open('./abi/ArtMarket.json'))
 console.log(abi)
 
 module.exports = merge(prodEnv, {
