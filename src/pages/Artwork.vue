@@ -90,7 +90,8 @@ export default {
   },
   computed: {
     artist () {
-      return this.$store.getters['userProfilesStore/getProfile'](this.artwork.artist)
+      let artwork = this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
+      return this.$store.getters['userProfilesStore/getProfile'](artwork.artist)
     },
     artwork () {
       return this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
@@ -112,21 +113,22 @@ export default {
       }
     },
     aboutArtwork () {
-      let artist = this.$store.getters['userProfilesStore/getProfile'](this.artwork.artist)
-      let owner = this.$store.getters['userProfilesStore/getProfile'](this.artwork.owner)
+      let artwork = this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
+      let artist = this.$store.getters['userProfilesStore/getProfile'](artwork.artist)
+      let owner = this.$store.getters['userProfilesStore/getProfile'](artwork.owner)
       return {
         artist: artist,
         owner: owner,
-        title: this.artwork.title,
-        keywords: this.artwork.keywords,
-        year: this.artwork.year,
-        image: this.artwork.image
+        title: artwork.title,
+        keywords: artwork.keywords,
+        year: artwork.year,
+        image: artwork.image
       }
     },
     purchaseState () {
-      let username = this.$store.getters['myAccountStore/getMyProfile'].username
-      let ownedBySomeElse = this.artwork.owner !== username
       let artwork = this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
+      let username = this.$store.getters['myAccountStore/getMyProfile'].username
+      let ownedBySomeElse = artwork.owner !== username
       let priceSet = artwork.bcitem.price > 0
       let forSale = artwork.saleData.soid === 1
       let purchaseState = {
@@ -135,7 +137,8 @@ export default {
       return purchaseState
     },
     artworks () {
-      return this.$store.getters['artworkSearchStore/getArtworksByArtist'](this.artwork.artist)
+      let artwork = this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
+      return this.$store.getters['artworkSearchStore/getArtworksByArtist'](artwork.artist)
     },
   },
   mounted () {
