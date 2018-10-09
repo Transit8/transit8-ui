@@ -3,7 +3,6 @@ import myArtworksService from '@/services/myArtworksService'
 import _ from 'lodash'
 import notify from '@/services/notify'
 import store from '@/storage/store'
-import utils from '@/services/utils'
 
 const myArtworksStore = {
   namespaced: true,
