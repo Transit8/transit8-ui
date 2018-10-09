@@ -98,7 +98,6 @@ const myArtworksStore = {
             if (myArtwork.owner !== blockchainItem.blockstackId) {
               _.merge(myArtwork.bcitem, blockchainItem)
               myArtwork.owner = blockchainItem.blockstackId
-              myArtwork.saleData = utils.buildInitialSaleData()
               store.dispatch('myArtworksStore/updateArtwork', myArtwork)
             }
             _.merge(myArtwork.bcitem, blockchainItem)
@@ -115,7 +114,6 @@ const myArtworksStore = {
           if (myArtwork.owner !== blockchainItem.blockstackId) {
             _.merge(myArtwork.bcitem, blockchainItem)
             myArtwork.owner = blockchainItem.blockstackId
-            myArtwork.saleData = utils.buildInitialSaleData()
             store.dispatch('myArtworksStore/updateArtwork', myArtwork)
           }
           commit('addMyArtwork', myArtwork)
