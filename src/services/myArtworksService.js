@@ -103,7 +103,14 @@ const myArtworksService = {
     let gaiaArtworkFileName = store.state.constants.gaiaArtworkFileName
     let provFile = gaiaArtworkFileName + artwork.id + '.json'
     let record = utils.convertToBlockstack(artwork)
-    blockstackRootFile.records.splice(0, 0, record.indexData)
+    let index = _.findIndex(blockstackRootFile.records, function (o) {
+      return o.id === artwork.id
+    })
+    if (index < 0) {
+      blockstackRootFile.records.splice(0, 0, record.indexData)
+    } else {
+      blockstackRootFile.records.splice(index, 1, record.indexData)
+    }
     putFile(blockstackRootFileName, JSON.stringify(blockstackRootFile), {encrypt: false})
       .then(function (message) {
         putFile(provFile, JSON.stringify(record.provData), {encrypt: false}).then(function (message) {

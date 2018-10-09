@@ -23,7 +23,7 @@
             </router-link>
           </li>
           <li>
-            <router-link to="/admin/search/art" class="navbar-item" v-if="showAdmin">
+            <router-link to="/admin/registrations" class="navbar-item" v-if="showAdmin">
               Admin
             </router-link>
           </li>

@@ -131,13 +131,6 @@ const artworkSearchService = {
             let provGaiaUrl = utils.buildGaiaUrl(indexData.gaiaUrl, indexData.id)
             xhrService.makeDirectCall(provGaiaUrl)
               .then(function (provData) {
-                if (provData && provData.artwork && provData.artwork[0] && provData.artwork[0].dataUrl.length > 0) {
-                  let timestamp = utils.buildArtworkHash(provData.artwork[0].dataUrl)
-                  let blockchainItem = store.getters['ethStore/getBlockchainItem'](timestamp)
-                  if (blockchainItem) {
-                    provData.bcitem = _.merge(provData.bcitem, blockchainItem)
-                  }
-                }
                 provData.gaiaUrl = provGaiaUrl
                 success(utils.convertFromBlockstack({indexData: indexData, provData: provData}))
               }).catch(function (e) {

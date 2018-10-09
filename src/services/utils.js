@@ -46,6 +46,7 @@ const utils = {
       id: record.indexData.id,
       title: record.indexData.title,
       gaiaUrl: record.provData.gaiaUrl,
+      bcitem: record.provData.bcitem,
       description: record.indexData.description,
       keywords: record.indexData.keywords,
       itemType: record.indexData.itemType,

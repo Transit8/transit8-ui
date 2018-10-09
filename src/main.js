@@ -35,13 +35,13 @@ store.commit('constants', CONSTANTS)
 store.dispatch('ethStore/fetchClientState').then((clientState) => {
   ethereumService.connectToBlockChain(clientState)
   store.dispatch('ethStore/fetchBlockchainItems').then((blockchainItems) => {
+    store.dispatch('myAccountStore/fetchMyAccount')
+    store.dispatch('myArtworksStore/fetchMyArtworks')
+    store.dispatch('artworkSearchStore/fetchRegisteredArtworks', blockchainItems)
     store.dispatch('ethStore/receiveBlockchainEvents').then((message) => {
       if (utils.isDebugMode()) {
         notify.info({title: 'Blockchain Events.', text: message})
       }
-      store.dispatch('myAccountStore/fetchMyAccount')
-      store.dispatch('myArtworksStore/fetchMyArtworks')
-      store.dispatch('artworkSearchStore/fetchRegisteredArtworks', blockchainItems)
     })
   })
 })
