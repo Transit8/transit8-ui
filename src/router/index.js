@@ -16,6 +16,11 @@ import MyArtworkRegister from '../pages/MyArtworkRegister'
 import MyArtworks from '../pages/MyArtworks'
 import MyArtworkUpload from '../pages/MyArtworkUpload'
 import MyArtworkUpdate from '../pages/MyArtworkUpdate'
+import Auctions from '../pages/Auctions'
+import AuctionsContainer from '../components/auctions/AuctionsContainer'
+import AuctionPreview from '../pages/AuctionPreview'
+import AuctionUpload from '../pages/AuctionUpload'
+import AuctionUpdate from '../pages/AuctionUpdate'
 import Story from '../pages/Story'
 import Privacy from '../pages/Privacy'
 import Profile from '../pages/Profile'
@@ -143,6 +148,26 @@ const router = new Router({
       path: '/search',
       name: 'search',
       component: Search,
+    },
+    {
+      path: '/auctions',
+      component: Auctions,
+      meta: { requiresAuth: true },
+      children: [
+        {
+          path: '',
+          component: AuctionsContainer,
+        }, {
+          path: '/auctions/update/:auctionId',
+          component: AuctionUpdate,
+        }, {
+          path: '/auction/upload',
+          component: AuctionUpload,
+        }, {
+          path: '/auction/:auctionId',
+          component: AuctionPreview,
+        }
+      ]
     },
     {
       path: '/my-artwork/update/:artworkId',

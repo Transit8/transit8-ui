@@ -6,6 +6,7 @@ export const CONSTANTS = {
   searchUrl: process.env.SEARCH_INDEX_URL,
   networkExpected: process.env.ETHEREUM_NETWORK,
   domain: location.origin,
-  blockstackRootFileName: 'records_v01.json',
+  artworkRootFileName: 'records_v01.json',
+  auctionsRootFileName: 'auctions_v01.json',
   gaiaArtworkFileName: 'record_',
 }

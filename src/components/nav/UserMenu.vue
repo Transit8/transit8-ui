@@ -23,6 +23,11 @@
             </router-link>
           </li>
           <li>
+            <router-link to="/auctions" class="navbar-item">
+              Auctions
+            </router-link>
+          </li>
+          <li>
             <router-link to="/admin/registrations" class="navbar-item" v-if="showAdmin">
               Admin
             </router-link>

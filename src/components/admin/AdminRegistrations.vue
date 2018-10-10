@@ -4,13 +4,7 @@
     <div class="row">
       <div class="col-sm-12">
         <div v-for="(registration, index) in registrations" :key="index">
-          <p>{{registration}}</p>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-12">
-        <div v-for="(registration, index) in registrations" :key="index">
+          <p>{{index}} : {{registration}}</p>
         </div>
       </div>
     </div>

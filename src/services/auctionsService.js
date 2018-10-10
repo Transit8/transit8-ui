@@ -5,27 +5,15 @@ import {
 import store from '@/storage/store'
 import _ from 'lodash'
 import utils from './utils'
-import artworkSearchService from '@/services/artworkSearchService'
 import moment from 'moment'
 import notify from '@/services/notify'
 
-const myArtworksService = {
-  initBlockstackRootFile: function () {
-    const artworkRootFileName = store.state.constants.artworkRootFileName
-    var now = moment({}).valueOf()
-    let newRootFile = {
-      created: now,
-      profile: {},
-      records: []
-    }
-    return putFile(artworkRootFileName, JSON.stringify(newRootFile), {encrypt: false})
-  },
-
-  getMyArtworks: function (success, failure) {
+const auctionsService = {
+  getAuctions: function (success, failure) {
     const artworkRootFileName = store.state.constants.artworkRootFileName
     getFile(artworkRootFileName, {decrypt: false}).then(function (file) {
       if (!file) {
-        myArtworksService.initBlockstackRootFile()
+        auctionsService.initBlockstackRootFile()
       } else {
         let blockstackRootFile = JSON.parse(file)
         store.commit('myArtworksStore/blockstackRootFile', blockstackRootFile)
@@ -36,7 +24,7 @@ const myArtworksService = {
           }
           store.dispatch('userProfilesStore/addUserProfile', {username: indexData.uploader}, {root: true})
           store.dispatch('userProfilesStore/addUserProfile', {username: indexData.owner}, {root: true})
-          myArtworksService.fetchMyProvenanceFile(indexData, success, failure)
+          auctionsService.fetchMyProvenanceFile(indexData, success, failure)
         })
       }
     }).catch(function (e) {
@@ -48,7 +36,7 @@ const myArtworksService = {
     const artworkRootFileName = store.state.constants.artworkRootFileName
     getFile(artworkRootFileName, {decrypt: false}).then(function (file) {
       if (!file) {
-        myArtworksService.initBlockstackRootFile()
+        auctionsService.initBlockstackRootFile()
       } else {
         let blockstackRootFile = JSON.parse(file)
         store.commit('myArtworksStore/blockstackRootFile', blockstackRootFile)
@@ -56,7 +44,7 @@ const myArtworksService = {
           if (indexData.id === artworkId) {
             store.dispatch('userProfilesStore/addUserProfile', {username: indexData.uploader}, {root: true})
             store.dispatch('userProfilesStore/addUserProfile', {username: indexData.owner}, {root: true})
-            myArtworksService.fetchMyProvenanceFile(indexData, success, failure)
+            auctionsService.fetchMyProvenanceFile(indexData, success, failure)
           }
         })
       }
@@ -68,7 +56,7 @@ const myArtworksService = {
   transferArtwork: function (artwork, success, failure) {
     artworkSearchService.remove('id', artwork.id).then(function (message) {
       notify.info({title: 'Transfer Artwork.', text: 'Removed from search index <br>' + message})
-      myArtworksService.uploadOrTransferArtwork(artwork, success, failure)
+      auctionsService.uploadOrTransferArtwork(artwork, success, failure)
     })
   },
 
@@ -78,18 +66,18 @@ const myArtworksService = {
       status: 'new',
       itemIndex: -1
     }
-    myArtworksService.uploadOrTransferArtwork(artwork, success, failure)
+    auctionsService.uploadOrTransferArtwork(artwork, success, failure)
   },
 
   uploadOrTransferArtwork: function (artwork, success, failure) {
     let artworkRootFileName = store.state.constants.artworkRootFileName
     getFile(artworkRootFileName, {decrypt: false}).then(function (file) {
       if (!file) {
-        myArtworksService.initBlockstackRootFile().then(function (file) {
-          myArtworksService.uploadProvenanceFile(artworkRootFileName, file, artwork, success, failure)
+        auctionsService.initBlockstackRootFile().then(function (file) {
+          auctionsService.uploadProvenanceFile(artworkRootFileName, file, artwork, success, failure)
         })
       } else {
-        myArtworksService.uploadProvenanceFile(artworkRootFileName, file, artwork, success, failure)
+        auctionsService.uploadProvenanceFile(artworkRootFileName, file, artwork, success, failure)
       }
     }).catch(function (e) {
       failure({ERR_CODE: 2, message: 'no root blockstack fole found.'})
@@ -229,4 +217,4 @@ const myArtworksService = {
     })
   },
 }
-export default myArtworksService
+export default auctionsService

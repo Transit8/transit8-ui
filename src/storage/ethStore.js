@@ -42,7 +42,15 @@ const ethStore = {
       state.blockchainItems = _.sortBy(blockchainItems, ['itemIndex'])
     },
     blockchainItem (state, blockchainItem) {
-      state.blockchainItems.splice(0, 0, blockchainItem)
+      let index = _.findIndex(state.blockchainItems, function (o) {
+        return o.itemIndex === blockchainItem.itemIndex
+      })
+      if (index === -1) {
+        state.blockchainItems.push(blockchainItem)
+      } else {
+        state.blockchainItems.splice(index, 1, blockchainItem)
+      }
+      state.blockchainItems = _.sortBy(state.blockchainItems, ['itemIndex'])
     },
     numbItems (state, numbItems) {
       state.clientState.numbItems = numbItems
@@ -76,7 +84,7 @@ const ethStore = {
       return new Promise((resolve, reject) => {
         ethereumService.fetchBlockchainItem(data, function (blockchainItem) {
           if (blockchainItem) {
-            // commit('blockchainItem', blockchainItem)
+            commit('blockchainItem', blockchainItem)
             resolve(blockchainItem)
           } else {
             resolve()

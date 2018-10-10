@@ -15,7 +15,8 @@ const myArtworksStore = {
       let artwork = getters.myArtwork(id)
       if (!artwork.bcitem) {
         artwork.bcitem = {
-          status: 'new'
+          status: 'new',
+          itemIndex: -1
         }
       }
       return artwork.bcitem.status
@@ -56,9 +57,6 @@ const myArtworksStore = {
       state.myArtworks = myArtworks
     },
     addMyArtwork (state, myArtwork) {
-      if (!state.myArtworks) {
-        state.myArtworks = []
-      }
       let index = _.findIndex(state.myArtworks, function (o) {
         return o.id === myArtwork.id
       })
@@ -101,6 +99,11 @@ const myArtworksStore = {
             }
             _.merge(myArtwork.bcitem, blockchainItem)
             commit('addMyArtwork', myArtwork)
+          } else {
+            myArtwork.bcitem = {
+              status: 'new',
+              itemIndex: -1
+            }
           }
         })
       })
