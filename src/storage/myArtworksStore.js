@@ -3,6 +3,7 @@ import myArtworksService from '@/services/myArtworksService'
 import _ from 'lodash'
 import notify from '@/services/notify'
 import store from '@/storage/store'
+import utils from '@/services/utils'
 
 const myArtworksStore = {
   namespaced: true,
@@ -97,7 +98,7 @@ const myArtworksStore = {
               myArtwork.owner = blockchainItem.blockstackId
               store.dispatch('myArtworksStore/updateArtwork', myArtwork)
             }
-            _.merge(myArtwork.bcitem, blockchainItem)
+            utils.convertPriceFromBlockchain(myArtwork, blockchainItem)
             commit('addMyArtwork', myArtwork)
           } else {
             myArtwork.bcitem = {

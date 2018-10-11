@@ -6,6 +6,20 @@ const utils = {
   isDebugMode () {
     return store.state.constants.environment === 'development'
   },
+
+  convertPriceToFiat (artwork, blockchainItem) {
+    _.merge(artwork.bcitem, blockchainItem)
+    let fiatRates = store.getters['conversionStore/getFiatRates']
+    let currentCurrency = fiatRates[artwork.saleData.currency]
+    let conversion = currentCurrency['15m']
+    let ethToBtc = store.getters['conversionStore/getCryptoRate']('eth_btc')
+    conversion = conversion * ethToBtc
+    artwork.owner = blockchainItem.blockstackId
+    artwork.bcitem.price = blockchainItem.price
+    let precision = 100000000
+    artwork.bcitem.priceInFiat = Math.round(conversion * precision) / precision
+  },
+
   buildArtworkHash (artworkUrl) {
     if (artworkUrl && artworkUrl.length > 0) {
       return '0x' + SHA256(artworkUrl).toString()

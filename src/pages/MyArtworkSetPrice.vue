@@ -153,15 +153,13 @@ export default {
       return conversionMessage
     },
     currentSymbol () {
-      if (this.fiatRates && this.currency && this.fiatRates[this.currency]) {
-        return this.fiatRates[this.currency]['symbol']
+      let fiatRates = this.$store.getters['conversionStore/getFiatRates']
+      if (fiatRates && this.currency && fiatRates[this.currency]) {
+        return fiatRates[this.currency]['symbol']
       }
     },
     myArtwork () {
       return this.$store.getters['myArtworksStore/myArtwork'](this.artworkId)
-    },
-    ethToBtc () {
-      return this.$store.getters['conversionStore/getCryptoRate']('eth_btc')
     },
   },
   methods: {
@@ -172,12 +170,14 @@ export default {
       this.isModalActive = false
     },
     valueInBitcoin (amount) {
-      let currentCurrency = this.fiatRates[this.currency]
+      let fiatRates = this.$store.getters['conversionStore/getFiatRates']
+      let currentCurrency = fiatRates[this.currency]
       let conversion = currentCurrency['15m']
       return this.convert(amount, conversion, 100000000)
     },
     valueInEther (amount) {
-      let currentCurrency = this.fiatRates[this.currency]
+      let fiatRates = this.$store.getters['conversionStore/getFiatRates']
+      let currentCurrency = fiatRates[this.currency]
       let conversion = currentCurrency['15m']
       let ethToBtc = this.$store.getters['conversionStore/getCryptoRate']('eth_btc')
       conversion = conversion * ethToBtc
@@ -213,8 +213,10 @@ export default {
       this.saleData.reserve = Number(this.saleData.reserve)
       this.saleData.increment = Number(this.saleData.increment)
       this.saleData.fiatCurrency = this.currency
-      this.saleData.initialRateBtc = this.fiatRates[this.currency]['15m']
-      this.saleData.initialRateEth = this.ethToBtc
+      let fiatRates = this.$store.getters['conversionStore/getFiatRates']
+      this.saleData.initialRateBtc = fiatRates[this.currency]['15m']
+      let ethToBtc = this.$store.getters['conversionStore/getCryptoRate']('eth_btc')
+      this.saleData.initialRateEth = ethToBtc
       this.saleData.amountInEther = this.valueInEther(this.saleData.amount)
 
       this.validate(this.saleData)
