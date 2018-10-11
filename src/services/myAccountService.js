@@ -35,6 +35,7 @@ const myAccountService = {
   handlePending: function () {
     handlePendingSignIn().then(function (myProfile) {
       store.dispatch('myAccountStore/fetchMyAccount')
+      store.dispatch('myArtworksStore/fetchMyArtworks')
     })
   },
   isPending: function () {

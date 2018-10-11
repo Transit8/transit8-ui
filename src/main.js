@@ -32,10 +32,10 @@ Vue.use(PrismicVue, {
   linkResolver
 })
 store.commit('constants', CONSTANTS)
+store.dispatch('myAccountStore/fetchMyAccount')
 store.dispatch('ethStore/fetchClientState').then((clientState) => {
   ethereumService.connectToBlockChain(clientState)
   store.dispatch('ethStore/fetchBlockchainItems').then((blockchainItems) => {
-    store.dispatch('myAccountStore/fetchMyAccount')
     store.dispatch('myArtworksStore/fetchMyArtworks')
     store.dispatch('artworkSearchStore/fetchRegisteredArtworks', blockchainItems)
     store.dispatch('ethStore/receiveBlockchainEvents').then((message) => {
