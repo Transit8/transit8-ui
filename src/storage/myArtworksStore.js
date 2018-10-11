@@ -93,12 +93,11 @@ const myArtworksStore = {
               myArtwork.bcitem = {}
             }
             myArtwork.bcitem.status = 'registered'
+            utils.convertPrices(myArtwork, blockchainItem)
             if (myArtwork.owner !== blockchainItem.blockstackId) {
-              _.merge(myArtwork.bcitem, blockchainItem)
               myArtwork.owner = blockchainItem.blockstackId
               store.dispatch('myArtworksStore/updateArtwork', myArtwork)
             }
-            utils.convertPriceFromBlockchain(myArtwork, blockchainItem)
             commit('addMyArtwork', myArtwork)
           } else {
             myArtwork.bcitem = {
@@ -114,8 +113,8 @@ const myArtworksStore = {
         myArtworksService.getMyArtwork(artworkId, function (myArtwork) {
           let blockchainItem = store.getters['ethStore/getBlockchainItem'](myArtwork.timestamp)
           myArtwork.blockchainItem = blockchainItem
+          utils.convertPrices(myArtwork, blockchainItem)
           if (myArtwork.owner !== blockchainItem.blockstackId) {
-            _.merge(myArtwork.bcitem, blockchainItem)
             myArtwork.owner = blockchainItem.blockstackId
             store.dispatch('myArtworksStore/updateArtwork', myArtwork)
           }

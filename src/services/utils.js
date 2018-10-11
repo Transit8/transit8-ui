@@ -7,17 +7,32 @@ const utils = {
     return store.state.constants.environment === 'development'
   },
 
-  convertPriceToFiat (artwork, blockchainItem) {
-    _.merge(artwork.bcitem, blockchainItem)
-    let fiatRates = store.getters['conversionStore/getFiatRates']
-    let currentCurrency = fiatRates[artwork.saleData.currency]
-    let conversion = currentCurrency['15m']
+  convertPrices (artwork, blockchainItem) {
+    if (!blockchainItem || !blockchainItem.price) {
+      return
+    }
+    if (!artwork.bcitem) {
+      artwork.bcitem = {}
+    }
+    let priceInWei = blockchainItem.price
+    let precision = 1000000000000000000
+    let priceInEth = priceInWei / precision
+    let fiatCurrency = artwork.saleData.fiatCurrency
+    if (!fiatCurrency) {
+      fiatCurrency = 'EUR'
+    }
+    let fiatRate = store.getters['conversionStore/getFiatRate'](fiatCurrency)
+    let fiatToBtc = fiatRate['15m']
     let ethToBtc = store.getters['conversionStore/getCryptoRate']('eth_btc')
-    conversion = conversion * ethToBtc
-    artwork.owner = blockchainItem.blockstackId
-    artwork.bcitem.price = blockchainItem.price
-    let precision = 100000000
-    artwork.bcitem.priceInFiat = Math.round(conversion * precision) / precision
+    let priceInBtc = priceInEth * ethToBtc
+    let priceInFiat = priceInBtc * fiatToBtc
+
+    _.merge(artwork.bcitem, blockchainItem)
+    artwork.bcitem.fiatCurrency = fiatCurrency
+    artwork.bcitem.fiatCurrencySymbol = fiatRate.symbol
+    artwork.bcitem.priceInEth = Math.round(priceInEth * 100000) / 100000
+    artwork.bcitem.priceInFiat = Math.round(priceInFiat * 100) / 100
+    artwork.bcitem.priceInBtc = Math.round(priceInBtc * 100000) / 100000
   },
 
   buildArtworkHash (artworkUrl) {

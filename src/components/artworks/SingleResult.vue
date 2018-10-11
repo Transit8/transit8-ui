@@ -14,7 +14,7 @@
         <p class="artwork-caption">Uploader: {{artwork.uploader}}</p>
         <p class="artwork-caption">Artist: {{artwork.artist}}</p>
         <p class="artwork-caption" v-if="artwork.saleData">SaleData: {{artwork.saleData.soid}} / {{artwork.saleData.amount}} {{artwork.saleData.fiatCurrency}} / {{artwork.saleData.amountInEther}}</p>
-        <p class="artwork-caption" v-if="artwork.bcitem">BCData: {{artwork.bcitem.owner}} / {{artwork.bcitem.price}}</p>
+        <p class="artwork-caption" v-if="artwork.bcitem">BCData: {{artwork.bcitem.owner}} / {{artwork.bcitem.price}} / {{artwork.bcitem.priceInFiat}} / {{artwork.bcitem.fiatCurrency}}</p>
         <p class="artwork-caption">Location: {{artwork.gaiaUrl}}</p>
     </div>
     <div class="col-sm-7 col-description">
