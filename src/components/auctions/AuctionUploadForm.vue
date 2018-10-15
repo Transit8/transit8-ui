@@ -21,13 +21,14 @@
         <li v-for="(error, index) in errors" :key="index" v-bind:error="error">{{ error }}</li>
       </ul>
     </p>
-    <div class="form-group">
-      <label>Title</label>
-      <input class="form-control" placeholder="Title of your auction" v-model="auction.title">
-    </div>
 
     <div class="form-group">
       <label>Auctioneer: {{username}}</label>
+    </div>
+
+    <div class="form-group">
+      <label>Title</label>
+      <input class="form-control" placeholder="Title of your auction" v-model="auction.title">
     </div>
 
     <div class="form-group">
@@ -58,6 +59,7 @@
     <div class="form-group">
       <button type="submit" class="btn btn-default" v-on:click.prevent="upload">Submit</button>
     </div>
+
   </form>
 </div>
 </template>
