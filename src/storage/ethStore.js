@@ -65,6 +65,7 @@ const ethStore = {
         },
         function (error) {
           notify.error({title: 'Blockchain Client.', text: 'Error fetching blockchain state.<br>' + error})
+          resolve({client: 'Error - client not connected', metaMaskNetwork: {networkName: 'not connected', networkId: -1}})
         })
       })
     },
@@ -101,13 +102,9 @@ const ethStore = {
           stompClient.subscribe('/topic/exchanges', function (blockchainEvent) {
             commit('blockchainEvent', blockchainEvent)
           })
-          resolve('Connected to blockchain events' + o)
+          resolve('Connected to blockchain events: ' + o)
         }, function (error) {
-          if (error.headers) {
-            console.log('[SysadmOnly] WebSocket Error: ' + error)
-          } else {
-            console.log('[SysadmOnly] WebSocket Error: ' + error)
-          }
+          resolve('Failed to connect to blockchain events: ' + error)
         })
       })
     },

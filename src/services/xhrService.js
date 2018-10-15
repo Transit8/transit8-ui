@@ -2,29 +2,18 @@ import axios from 'axios'
 
 const SERVER_URL = process.env.SEARCH_INDEX_URL
 
-/**
- *  The service is a client to the brightblock sever side grpc client.
-**/
 const xhrService = {
-  handleError: function (e) {
-    console.error('xhr error: ', e)
-    // if (e.response && e.response.data) {
-    //   throw e.response.data.details
-    // } else {
-    //   throw e.message
-    // }
-  },
   makeDirectCall: function (url) {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       axios.get(url)
         .then(response => {
           if (response.failed) {
-            Promise.reject(new Error(response.details))
+            reject(new Error(response.message))
           }
           resolve(response.data)
         })
         .catch(e => {
-          xhrService.handleError(e)
+          reject(new Error(e.message))
         })
     })
   },
@@ -39,13 +28,16 @@ const xhrService = {
     for (var key in args) {
       callInfo.url += '/' + args[key]
     }
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       axios.get(callInfo.url, { headers: callInfo.headers })
         .then(response => {
+          if (response.failed) {
+            reject(new Error(response.message))
+          }
           resolve(response.data.details)
         })
         .catch(e => {
-          xhrService.handleError(e)
+          reject(new Error(e.message))
         })
     })
   },
@@ -57,16 +49,16 @@ const xhrService = {
         'Content-Type': 'application/json'
       }
     }
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       axios.post(callInfo.url, data)
         .then(response => {
           if (response.failed) {
-            Promise.reject(new Error(response.details))
+            reject(new Error(response.message))
           }
           resolve(response.data.details)
         })
         .catch(e => {
-          xhrService.handleError(e)
+          reject(new Error(e.message))
         })
     })
   },

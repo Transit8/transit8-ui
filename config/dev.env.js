@@ -10,6 +10,6 @@ module.exports = merge(prodEnv, {
   SHAPE_SHIFT_URL: '"https://cors.shapeshift.io"',
   ETH_GATEWAY_URL: '"http://localhost:8191"',
   SEARCH_INDEX_URL: '"http://localhost:8191"',
-  ETHEREUM_NETWORK: '"Rinkby (4)"',
+  ETHEREUM_NETWORK: '"Ganache"',
   ETHEREUM_ABI: '\'' + JSON.stringify(abi) + '\'',
 })

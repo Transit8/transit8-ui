@@ -1,6 +1,6 @@
 <template>
 <div>
-  <notifications group="artwork-actions" />
+  <notifications position="bottom right" group="artwork-actions" />
   <div class="main">
     <navigation/>
     <settings-blockchain v-if="error" v-on:continue-onward="continueOnward" v-bind:metamask="metamask"></settings-blockchain>
