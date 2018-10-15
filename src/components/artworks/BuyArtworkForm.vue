@@ -4,8 +4,8 @@
       <div class="row  m-0">
         <div class="col-md-9 col-xs-12 product-price">
           <span class="price inline-block">{{artwork.bcitem.fiatCurrencySymbol}} {{artwork.bcitem.priceInFiat}} {{ artwork.bcitem.fiatCurrency }}</span>
-          <span class="price-small inline-block grey-medium">ETH {{ artwork.bcitem.priceInEth }}</span>
-          <span class="price-small inline-block grey-medium">BTC {{ artwork.bcitem.priceInBtc }}</span>
+          <span class="price-small inline-block grey-medium">{{ artwork.bcitem.priceInEth }} ETH</span>
+          <!-- <span class="price-small inline-block grey-medium">BTC {{ artwork.bcitem.priceInBtc }}</span> -->
         </div>
         <button class="btn btn-block black action-button text-uppercase" :disabled="!purchaseState.canBuy" v-bind:class="{ 'yellow-bg': purchaseState.canBuy, 'grey-bg': !purchaseState.canBuy }"  @click="buyArtwork()">buy</button>
       </div>

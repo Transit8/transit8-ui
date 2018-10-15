@@ -8,7 +8,7 @@ const utils = {
   },
 
   convertPrices (artwork, blockchainItem) {
-    if (!blockchainItem || !blockchainItem.price) {
+    if (!blockchainItem) {
       return
     }
     if (!artwork.bcitem) {
