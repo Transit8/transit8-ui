@@ -1,8 +1,35 @@
 import SHA256 from 'crypto-js/sha256'
 import _ from 'lodash'
 import store from '@/storage/store'
+import moment from 'moment'
 
 const utils = {
+  dt_Offset (date) {
+    let message = ''
+    let now = moment({})
+    let starts = moment(date)
+    let days = starts.diff(now, 'days')
+    if (days > 0) {
+      message += days + ' days '
+    }
+    starts = starts.subtract(days, 'day')
+    let hours = starts.diff(now, 'hours')
+    if (hours > 0) {
+      message += hours + ' hours '
+    }
+    starts = starts.subtract(hours, 'hour')
+    let mins = starts.diff(now, 'minutes')
+    if (mins > 0) {
+      message += mins + ' mins '
+    }
+    starts = starts.subtract(mins, 'minute')
+    let seconds = starts.diff(now, 'seconds')
+    if (seconds > 0) {
+      message += seconds + ' secs '
+    }
+    return message
+  },
+
   isDebugMode () {
     return store.state.constants.environment === 'development'
   },

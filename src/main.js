@@ -16,6 +16,9 @@ import { CONSTANTS } from '@/storage/constants'
 import notify from '@/services/notify'
 import utils from '@/services/utils'
 import ethereumService from '@/services/ethereumService'
+import Datetime from 'vue-datetime'
+// You need a specific loader for CSS files
+import 'vue-datetime/dist/vue-datetime.css'
 
 // import Vuelidate from 'vuelidate'
 Vue.config.productionTip = false
@@ -31,6 +34,8 @@ Vue.use(PrismicVue, {
   endpoint: 'https://sybellaio.cdn.prismic.io/api/v2',
   linkResolver
 })
+Vue.use(Datetime)
+
 store.commit('constants', CONSTANTS)
 store.dispatch('myAccountStore/fetchMyAccount')
 store.dispatch('ethStore/fetchClientState').then((clientState) => {
@@ -45,6 +50,7 @@ store.dispatch('ethStore/fetchClientState').then((clientState) => {
     })
   })
 })
+store.dispatch('auctionsStore/fetchMyAuctions')
 store.dispatch('conversionStore/fetchShapeShiftCryptoRate', 'eth_btc')
 store.dispatch('conversionStore/fetchFiatRates')
 

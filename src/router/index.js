@@ -17,8 +17,8 @@ import MyArtworks from '../pages/MyArtworks'
 import MyArtworkUpload from '../pages/MyArtworkUpload'
 import MyArtworkUpdate from '../pages/MyArtworkUpdate'
 import Auctions from '../pages/Auctions'
-import AuctionsContainer from '../components/auctions/AuctionsContainer'
-import AuctionPreview from '../pages/AuctionPreview'
+import AuctionList from '../components/auctions/AuctionList'
+import AuctionManagement from '../pages/AuctionManagement'
 import AuctionUpload from '../pages/AuctionUpload'
 import AuctionUpdate from '../pages/AuctionUpdate'
 import Story from '../pages/Story'
@@ -156,16 +156,16 @@ const router = new Router({
       children: [
         {
           path: '',
-          component: AuctionsContainer,
+          component: AuctionList,
         }, {
           path: '/auctions/update/:auctionId',
           component: AuctionUpdate,
         }, {
-          path: '/auction/upload',
+          path: '/auctions/upload',
           component: AuctionUpload,
         }, {
-          path: '/auction/:auctionId',
-          component: AuctionPreview,
+          path: '/auctions/manage/:auctionId',
+          component: AuctionManagement,
         }
       ]
     },

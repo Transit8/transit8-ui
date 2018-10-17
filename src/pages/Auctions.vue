@@ -4,7 +4,7 @@
       <div class="col-md-2 pt-80">
         <ul>
           <li>
-            <router-link to="/auction/upload">
+            <router-link to="/auctions/upload">
               New Auction
             </router-link>
           </li>
@@ -33,11 +33,9 @@ export default {
     return {
     }
   },
-  mounted () {
+  created () {
   },
   methods: {
   },
-  computed: {
-  }
 }
 </script>

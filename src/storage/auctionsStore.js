@@ -3,68 +3,68 @@ import auctionsService from '@/services/auctionsService'
 import _ from 'lodash'
 import notify from '@/services/notify'
 import store from '@/storage/store'
+import moment from 'moment'
 
 const auctionsStore = {
   namespaced: true,
   state: {
-    auctions: [],
+    myAuctions: [],
   },
   getters: {
-    numberAuctionsCurrent: (state, getters) => {
-      return getters.current.length
+    myAuctionsPastCount: (state, getters) => {
+      let now = moment({})
+      return state.myAuctions.filter(auction => moment(auction.startDate).isBefore(now)).length
     },
-    numberAuctionsPast: (state, getters) => {
-      return getters.past.length
+    myAuctionsPast: (state, getters) => {
+      let now = moment({})
+      return state.myAuctions.filter(auction => moment(auction.startDate).isBefore(now))
     },
-    editable: (state, getters) => (id) => {
-      let auction = getters.auction(id)
+    myAuctionsFuture: (state, getters) => {
+      let now = moment({})
+      return state.myAuctions.filter(auction => moment(auction.startDate).isAfter(now))
+    },
+    myAuctionsFutureCount: (state, getters) => {
+      let now = moment({})
+      return state.myAuctions.filter(auction => moment(auction.startDate).isAfter(now)).length
+    },
+    myAuction: (state) => (auctionId) => {
+      if (!auctionId) {
+        return
+      }
       let userProfile = store.getters['myAccountStore/getMyProfile']
-      return (userProfile.username === auction.owner)
-    },
-    auction: (state) => (id) => {
-      let auctions = state.auctions.filter(myArtwork => auction.id === id)
-      if (auctions && auctions.length > 0) {
-        return auctions[0]
-      } else {
-        return {}
+      let myAuctions = state.myAuctions.filter(auction => auction.auctionId === auctionId)
+      if (myAuctions && myAuctions.length > 0) {
+        let auction = myAuctions[0]
+        if (auction.administrator === userProfile.username) {
+          return auction
+        }
       }
     },
-    current: (state) => {
-      let username = store.getters['myAccountStore/getMyProfile'].username
-      return state.auctions.filter(auction => username === auction.owner)
-    },
-    past: state => {
-      let username = store.getters['myAccountStore/getMyProfile'].username
-      return state.auctions.filter(auction => username !== auction.owner)
-    }
   },
   mutations: {
-    myArtworks (state, auctions) {
-      state.auctions = auctions
+    myAuctions (state, auctions) {
+      state.myAuctions = auctions
     },
-    addAuction (state, auction) {
-      if (!state.auctions) {
-        state.auctions = []
-      }
-      let index = _.findIndex(state.auctions, function (o) {
-        return o.id === auction.id
+    addMyAuction (state, auction) {
+      let index = _.findIndex(state.myAuctions, function (o) {
+        return o.auctionId === auction.auctionId
       })
       if (index === -1) {
-        state.auctions.splice(0, 0, auction)
+        state.myAuctions.splice(0, 0, auction)
       } else {
-        state.auctions.splice(index, 1, auction)
+        state.myAuctions.splice(index, 1, auction)
       }
     }
   },
   actions: {
-    deleteAuction ({ commit, state }, id) {
-      auctionsService.deleteAuction(id, function (result) {
-        let auctions = state.auctions
-        let index = _.findIndex(auctions, function (o) {
-          return o.id === result.id
+    deleteMyAuction ({ commit, state }, auctionId) {
+      auctionsService.deleteMyAuction(auctionId, function (result) {
+        let myAuctions = state.myAuctions
+        let index = _.findIndex(myAuctions, function (o) {
+          return o.auctionId === result.auctionId
         })
-        auctions.splice(index, 1)
-        commit('auctions', auctions)
+        myAuctions.splice(index, 1)
+        commit('myAuctions', myAuctions)
         notify.info({title: 'Delete Auction.', text: result.message})
       },
       function (error) {
@@ -72,17 +72,21 @@ const auctionsStore = {
         console.log('Error deleting auction.', error)
       })
     },
-    fetchAuctions ({ commit, state }) {
-      auctionsService.getAuctions(function (myArtwork) {
-        commit('auctions', auctions)
+
+    fetchMyAuctions ({ commit, state }) {
+      auctionsService.getMyAuctions(function (myAuctions) {
+        commit('myAuctions', myAuctions)
+      },
+      function (error) {
+        console.log('Error fetching auction: ', error)
       })
     },
 
-    uploadAuction ({ commit, state }, auction) {
+    uploadAuction ({ commit, state }, myAuction) {
       return new Promise((resolve, reject) => {
-        auctionsService.uploadAuction(auction, function (auction) {
-          commit('addAuction', auction)
-          resolve(auction)
+        auctionsService.uploadAuction(myAuction, function (myAuction) {
+          commit('addMyAuction', myAuction)
+          resolve(myAuction)
         },
         function (error) {
           console.log('Error uploading auction: ', error)
@@ -91,11 +95,11 @@ const auctionsStore = {
       })
     },
 
-    updateAuction ({ commit, state }, auction) {
+    updateAuction ({ commit, state }, myAuction) {
       return new Promise((resolve, reject) => {
-        auctionsService.updateAuction(auction, function (auction) {
-          commit('addAuction', auction)
-          resolve(auction)
+        auctionsService.updateAuction(myAuction, function (myAuction) {
+          commit('addMyAuction', myAuction)
+          resolve(myAuction)
         },
         function (error) {
           console.log('Error uploading auction: ', error)

@@ -27,8 +27,20 @@
     </div>
 
     <div class="form-group">
+      <label>Administrator: {{username}}</label>
+      <p>Only the auction administrator is able to change information about the auction.</p>
+    </div>
+
+    <div class="form-group">
       <label>Title</label>
       <input class="form-control" placeholder="Title of your auction" v-model="auction.title">
+    </div>
+
+    <div class="form-group">
+      <datetime type="datetime" v-model="auction.startDate" input-id="startDate">
+        <label for="startDate" slot="before">Auction Starts&nbsp;&nbsp;&nbsp;</label>
+        <input id="startDate" class="form-control">
+      </datetime>
     </div>
 
     <div class="form-group">
@@ -66,27 +78,38 @@
 
 <script>
 import moment from 'moment'
+import { Datetime } from 'vue-datetime'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
   name: 'AuctionUploadForm',
-  components: { },
+  components: {datetime: Datetime},
   props: ['auctionId', 'mode'],
   data () {
     return {
       isModalActive: false,
       errors: [],
       auction: {
-        auctionId: null,
-        title: 'Auction ' + moment({}).valueOf(),
-        description: 'Decentralised auction of registered artworks: ' + moment({}).valueOf(),
-        keywords: 'Photography,Illustration.3D,2D,Film & Video,Mix-media',
+        title: 'Egyptian Artworks Auction',
+        description: 'Egyptian artifacts auctioned from a private collection',
+        keywords: 'Egypt,Ancient,Sculpture',
         auctioneer: '',
         privacy: 'private',
+        sellingList: []
       },
     }
   },
   mounted () {
+    let auction = this.$store.getters['auctionsStore/myAuction'](this.auctionId)
+    if (auction) {
+      this.auction = auction
+    } else {
+      let daysTillStart = Math.floor(Math.random() * 14) + 7
+      let dd = moment({}).add(daysTillStart, 'days')
+      dd.hour(10)
+      dd.minute(0)
+      this.auction.startDate = dd.format() // '2018-10-18T11:05:00.000Z'
+    }
   },
   computed: {
     username () {
@@ -98,12 +121,17 @@ export default {
     upload: function () {
       if (this.validate()) {
         this.isModalActive = true
+        let profile = this.$store.getters['myAccountStore/getMyProfile']
+        this.auction.auctioneer = profile.username
+        this.auction.administrator = profile.username
         if (this.mode === 'update') {
+          this.auction.auctionId = this.auctionId
           this.$store.dispatch('auctionsStore/updateAuction', this.auction).then((auction) => {
             this.auction = auction
             this.$router.push('/auctions')
           })
         } else {
+          this.auction.auctionId = moment({}).valueOf()
           this.$store.dispatch('auctionsStore/uploadAuction', this.auction).then((auction) => {
             this.auction = auction
             this.$router.push('/auctions')
@@ -121,6 +149,9 @@ export default {
       this.errors = []
       if (!this.auction.title) {
         this.errors.push('title required.')
+      }
+      if (moment(this.auction.startDate).isBefore(moment({}))) {
+        this.errors.push('StartDate before now.')
       }
       if (!this.auction.description) {
         this.errors.push('description required.')
