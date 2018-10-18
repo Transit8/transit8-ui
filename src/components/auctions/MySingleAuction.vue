@@ -5,7 +5,7 @@
   <p>Starts: {{startsIn(auction.startDate)}}</p>
   <div class="row" v-if="future">
     <div class="col-sm-3" v-if="!managing">
-      <router-link :to="manageUrl">manage auction ({{auction.sellingList.length}} items)</router-link>
+      <router-link :to="manageUrl">manage auction ({{sellingItemsSize}} items)</router-link>
     </div>
     <div class="col-sm-3 pull-right" v-if="future">
       <router-link :to="updateUrl">edit</router-link> |
@@ -45,6 +45,10 @@ export default {
   computed: {
     myAuctionsFuture () {
       return this.$store.getters['auctionsStore/myAuctionsFuture']
+    },
+    sellingItemsSize () {
+      let sellingItems = this.$store.getters['myArtworksStore/auctioning'](this.auction.auctionId)
+      return sellingItems.length
     },
     myAuctionsPast () {
       return this.$store.getters['auctionsStore/myAuctionsPast']

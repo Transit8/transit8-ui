@@ -121,7 +121,7 @@ import notify from '@/services/notify'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
-  name: 'MyArtworkSetPrice',
+  name: 'SellViaBuyNow',
   data () {
     return {
       errors: [],

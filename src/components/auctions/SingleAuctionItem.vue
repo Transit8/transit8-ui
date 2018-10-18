@@ -1,9 +1,13 @@
 <template>
 <div class="col-md-12">
   <div class="media">
-    <img :src="item.image" :alt="item.title" class="mr-3"/>
+    <div class="media-left">
+      <a href="#">
+        <img :src="item.image" :alt="item.title" class="media-object" style="max-width: 150px"/>
+      </a>
+    </div>
     <div class="media-body">
-      <h5 class="mt-0">{{item.title}}</h5>
+      <h4 class="media-heading">{{item.title}}</h4>
       {{item.description}}
       <hr>
       {{item.saleData}}

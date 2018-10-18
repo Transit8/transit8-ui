@@ -14,7 +14,7 @@ const myArtworksStore = {
   getters: {
     bcstatus: (state, getters) => (id) => {
       let artwork = getters.myArtwork(id)
-      if (!artwork.bcitem) {
+      if (!artwork.bcitem || artwork.bcitem.itemIndex < 0) {
         artwork.bcitem = {
           status: 'new',
           itemIndex: -1
@@ -48,6 +48,9 @@ const myArtworksStore = {
     sold: state => {
       let username = store.getters['myAccountStore/getMyProfile'].username
       return state.myArtworks.filter(artwork => username !== artwork.owner)
+    },
+    auctioning: (state) => (auctionId) => {
+      return state.myArtworks.filter(artwork => auctionId === artwork.saleData.auctionId)
     }
   },
   mutations: {

@@ -42,14 +42,7 @@ export default {
       return this.$store.getters['myArtworksStore/unsold']
     },
     sellingItems () {
-      let auction = this.$store.getters['auctionsStore/myAuction'](this.auctionId)
-      if (auction && auction.sellingItems) {
-        return auction.sellingItems
-      } else {
-        return {
-          sellingItems: {}
-        }
-      }
+      return this.$store.getters['myArtworksStore/auctioning'](this.auctionId)
     },
   },
   methods: {
