@@ -4,7 +4,7 @@
     <div class="container wide">
       <div class="row">
         <div class="col-sm-12 pt-120">
-          <h1 class="innerpage">Explore & Collect Art on Sybella</h1>
+          <h1 class="innerpage">Explore & Collect Art on Transit8</h1>
         </div>
         </div>
         <div class="row">

@@ -8,7 +8,7 @@
           <p class="subtext">In order to experience the amazing technology that gives you access to a truly decentralized network, take a minute to install <a href="https://metamask.io/" target="_blank">Meta Mask</a> and <a href="https://blockstack.org/" target="_blank">Blockstack</a>.</p>
           <p>Think of Meta Mask  as your online wallet where you keep your cryptocurrency.</p>
           <p>We admit it takes some time to figure it out, but promise it’s easier than you think. Besides, all the cool kids are doing it!</p>
-          <p>Blockstack is a piece of next generation internet - one that allows you to be in full control of your own data. With this technology, you will never have to worry about becoming someone’s product - no ads and no user information gathering. We at Sybella believe that all internet should be like this.</p>
+          <p>Blockstack is a piece of next generation internet - one that allows you to be in full control of your own data. With this technology, you will never have to worry about becoming someone’s product - no ads and no user information gathering. We at Transit8 believe that all internet should be like this.</p>
           <p>Know only some of these words? Don’t worry - people in 1990 felt the same way about the internet!</p>
           <button class="btn btn-block yellow-bg text-uppercase" v-on:click="$emit('continue-onward')">Click here to continue!</button>
         </div>

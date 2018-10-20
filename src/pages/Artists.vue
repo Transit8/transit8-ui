@@ -3,7 +3,7 @@
     <div class="container wide pt-120">
       <div class="row">
         <div class="col-sm-12">
-          <h2 class="h4">Artists at Sybella</h2>
+          <h2 class="h4">Artists at Transit8</h2>
         </div>
         <div class="col-sm-12 pt-75 pt-30m">
           <artists-list :artists="artists"/>

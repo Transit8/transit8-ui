@@ -3,7 +3,7 @@
     <div class="container wide pt-80">
       <div class="row">
         <div class="col-sm-12">
-          <h2 class="section-title">Artworks at Sybella</h2>
+          <h2 class="section-title">Artworks at Transit8</h2>
         </div>
       </div>
       <div class="row" v-for="(artworkChunked, index) of artworksChunked" :key="index">

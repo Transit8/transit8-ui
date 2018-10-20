@@ -20,7 +20,7 @@
       <div class="row footer-bottom clearfix">
         <div class="col-md-7 col-sm-6">
           <ul class="list-inline">
-            <li class="text-uppercase "><span class="copy">&copy;</span>2018 Sybella</li>
+            <li class="text-uppercase "><span class="copy">&copy;</span>2018 Transit8</li>
             <li><router-link to="/privacy">Privacy Policy</router-link></li>
             <li>Karl Marx Allee 98, 10243 Berlin, DE</li>
           </ul>

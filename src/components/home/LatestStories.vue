@@ -3,7 +3,7 @@
     <div class="container wide pt-80">
       <div class="row">
         <div class="col-xs-12">
-          <h2 class="section-title">Sybella Stories</h2>
+          <h2 class="section-title">Transit8 Stories</h2>
         </div>
         <div class="spacer-small"></div>
       </div>
