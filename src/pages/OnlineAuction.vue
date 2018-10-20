@@ -55,10 +55,6 @@ export default {
     updateUrl () {
       return `/my-auctions/update/${this.auction.auctionId}`
     },
-    debugMode () {
-      let debugMode = this.$store.getters['isDebugMode']
-      return debugMode
-    },
     sellingItems () {
       return this.$store.getters['myArtworksStore/auctioning'](this.auctionId)
     },

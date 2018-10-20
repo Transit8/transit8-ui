@@ -99,7 +99,6 @@
       <div class="form-group">
         Display in auction
         <select class="form-control" v-model="auctionId">
-          <option value="-1">Laters</option>
           <option v-for="(auction,key) in auctions" :key="key" :value="auction.auctionId">{{auction.title}}</option>
         </select>
 

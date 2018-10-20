@@ -23,7 +23,7 @@
             </router-link>
           </li>
           <li>
-            <router-link to="/my-auctions" class="navbar-item">
+            <router-link to="/my-auctions" class="navbar-item" v-if="debugMode">
               My Auctions
             </router-link>
           </li>
@@ -103,6 +103,9 @@ export default {
     },
     loggedIn () {
       return this.$store.state.myAccountStore.myProfile.loggedIn
+    },
+    debugMode () {
+      return this.$store.getters['isDebugMode']
     },
   },
   methods: {

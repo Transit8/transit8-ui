@@ -34,7 +34,6 @@
 export default {
   name: 'SingleResult',
   props: {
-    debugMode: false,
     artwork: {
       type: Object,
       default () {
@@ -49,6 +48,9 @@ export default {
   computed: {
     registerUrl () {
       return `/provenance/register/${this.artwork.id}`
+    },
+    debugMode () {
+      return this.$store.getters['isDebugMode']
     },
     editUrl () {
       return `/provenance/edit/${this.artwork.id}`

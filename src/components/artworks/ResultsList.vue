@@ -2,7 +2,7 @@
   <div>
     <div v-for="(chunkedArtwork, index) of chunkedArtworks" :key="index">
     <single-result v-for="(artwork, index) of chunkedArtwork" :key="index" :artwork="artwork"
-                    :width="artworkWidth" :debugMode="debugMode"/>
+                    :width="artworkWidth"/>
     </div>
     <button v-if="showLoadButton" class="button btn btn-load" id="load-more" @click.prevent="loadMore()">
       Load more
@@ -19,7 +19,6 @@ export default {
   name: 'ResultsList',
   components: { SingleResult },
   props: {
-    debugMode: false,
     artworks: {
       type: Array,
       default () {

@@ -43,10 +43,6 @@ export default {
     myAuctionsPastCount () {
       return this.$store.getters['myAuctionsStore/myAuctionsPastCount']
     },
-    debugMode () {
-      let debugMode = this.$store.getters['isDebugMode']
-      return debugMode
-    }
   }
 }
 </script>

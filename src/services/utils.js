@@ -30,10 +30,6 @@ const utils = {
     return message
   },
 
-  isDebugMode () {
-    return store.state.constants.environment === 'development'
-  },
-
   convertPrices (artwork, blockchainItem) {
     if (!blockchainItem) {
       return

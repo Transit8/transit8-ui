@@ -14,7 +14,6 @@ import '@/assets/css/main.scss'
 import store from '@/storage/store'
 import { CONSTANTS } from '@/storage/constants'
 import notify from '@/services/notify'
-import utils from '@/services/utils'
 import ethereumService from '@/services/ethereumService'
 import Datetime from 'vue-datetime'
 // You need a specific loader for CSS files
@@ -51,7 +50,7 @@ store.dispatch('ethStore/fetchClientState').then((clientState) => {
     store.dispatch('myArtworksStore/fetchMyArtworks')
     store.dispatch('artworkSearchStore/fetchRegisteredArtworks', blockchainItems)
     store.dispatch('ethStore/receiveBlockchainEvents').then((message) => {
-      if (utils.isDebugMode()) {
+      if (store.getters['isDebugMode']) {
         notify.info({title: 'Blockchain Events.', text: message})
       }
     })

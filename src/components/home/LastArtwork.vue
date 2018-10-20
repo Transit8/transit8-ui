@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import utils from '@/services/utils'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -21,8 +20,8 @@ export default {
   },
   computed: {
     debugMode () {
-      return utils.isDebugMode()
-    }
+      return this.$store.getters['isDebugMode']
+    },
   }
 }
 </script>

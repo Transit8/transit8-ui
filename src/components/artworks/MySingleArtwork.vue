@@ -82,9 +82,7 @@ export default {
       return this.$store.getters['myArtworksStore/editable'](this.artwork.id)
     },
     debugMode () {
-      // process.env.DEBUG_MODE = false
-      console.log(process.env)
-      return false // process.env.DEBUG_MODE
+      return this.$store.getters['isDebugMode']
     },
     canSell () {
       let bcitem = this.artwork.bcitem
