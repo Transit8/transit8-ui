@@ -26,7 +26,6 @@
     <!-- /#pdp slider -->
 
     <buy-artwork-form :purchaseState="purchaseState" :artwork="artwork" @buy="buyArtwork()" v-if="forSale"/>
-    <bid-artwork-form :purchaseState="purchaseState" :artwork="artwork" @bid="bidArtwork($event)" v-if="forAuction"/>
     <!-- /#pdp-action -->
 
     <about-artwork :aboutArtwork="aboutArtwork" ref="about"/>
@@ -80,34 +79,39 @@ export default {
   },
   data () {
     return {
+      artwork: {
+        type: Object,
+        default () {
+          return {
+            bcitem: {}
+          }
+        }
+      },
       message: '',
       sliderImage: 0,
     }
   },
   created () {
     this.artworkId = Number(this.$route.params.artworkId)
-    this.$store.dispatch('artworkSearchStore/fetchArtwork', this.artworkId)
+    this.$store.dispatch('artworkSearchStore/fetchArtwork', this.artworkId).then((artwork) => {
+      this.artwork = artwork
+      if (artwork.bcitem && artwork.bcitem.itemIndex > -1) {
+        // check for redirect to auctions...
+        if (artwork.saleData.auctionId) {
+          this.$router.push('/online-auction/' + artwork.saleData.auctionId)
+        }
+      }
+    })
   },
   computed: {
     artist () {
       let artwork = this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
       return this.$store.getters['userProfilesStore/getProfile'](artwork.artist)
     },
-    artwork () {
-      return this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
-    },
     forSale () {
       let artwork = this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
       if (artwork.bcitem && artwork.saleData) {
         return (artwork.bcitem.itemIndex > -1 && artwork.bcitem.price > 0)
-      } else {
-        return false
-      }
-    },
-    forAuction () {
-      let artwork = this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
-      if (artwork.bcitem && artwork.saleData) {
-        return (artwork.bcitem.itemIndex > -1 && artwork.bcitem.price > 0 && artwork.bcitem.inAuction)
       } else {
         return false
       }

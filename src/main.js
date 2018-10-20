@@ -19,6 +19,7 @@ import ethereumService from '@/services/ethereumService'
 import Datetime from 'vue-datetime'
 // You need a specific loader for CSS files
 import 'vue-datetime/dist/vue-datetime.css'
+import VModal from 'vue-js-modal'
 
 // import Vuelidate from 'vuelidate'
 Vue.config.productionTip = false
@@ -35,8 +36,14 @@ Vue.use(PrismicVue, {
   linkResolver
 })
 Vue.use(Datetime)
+Vue.use(VModal, {
+  scrollable: true,
+  resizable: true,
+  draggable: true,
+})
 
 store.commit('constants', CONSTANTS)
+store.dispatch('conversionStore/fetchFiatRates')
 store.dispatch('myAccountStore/fetchMyAccount')
 store.dispatch('ethStore/fetchClientState').then((clientState) => {
   ethereumService.connectToBlockChain(clientState)
@@ -50,9 +57,8 @@ store.dispatch('ethStore/fetchClientState').then((clientState) => {
     })
   })
 })
-store.dispatch('auctionsStore/fetchMyAuctions')
+store.dispatch('myAuctionsStore/fetchMyAuctions')
 store.dispatch('conversionStore/fetchShapeShiftCryptoRate', 'eth_btc')
-store.dispatch('conversionStore/fetchFiatRates')
 
 /* eslint-disable no-new */
 new Vue({

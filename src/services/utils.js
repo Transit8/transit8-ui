@@ -129,11 +129,13 @@ const utils = {
       artist: artwork.artist,
       editions: (artwork.editions) ? artwork.editions : 1,
     }
+
     if (artwork.saleData) {
       indexData.saleData = artwork.saleData
     } else {
       indexData.saleData = utils.buildInitialSaleData()
     }
+
     let provData = {
       id: artwork.id,
       images: artwork.images,

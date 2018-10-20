@@ -4,13 +4,13 @@
       <div class="col-md-2 pt-80">
         <ul>
           <li>
-            <router-link to="/auctions/upload">
+            <router-link to="/my-auctions/upload">
               New Auction
             </router-link>
           </li>
           <li>
-            <router-link to="/auctions">
-              Auctions
+            <router-link to="/my-auctions">
+              My Auctions
             </router-link>
           </li>
         </ul>
@@ -27,7 +27,7 @@
 
 // noinspection JSUnusedGlobalSymbols
 export default {
-  name: 'Auctions',
+  name: 'MyAuctions',
   components: { },
   data () {
     return {

@@ -4,9 +4,6 @@
     <!-- TO DO: in design, artwork caption is artist name -->
     <p class="art-title">{{artwork.title}}</p>
     <p class="artwork-caption">{{artwork.description}}</p>
-
-    <router-link :to="url" class="artwork-action" v-if="artwork.forSale">Buy</router-link>
-    <router-link :to="url" class="artwork-action" v-if="artwork.forAuction">Bid</router-link>
   </router-link>
 </template>
 

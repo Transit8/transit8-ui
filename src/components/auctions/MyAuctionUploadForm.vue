@@ -14,7 +14,7 @@
     </uiv-modal>
   </div>
 
-  <form class="">
+  <form>
     <p v-if="errors.length" :key="errors.length">
       <b>Please correct the following error(s):</b>
       <ul>
@@ -37,9 +37,16 @@
     </div>
 
     <div class="form-group">
-      <datetime type="datetime" v-model="auction.startDate" input-id="startDate">
+      <datetime type="datetime" v-model="startDate" input-id="startDate">
         <label for="startDate" slot="before">Auction Starts&nbsp;&nbsp;&nbsp;</label>
         <input id="startDate" class="form-control">
+      </datetime>
+    </div>
+
+    <div class="form-group">
+      <datetime type="datetime" v-model="endDate" input-id="endDate">
+        <label for="endDate" slot="before">Auction Ends&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        <input id="endDate" class="form-control">
       </datetime>
     </div>
 
@@ -82,13 +89,15 @@ import { Datetime } from 'vue-datetime'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
-  name: 'AuctionUploadForm',
+  name: 'MyAuctionUploadForm',
   components: {datetime: Datetime},
   props: ['auctionId', 'mode'],
   data () {
     return {
       isModalActive: false,
       errors: [],
+      startDate: null,
+      endDate: null,
       auction: {
         title: 'Egyptian Artworks Auction',
         description: 'Egyptian artifacts auctioned from a private collection',
@@ -100,15 +109,18 @@ export default {
     }
   },
   mounted () {
-    let auction = this.$store.getters['auctionsStore/myAuction'](this.auctionId)
+    let auction = this.$store.getters['myAuctionsStore/myAuction'](this.auctionId)
     if (auction) {
       this.auction = auction
+      this.startDate = moment(auction.startDate).format()
+      this.endDate = moment(auction.endDate).format()
     } else {
-      let daysTillStart = Math.floor(Math.random() * 14) + 7
-      let dd = moment({}).add(daysTillStart, 'days')
+      // let daysTillStart = Math.floor(Math.random() * 14) + 7
+      let dd = moment({}).add(2, 'days')
       dd.hour(10)
       dd.minute(0)
-      this.auction.startDate = dd.format() // '2018-10-18T11:05:00.000Z'
+      this.startDate = dd.format()
+      this.endDate = dd.add(2, 'days').format()
     }
   },
   computed: {
@@ -124,17 +136,20 @@ export default {
         let profile = this.$store.getters['myAccountStore/getMyProfile']
         this.auction.auctioneer = profile.username
         this.auction.administrator = profile.username
+        this.auction.auctionType = 'webcast'
+        this.auction.startDate = moment(this.startDate).valueOf()
+        this.auction.endDate = moment(this.endDate).valueOf()
         if (this.mode === 'update') {
           this.auction.auctionId = this.auctionId
-          this.$store.dispatch('auctionsStore/updateAuction', this.auction).then((auction) => {
+          this.$store.dispatch('myAuctionsStore/updateAuction', this.auction).then((auction) => {
             this.auction = auction
-            this.$router.push('/auctions')
+            this.$router.push('/my-auctions')
           })
         } else {
           this.auction.auctionId = moment({}).valueOf()
-          this.$store.dispatch('auctionsStore/uploadAuction', this.auction).then((auction) => {
+          this.$store.dispatch('myAuctionsStore/uploadAuction', this.auction).then((auction) => {
             this.auction = auction
-            this.$router.push('/auctions')
+            this.$router.push('/my-auctions')
           })
         }
       }

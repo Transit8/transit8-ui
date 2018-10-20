@@ -10,22 +10,20 @@
         <p class="artwork-caption">{{artwork.description}}</p>
         <p class="artwork-caption">Artist: {{artistProfile.name}}</p>
         <div class="artwork-caption" v-if="canSell">
+          <p>Selling Options</p>
           <p>
-            <a v-on:click="sellBuyNowActive = !sellBuyNowActive">sell direct</a>
-          </p>
-          <p class="artwork-caption" v-if="canSell">
-            <router-link :to="auctionUrl" v-if="artwork.saleData.auctionId">go to auction</router-link>
-            | <a v-on:click="sellAuctionActive = !sellAuctionActive" @closeViaAuction="closeSellAuction">auction settings</a>
+            <a v-on:click="sellBuyNowActive = !sellBuyNowActive">sell via buy now</a> |
+            <a v-on:click="sellAuctionActive = !sellAuctionActive" @closeViaAuction="closeSellAuction">sell via auction</a>
+            <router-link :to="auctionUrl" v-if="artwork.saleData.auctionId">| go to auction</router-link>
           </p>
         </div>
 
+        <sell-via-buy-now v-if="sellBuyNowActive" :artwork="artwork"/>
         <sell-via-auction v-if="sellAuctionActive" :artwork="artwork"/>
 
         <router-link :to="registerUrl" class="artwork-action"  v-if="status === 'new' && !sold">Register</router-link>
         <router-link :to="setPriceUrl" class="artwork-action"  v-if="status !== 'new' && !sold">Set Price</router-link>
         <router-link :to="editUrl" class="artwork-action" v-if="editable">Edit</router-link>
-        <router-link :to="url" class="artwork-action" v-if="artwork.forSale">Buy</router-link>
-        <router-link :to="url" class="artwork-action" v-if="artwork.forAuction">Bid</router-link>
         <br/>
         <div v-if="debugMode">
             <p class="artwork-caption">Owner: {{artwork.owner}}</p>
@@ -44,11 +42,12 @@
 
 <script>
 import SellViaAuction from './SellViaAuction'
+import SellViaBuyNow from './SellViaBuyNow'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
   name: 'MySingleArtwork',
-  components: { SellViaAuction },
+  components: { SellViaBuyNow, SellViaAuction },
   props: {
     debugMode: false,
     sold: true,
@@ -103,7 +102,7 @@ export default {
       return `/my-artworks/register/${this.artwork.id}`
     },
     auctionUrl () {
-      return `/auctions/manage/${this.artwork.saleData.auctionId}`
+      return `/my-auctions/manage/${this.artwork.saleData.auctionId}`
     },
     setPriceUrl () {
       return `/my-artworks/set-price/${this.artwork.id}`

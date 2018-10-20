@@ -4,7 +4,7 @@
     <div>
       <div class="row">
         <h1>Update an Auction</h1>
-        <auction-upload-form :auctionId="auctionId" :mode="'update'"/>
+        <my-auction-upload-form :auctionId="auctionId" :mode="'update'"/>
       </div>
     </div>
   </section>
@@ -12,13 +12,13 @@
 </template>
 
 <script>
-import AuctionUploadForm from '../components/auctions/AuctionUploadForm'
+import MyAuctionUploadForm from '../components/auctions/MyAuctionUploadForm'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
-  name: 'AuctionUpload',
+  name: 'MyAuctionUpload',
   components: {
-    AuctionUploadForm
+    MyAuctionUploadForm
   },
   data () {
     return {

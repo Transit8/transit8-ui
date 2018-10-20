@@ -51,6 +51,9 @@ const myArtworksStore = {
     },
     auctioning: (state) => (auctionId) => {
       return state.myArtworks.filter(artwork => auctionId === artwork.saleData.auctionId)
+    },
+    available: (state) => (auctionId) => {
+      return state.myArtworks.filter(artwork => auctionId !== artwork.saleData.auctionId)
     }
   },
   mutations: {

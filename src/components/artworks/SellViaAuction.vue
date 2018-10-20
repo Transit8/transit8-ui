@@ -1,12 +1,12 @@
 <template>
   <div class="modal-dialog" role="document">
+  <form @submit.prevent="setPrice">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Bidding Data</h4>
+        <h4 class="modal-title">Sell via Auction</h4>
       </div>
       <div class="modal-body">
-        <form @submit.prevent="setPrice">
           <p>This item can be bought via online bidding - the reserve is the minimum price you will accept.</p>
           <p v-if="errors.length" :key="errors.length">
             <b>Please correct the following error(s):</b>
@@ -37,16 +37,13 @@
               </select>
             </div>
           </div>
-          <div class="form-group">
-            <button type="submit" class="btn btn-default" @click.prevent="setPrice">Submit</button>
-          </div>
-        </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-primary" @click.prevent="setPrice">Save</button>
       </div>
     </div><!-- /.modal-content -->
+    </form>
   </div><!-- /.modal-dialog -->
 </template>
 
@@ -81,7 +78,7 @@ export default {
       return this.$store.getters['conversionStore/getFiatRates']
     },
     auctions () {
-      return this.$store.getters['auctionsStore/myAuctionsFuture']
+      return this.$store.getters['myAuctionsStore/myAuctionsFuture']
     },
     conversionMessage () {
       let fiatRate = this.$store.getters['conversionStore/getFiatRate'](this.currency)

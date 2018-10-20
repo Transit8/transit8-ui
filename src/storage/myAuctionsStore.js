@@ -1,11 +1,11 @@
 // myArtworksStore.js
-import auctionsService from '@/services/auctionsService'
+import myAuctionsService from '@/services/myAuctionsService'
 import _ from 'lodash'
 import notify from '@/services/notify'
 import store from '@/storage/store'
 import moment from 'moment'
 
-const auctionsStore = {
+const myAuctionsStore = {
   namespaced: true,
   state: {
     myAuctions: [],
@@ -58,7 +58,7 @@ const auctionsStore = {
   },
   actions: {
     deleteMyAuction ({ commit, state }, auctionId) {
-      auctionsService.deleteMyAuction(auctionId, function (result) {
+      myAuctionsService.deleteMyAuction(auctionId, function (result) {
         let myAuctions = state.myAuctions
         let index = _.findIndex(myAuctions, function (o) {
           return o.auctionId === result.auctionId
@@ -74,7 +74,7 @@ const auctionsStore = {
     },
 
     fetchMyAuctions ({ commit, state }) {
-      auctionsService.getMyAuctions(function (myAuctions) {
+      myAuctionsService.getMyAuctions(function (myAuctions) {
         commit('myAuctions', myAuctions)
       },
       function (error) {
@@ -82,9 +82,53 @@ const auctionsStore = {
       })
     },
 
+    fetchMyAuction ({ commit, state }, auctionId) {
+      return new Promise((resolve, reject) => {
+        let auctions = state.myAuctions.filter(auction => auction.auctionId === auctionId)
+        if (auctions.length === 1) {
+          resolve(auctions[0])
+        } else {
+          myAuctionsService.getMyAuction(auctionId, function (auction) {
+            commit('addMyAuction', auction)
+            resolve(auction)
+          },
+          function (error) {
+            console.log(error)
+            resolve()
+          })
+        }
+      })
+    },
+
+    makePublic ({ commit, state }, myAuction) {
+      return new Promise((resolve, reject) => {
+        myAuctionsService.makePublic(myAuction, function (myAuction) {
+          commit('addMyAuction', myAuction)
+          resolve(myAuction)
+        },
+        function (error) {
+          console.log('Error uploading auction: ', error)
+          resolve()
+        })
+      })
+    },
+
+    makePrivate ({ commit, state }, myAuction) {
+      return new Promise((resolve, reject) => {
+        myAuctionsService.makePrivate(myAuction, function (myAuction) {
+          commit('addMyAuction', myAuction)
+          resolve(myAuction)
+        },
+        function (error) {
+          console.log('Error uploading auction: ', error)
+          resolve()
+        })
+      })
+    },
+
     uploadAuction ({ commit, state }, myAuction) {
       return new Promise((resolve, reject) => {
-        auctionsService.uploadAuction(myAuction, function (myAuction) {
+        myAuctionsService.uploadAuction(myAuction, function (myAuction) {
           commit('addMyAuction', myAuction)
           resolve(myAuction)
         },
@@ -97,7 +141,7 @@ const auctionsStore = {
 
     updateAuction ({ commit, state }, myAuction) {
       return new Promise((resolve, reject) => {
-        auctionsService.updateAuction(myAuction, function (myAuction) {
+        myAuctionsService.updateAuction(myAuction, function (myAuction) {
           commit('addMyAuction', myAuction)
           resolve(myAuction)
         },
@@ -109,4 +153,4 @@ const auctionsStore = {
     },
   }
 }
-export default auctionsStore
+export default myAuctionsStore

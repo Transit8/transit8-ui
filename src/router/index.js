@@ -16,11 +16,12 @@ import MyArtworkRegister from '../pages/MyArtworkRegister'
 import MyArtworks from '../pages/MyArtworks'
 import MyArtworkUpload from '../pages/MyArtworkUpload'
 import MyArtworkUpdate from '../pages/MyArtworkUpdate'
-import Auctions from '../pages/Auctions'
-import AuctionList from '../components/auctions/AuctionList'
-import AuctionManagement from '../pages/AuctionManagement'
-import AuctionUpload from '../pages/AuctionUpload'
-import AuctionUpdate from '../pages/AuctionUpdate'
+import MyAuctions from '../pages/MyAuctions'
+import MyAuctionList from '../components/auctions/MyAuctionList'
+import MyAuctionManage from '../pages/MyAuctionManage'
+import MyAuctionUpload from '../pages/MyAuctionUpload'
+import MyAuctionUpdate from '../pages/MyAuctionUpdate'
+import OnlineAuction from '../pages/OnlineAuction'
 import Story from '../pages/Story'
 import Privacy from '../pages/Privacy'
 import Profile from '../pages/Profile'
@@ -30,8 +31,9 @@ import BlogPost from '../pages/BlogPost'
 import Admin from '../components/admin/Admin'
 import AdminSettings from '../components/admin/AdminSettings'
 import AdminRegistrations from '../components/admin/AdminRegistrations'
-import AdminSearchNames from '../components/admin/AdminSearchNames'
-import AdminSearchArt from '../components/admin/AdminSearchArt'
+import AdminIndexAuctions from '../components/admin/AdminIndexAuctions'
+import AdminIndexNames from '../components/admin/AdminIndexNames'
+import AdminIndexArt from '../components/admin/AdminIndexArt'
 import AdminUserRecords from '../components/admin/AdminUserRecords'
 import Account from '../components/account/Account'
 import AccountUserData from '../components/account/AccountUserData'
@@ -57,9 +59,17 @@ const router = new Router({
       component: Admin,
       children: [
         {
-          path: '/admin/search/names',
-          name: 'adminSearchNames',
-          component: AdminSearchNames
+          path: '/admin/index/names',
+          name: 'adminIndexNames',
+          component: AdminIndexNames
+        }, {
+          path: '/admin/index/auctions',
+          name: 'adminIndexAuctions',
+          component: AdminIndexAuctions
+        }, {
+          path: '/admin/index/art',
+          name: 'adminSearchArt',
+          component: AdminIndexArt
         }, {
           path: '/admin/settings',
           name: 'adminSettings',
@@ -68,10 +78,6 @@ const router = new Router({
           path: '/admin/registrations',
           name: 'adminRegistrations',
           component: AdminRegistrations
-        }, {
-          path: '/admin/search/art',
-          name: 'adminSearchArt',
-          component: AdminSearchArt
         }, {
           path: '/admin/user/records',
           name: 'adminUserRecords',
@@ -150,22 +156,27 @@ const router = new Router({
       component: Search,
     },
     {
-      path: '/auctions',
-      component: Auctions,
+      path: '/online-auction/:auctionId',
+      name: 'onlineAuction',
+      component: OnlineAuction,
+    },
+    {
+      path: '/my-auctions',
+      component: MyAuctions,
       meta: { requiresAuth: true },
       children: [
         {
           path: '',
-          component: AuctionList,
+          component: MyAuctionList,
         }, {
-          path: '/auctions/update/:auctionId',
-          component: AuctionUpdate,
+          path: '/my-auctions/update/:auctionId',
+          component: MyAuctionUpdate,
         }, {
-          path: '/auctions/upload',
-          component: AuctionUpload,
+          path: '/my-auctions/upload',
+          component: MyAuctionUpload,
         }, {
-          path: '/auctions/manage/:auctionId',
-          component: AuctionManagement,
+          path: '/my-auctions/manage/:auctionId',
+          component: MyAuctionManage,
         }
       ]
     },

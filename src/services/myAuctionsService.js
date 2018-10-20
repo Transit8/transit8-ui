@@ -5,8 +5,9 @@ import {
 import moment from 'moment'
 import store from '@/storage/store'
 import _ from 'lodash'
+import auctionSearchService from '@/services/auctionSearchService'
 
-const auctionsService = {
+const myAuctionsService = {
 
   setAuctionsRootFile: function (rootFile) {
     const auctionsRootFileName = store.state.constants.auctionsRootFileName
@@ -35,7 +36,7 @@ const auctionsService = {
   },
 
   getMyAuctions: function (success, failure) {
-    auctionsService.getAuctionsRootFile(
+    myAuctionsService.getAuctionsRootFile(
       function (rootFile) {
         success(rootFile.auctions)
       },
@@ -45,10 +46,10 @@ const auctionsService = {
   },
 
   getMyAuction: function (auctionId, success, failure) {
-    auctionsService.getAuctionsRootFile(
+    myAuctionsService.getAuctionsRootFile(
       function (rootFile) {
-        let auction = rootFile.auctions[auctionId]
-        success(auction)
+        let index = _.findIndex(rootFile.auctions, function (o) { return o.auctionId === auctionId })
+        success(rootFile.auctions[index])
       },
       function () {
         failure({ERR_CODE: 'AUCTIONS_1', message: 'Error fetching auctions root file!'})
@@ -56,15 +57,15 @@ const auctionsService = {
   },
 
   updateAuction: function (auction, success, failure) {
-    auctionsService.getAuctionsRootFile(
+    myAuctionsService.getAuctionsRootFile(
       function (rootFile) {
-        let index = _.findIndex(rootFile.auctions, function (o) {
-          return o.auctionId === auction.auctionId
-        })
+        let index = _.findIndex(rootFile.auctions, function (o) { return o.auctionId === auction.auctionId })
         if (index > -1) {
           rootFile.auctions.splice(index, 1, auction)
-          auctionsService.setAuctionsRootFile(rootFile).then(function (message) {
-            success(auction)
+          myAuctionsService.setAuctionsRootFile(rootFile).then(function (message) {
+            auctionSearchService.reindexOne(auction).then((message) => {
+              success(auction)
+            })
           })
         } else {
           failure({ERR_CODE: 'AUCTIONS_2', message: 'Not found: ' + auction.auctionId})
@@ -76,15 +77,17 @@ const auctionsService = {
   },
 
   deleteMyAuction: function (auctionId, success, failure) {
-    auctionsService.getAuctionsRootFile(
+    myAuctionsService.getAuctionsRootFile(
       function (rootFile) {
         let index = _.findIndex(rootFile.auctions, function (o) {
           return o.auctionId === auctionId
         })
         if (index > -1) {
           rootFile.auctions.splice(index, 1)
-          auctionsService.setAuctionsRootFile(rootFile).then(function (message) {
-            success(auctionId)
+          myAuctionsService.setAuctionsRootFile(rootFile).then(function (message) {
+            auctionSearchService.removeOne(auctionId).then((message) => {
+              success(auctionId)
+            })
           })
         } else {
           failure({ERR_CODE: 'AUCTIONS_2', message: 'Not found: ' + auctionId})
@@ -96,16 +99,56 @@ const auctionsService = {
   },
 
   uploadAuction: function (auction, success, failure) {
-    auctionsService.getAuctionsRootFile(
+    myAuctionsService.getAuctionsRootFile(
       function (rootFile) {
         rootFile.auctions.splice(0, 0, auction)
-        auctionsService.setAuctionsRootFile(rootFile).then(function (message) {
-          success(auction)
+        myAuctionsService.setAuctionsRootFile(rootFile).then(function (message) {
+          auctionSearchService.reindexOne(auction).then((message) => {
+            success(auction)
+          })
         })
       },
       function (error) {
         failure(error)
       })
   },
+
+  reindex: function (success, failure) {
+    myAuctionsService.getAuctionsRootFile(function (rootFile) {
+      auctionSearchService.reindex(rootFile).then((message) => {
+        console.log(message)
+        success(message)
+      })
+    },
+    function () {
+      failure({ERR_CODE: 'AUCTIONS_10', message: 'Error adding the auction to the public index!'})
+    })
+  },
+
+  makePublic: function (auction, success, failure) {
+    auction.privacy = 'public'
+    myAuctionsService.updateAuction(auction,
+      function (auction) {
+        auctionSearchService.reindexOne(auction).then((message) => {
+          success(message)
+        })
+      },
+      function () {
+        failure({ERR_CODE: 'AUCTIONS_10', message: 'Error adding the auction to the public index!'})
+      })
+  },
+
+  makePrivate: function (auction, success, failure) {
+    auction.privacy = 'private'
+    myAuctionsService.updateAuction(auction,
+      function (auction) {
+        auctionSearchService.removeOne(auction.auctionId).then((message) => {
+          success(message)
+        })
+      },
+      function () {
+        failure({ERR_CODE: 'AUCTIONS_11', message: 'Error removing the auction from the public index!'})
+      })
+  },
 }
-export default auctionsService
+export default myAuctionsService

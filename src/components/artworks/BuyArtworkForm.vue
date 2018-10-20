@@ -1,5 +1,5 @@
 <template>
-  <section id="pdp-action" class="pdp-action black pb-0">
+  <section id="pdp-action" class="pdp-action black pb-0" v-if="artwork.bcitem">
     <div class="container-fluid p-0">
       <div class="row  m-0">
         <div class="col-md-9 col-xs-12 product-price">
@@ -22,7 +22,9 @@ export default {
     artwork: {
       type: Object,
       default () {
-        return {}
+        return {
+          bcitem: {}
+        }
       }
     }
   },

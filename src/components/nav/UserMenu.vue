@@ -23,8 +23,8 @@
             </router-link>
           </li>
           <li>
-            <router-link to="/auctions" class="navbar-item">
-              Auctions
+            <router-link to="/my-auctions" class="navbar-item">
+              My Auctions
             </router-link>
           </li>
           <li>

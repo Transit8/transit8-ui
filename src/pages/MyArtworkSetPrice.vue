@@ -152,7 +152,7 @@ export default {
       return this.$store.getters['conversionStore/getFiatRates']
     },
     auctions () {
-      return this.$store.getters['auctionsStore/myAuctionsFuture']
+      return this.$store.getters['myAuctionsStore/myAuctionsFuture']
     },
     conversionMessage () {
       let fiatRate = this.$store.getters['conversionStore/getFiatRate'](this.currency)

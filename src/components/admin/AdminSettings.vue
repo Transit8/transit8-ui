@@ -40,7 +40,6 @@
 
 <script>
 import ethereumService from '@/services/ethereumService'
-import { mapState } from 'vuex'
 
 export default {
   data () {
@@ -69,11 +68,6 @@ export default {
     localComputed () {
       return 'hi there!'
     },
-    // mix this into the outer object with the object spread operator
-    ...mapState({
-      count: state => state.count + 2,
-      todos: state => state.todos,
-    })
   },
   components: {
   }

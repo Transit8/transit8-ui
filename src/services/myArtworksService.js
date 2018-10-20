@@ -138,7 +138,6 @@ const myArtworksService = {
       }
     }
     artworkSearchService.remove('id', artwork.id).then(function (message) {
-      notify.info({title: 'Transfer Artwork.', text: 'Removed from search index <br>' + message})
       let record = utils.convertToBlockstack(artwork)
       getFile(artworkRootFileName, {decrypt: false}).then(function (file) {
         if (!file) {
@@ -206,6 +205,12 @@ const myArtworksService = {
         })
         if (index < 0) {
           failure({ERR_CODE: 2, message: 'no artwork in blockstack root file: ' + id})
+          return
+        }
+        let artwork = blockstackRootFile.records[index]
+        if (artwork.saleData.auctionId) {
+          failure({ERR_CODE: 3, message: 'This artwork is listed in auction: ' + artwork.saleData.auctionId + ' please remove it before continuing..'})
+          return
         }
         let deletedRecord = blockstackRootFile.records.splice(index, 1)
         console.log('blockstackRootFile length after: ' + blockstackRootFile.records.length + ' index=' + index)

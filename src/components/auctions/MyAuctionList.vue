@@ -9,7 +9,7 @@
   <div class="row">
     <div class="col-md-12">
       <h1>Past Auctions <span>({{myAuctionsPastCount}})</span></h1>
-      <my-single-auction v-for="(auction, index) of myAuctionsFuture" :key="index" :auction="auction" :future="false"/>
+      <my-single-auction v-for="(auction, index) of myAuctionsPast" :key="index" :auction="auction" :future="false"/>
     </div>
   </div>
 </section>
@@ -32,16 +32,16 @@ export default {
   },
   computed: {
     myAuctionsFuture () {
-      return this.$store.getters['auctionsStore/myAuctionsFuture']
+      return this.$store.getters['myAuctionsStore/myAuctionsFuture']
     },
     myAuctionsPast () {
-      return this.$store.getters['auctionsStore/myAuctionsPast']
+      return this.$store.getters['myAuctionsStore/myAuctionsPast']
     },
     myAuctionsFutureCount () {
-      return this.$store.getters['auctionsStore/myAuctionsFutureCount']
+      return this.$store.getters['myAuctionsStore/myAuctionsFutureCount']
     },
     myAuctionsPastCount () {
-      return this.$store.getters['auctionsStore/myAuctionsPastCount']
+      return this.$store.getters['myAuctionsStore/myAuctionsPastCount']
     },
     debugMode () {
       let debugMode = this.$store.getters['isDebugMode']
