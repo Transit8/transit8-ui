@@ -49,7 +49,6 @@ export default {
   name: 'MySingleArtwork',
   components: { SellViaBuyNow, SellViaAuction },
   props: {
-    debugMode: false,
     sold: true,
     artwork: {
       type: Object,
@@ -81,6 +80,11 @@ export default {
   computed: {
     editable (id) {
       return this.$store.getters['myArtworksStore/editable'](this.artwork.id)
+    },
+    debugMode () {
+      // process.env.DEBUG_MODE = false
+      console.log(process.env)
+      return false // process.env.DEBUG_MODE
     },
     canSell () {
       let bcitem = this.artwork.bcitem

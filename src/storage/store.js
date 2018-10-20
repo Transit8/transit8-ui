@@ -29,12 +29,15 @@ const store = new Vuex.Store({
   },
   getters: {
     isDebugMode: (state) => {
-      return state.constants['environment'] === 'development'
-    }
+      return state.constants.debugMode
+    },
   },
   mutations: {
     constants (state, constants) {
       state.constants = CONSTANTS
+    },
+    debugMode (state) {
+      state.constants.debugMode = !state.constants.debugMode
     },
   },
   actions: {

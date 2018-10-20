@@ -35,6 +35,12 @@
   <div class="row">
     <div class="col-sm-12 pt-1">Items Registered: {{ clientState.numbItems }}</div>
   </div>
+
+  <h1 class="title ptb-1">Debug Settings</h1>
+  <div class="row">
+    <div class="col-sm-12 pt-5">Debug Mode: <a @click="toggleDebugMode">{{debugMode}}</a></div>
+  </div>
+
 </div>
 </template>
 
@@ -56,11 +62,18 @@ export default {
     this.networkExpected = process.env.ETHEREUM_NETWORK
   },
   methods: {
+    toggleDebugMode () {
+      this.$store.commit('debugMode')
+    },
   },
   computed: {
     clientState () {
       let clientState = this.$store.state.ethStore.clientState
       return clientState
+    },
+    debugMode () {
+      let debugMode = this.$store.getters['isDebugMode']
+      return debugMode
     },
     constants () {
       return this.$store.state.constants

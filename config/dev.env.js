@@ -6,6 +6,7 @@ console.log(abi)
 
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
+  DEBUG_MODE: '"true"',
   TOK_BOX_API_KEY: '46171452',
   SHAPE_SHIFT_URL: '"https://cors.shapeshift.io"',
   ETH_GATEWAY_URL: '"http://localhost:8191"',
