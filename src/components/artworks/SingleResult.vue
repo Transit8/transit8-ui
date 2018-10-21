@@ -46,14 +46,8 @@ export default {
     }
   },
   computed: {
-    registerUrl () {
-      return `/provenance/register/${this.artwork.id}`
-    },
     debugMode () {
       return this.$store.getters['isDebugMode']
-    },
-    editUrl () {
-      return `/provenance/edit/${this.artwork.id}`
     },
     url () {
       return `/artworks/${this.artwork.id}`

@@ -14,6 +14,9 @@ const onlineAuctionsStore = {
         return onlineAuctions[0]
       }
     },
+    onlineAuctions: (state, getters) => {
+      return state.onlineAuctions
+    },
   },
   mutations: {
     onlineAuctions (state, auctions) {
@@ -45,12 +48,9 @@ const onlineAuctionsStore = {
     },
     fetchOnlineAuctions ({ commit, state }) {
       return new Promise((resolve, reject) => {
-        auctionSearchService.getOnlineAuctions(function (onlineAuctions) {
-          commit('onlineAuctions', onlineAuctions)
-          resolve(onlineAuctions)
-        },
-        function (error) {
-          console.log('Error fetching auction: ', error)
+        auctionSearchService.searchIndex('title', '*').then((results) => {
+          commit('onlineAuctions', results)
+          resolve(results)
         })
       })
     },

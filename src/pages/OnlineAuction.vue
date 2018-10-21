@@ -52,9 +52,6 @@ export default {
       let sellingItems = this.$store.getters['myArtworksStore/auctioning'](this.auction.auctionId)
       return sellingItems.length
     },
-    updateUrl () {
-      return `/my-auctions/update/${this.auction.auctionId}`
-    },
     sellingItems () {
       return this.$store.getters['myArtworksStore/auctioning'](this.auctionId)
     },

@@ -22,6 +22,7 @@ import MyAuctionManage from '../pages/MyAuctionManage'
 import MyAuctionUpload from '../pages/MyAuctionUpload'
 import MyAuctionUpdate from '../pages/MyAuctionUpdate'
 import OnlineAuction from '../pages/OnlineAuction'
+import OnlineAuctions from '../pages/OnlineAuctions'
 import Story from '../pages/Story'
 import Privacy from '../pages/Privacy'
 import Profile from '../pages/Profile'
@@ -159,6 +160,11 @@ const router = new Router({
       path: '/online-auction/:auctionId',
       name: 'onlineAuction',
       component: OnlineAuction,
+    },
+    {
+      path: '/online-auctions',
+      name: 'onlineAuctions',
+      component: OnlineAuctions,
     },
     {
       path: '/my-auctions',

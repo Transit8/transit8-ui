@@ -28,6 +28,11 @@
             </router-link>
           </li>
           <li>
+            <router-link to="/online-auctions" class="navbar-item" v-if="debugMode">
+              Online Auctions
+            </router-link>
+          </li>
+          <li>
             <router-link to="/admin/registrations" class="navbar-item" v-if="showAdmin">
               Admin
             </router-link>

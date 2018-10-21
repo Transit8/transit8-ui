@@ -4,6 +4,8 @@
     <p class="artwork-caption">{{artwork.description}}</p>
     <p class="art-title">{{artwork.title}}</p>
     <p class="art-title" v-if="debugMode">{{artwork.bcitem.itemIndex}}</p>
+    <p class="art-title" v-if="debugMode">Artist: {{artwork.artist}}</p>
+    <p class="art-title" v-if="debugMode">Owner: {{artwork.owner}}</p>
   </router-link>
 </template>
 
