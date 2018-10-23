@@ -165,8 +165,14 @@ export default {
       if (!this.auction.title) {
         this.errors.push('title required.')
       }
-      if (moment(this.auction.startDate).isBefore(moment({}))) {
-        this.errors.push('StartDate before now.')
+      if (moment(this.startDate).isBefore(moment({}))) {
+        this.errors.push('Start date before now.')
+      }
+      if (moment(this.endDate).isBefore(moment({}))) {
+        this.errors.push('End date before now.')
+      }
+      if (moment(this.endDate).isBefore(this.startDate)) {
+        this.errors.push('Ends before it starts.')
       }
       if (!this.auction.description) {
         this.errors.push('description required.')

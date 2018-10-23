@@ -2,9 +2,7 @@
 <div class="col-md-12">
   <h3><router-link :to="auctionUrl">{{auction.title}}</router-link></h3>
   <p>{{auction.description}}</p>
-  <p>Starts: {{convertDate(auction.startDate)}}</p>
-  <p>Ends: {{convertDate(auction.endDate)}}</p>
-  <p>Countdown: {{startsIn(auction.startDate)}}</p>
+  <p>Countdown: {{countdown}}</p>
 </div>
 </template>
 
@@ -26,9 +24,6 @@ export default {
     future: false,
   },
   methods: {
-    startsIn (date) {
-      return utils.dt_Offset(date)
-    },
     convertDate (date) {
       return moment(date).format()
     },
@@ -36,6 +31,10 @@ export default {
   computed: {
     auctionUrl () {
       return `/online-auction/${this.auction.auctionId}`
+    },
+    countdown () {
+      let serverTime = this.$store.getters['serverTime']
+      return utils.dt_Offset(serverTime, this.auction.startDate)
     },
   }
 }

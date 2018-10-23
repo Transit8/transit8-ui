@@ -4,28 +4,34 @@ import store from '@/storage/store'
 import moment from 'moment'
 
 const utils = {
-  dt_Offset (date) {
-    let message = ''
-    let now = moment({})
-    let starts = moment(date)
+  dt_Offset (serverTime, compareTime) {
+    let message = 'Starts in: '
+    if (serverTime > compareTime) {
+      message = 'Finished: '
+    }
+    let now = moment(serverTime)
+    let starts = moment(compareTime)
     let days = starts.diff(now, 'days')
-    if (days > 0) {
-      message += days + ' days '
+    if (days !== 0) {
+      message += Math.abs(days) + ' days '
     }
     starts = starts.subtract(days, 'day')
     let hours = starts.diff(now, 'hours')
-    if (hours > 0) {
-      message += hours + ' hours '
+    if (hours !== 0) {
+      message += Math.abs(hours) + ' hours '
     }
     starts = starts.subtract(hours, 'hour')
     let mins = starts.diff(now, 'minutes')
-    if (mins > 0) {
-      message += mins + ' mins '
+    if (mins !== 0) {
+      message += Math.abs(mins) + ' mins '
     }
     starts = starts.subtract(mins, 'minute')
     let seconds = starts.diff(now, 'seconds')
-    if (seconds > 0) {
-      message += seconds + ' secs '
+    if (seconds !== 0) {
+      message += Math.abs(seconds) + ' secs '
+    }
+    if (serverTime > compareTime) {
+      message += ' ago.'
     }
     return message
   },
@@ -87,8 +93,38 @@ const utils = {
       initialRateBtc: 0,
       initialRateEth: 0,
       amountInEther: 0,
+      auctionId: 0,
     }
   },
+  valueInEther (fiatRate, amount, precision) {
+    let conversion = fiatRate['15m']
+    let ethToBtc = store.getters['conversionStore/getCryptoRate']('eth_btc')
+    conversion = conversion * ethToBtc
+    if (typeof amount === 'string') {
+      amount = Number(amount)
+    }
+    if (typeof amount === 'number') {
+      conversion = amount / conversion
+    }
+    return Math.round(conversion * precision) / precision
+  },
+
+  buildSaleDataFromUserInput (auctionId, currency, userSaleData) {
+    let fiatRate = store.getters['conversionStore/getFiatRate'](currency)
+    let ethToBtc = store.getters['conversionStore/getCryptoRate']('eth_btc')
+    let saleData = {}
+    saleData.soid = (auctionId) ? 2 : 1
+    saleData.amount = Number(userSaleData.amount)
+    saleData.reserve = Number(userSaleData.reserve)
+    saleData.increment = Number(userSaleData.increment)
+    saleData.fiatCurrency = currency
+    saleData.initialRateBtc = fiatRate['15m']
+    saleData.initialRateEth = ethToBtc
+    saleData.amountInEther = utils.valueInEther(fiatRate, saleData.amount, 100000000)
+    saleData.auctionId = auctionId
+    return saleData
+  },
+
   convertFromBlockstack: function (record) {
     if (!record.indexData.uploader || !record.indexData.id) {
       throw new Error({ERR_CODE: 200, error: 'Uploader and id must be present.'})

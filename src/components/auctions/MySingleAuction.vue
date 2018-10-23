@@ -2,10 +2,8 @@
 <div class="col-md-12">
   <h3>{{auction.title}}</h3>
   <p>{{auction.description}}</p>
-  <p>Starts: {{convertDate(auction.startDate)}}</p>
-  <p>Ends: {{convertDate(auction.endDate)}}</p>
-  <p>Countdown: {{startsIn(auction.startDate)}}</p>
-  <div class="row" v-if="future">
+  <p>Countdown: {{countdown}}</p>
+  <div class="row">
     <div class="col-sm-3">
       <router-link :to="manageUrl">manage auction</router-link>
     </div>
@@ -28,17 +26,17 @@ export default {
         return {}
       }
     },
-    future: false,
   },
   methods: {
-    startsIn (date) {
-      return utils.dt_Offset(date)
-    },
     convertDate (date) {
       return moment(date).format()
     },
   },
   computed: {
+    countdown () {
+      let serverTime = this.$store.getters['serverTime']
+      return utils.dt_Offset(serverTime, this.auction.startDate)
+    },
     manageUrl () {
       return `/my-auctions/manage/${this.auction.auctionId}`
     },

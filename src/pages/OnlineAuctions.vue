@@ -11,7 +11,6 @@
 
 <script>
 import SingleAuction from '../components/auctions/SingleAuction'
-import utils from '@/services/utils'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -27,9 +26,6 @@ export default {
     })
   },
   methods: {
-    startsIn (date) {
-      return utils.dt_Offset(date)
-    },
   },
   computed: {
     auctionsSize () {

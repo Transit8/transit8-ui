@@ -35,6 +35,9 @@
   <div class="row">
     <div class="col-sm-12 pt-1">Items Registered: {{ clientState.numbItems }}</div>
   </div>
+  <div class="row">
+    <div class="col-sm-12 pt-1">Load Contract: <input type="text" v-model="contractAddress" v-on:keyup.13="loadContract"/></div>
+  </div>
 
   <h1 class="title ptb-1">Debug Settings</h1>
   <div class="row">
@@ -54,16 +57,19 @@ export default {
       networkExpected: '',
       contract: '',
       numberOfItems: '',
+      contractAddress: '',
     }
   },
   created () {
     this.network = ethereumService.getNetworkType()
     this.networkExpected = process.env.ETHEREUM_NETWORK
-    this.networkExpected = process.env.ETHEREUM_NETWORK
   },
   methods: {
     toggleDebugMode () {
       this.$store.commit('debugMode')
+    },
+    loadContract () {
+      ethereumService.loadContract(this.contractAddress)
     },
   },
   computed: {

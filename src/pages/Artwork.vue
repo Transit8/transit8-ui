@@ -58,7 +58,6 @@ import ArtworksList from '../components/artworks/ArtworksList'
 import AboutArtist from '../components/artists/AboutArtist'
 import AboutArtwork from '../components/artworks/AboutArtwork'
 import BuyArtworkForm from '../components/artworks/BuyArtworkForm'
-import BidArtworkForm from '../components/artworks/BidArtworkForm'
 import ArtworkSlider from '../components/artworks/ArtworkSlider'
 import ArtworkSliderControls from '../components/artworks/ArtworkSliderControls'
 import ethereumService from '@/services/ethereumService'
@@ -71,7 +70,6 @@ export default {
   components: {
     ArtworkSliderControls,
     ArtworkSlider,
-    BidArtworkForm,
     BuyArtworkForm,
     AboutArtwork,
     AboutArtist,

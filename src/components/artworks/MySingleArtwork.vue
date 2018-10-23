@@ -9,21 +9,17 @@
         <p class="art-title">{{artwork.title}}</p>
         <p class="artwork-caption">{{artwork.description}}</p>
         <p class="artwork-caption">Artist: {{artistProfile.name}}</p>
-        <div class="artwork-caption" v-if="canSell">
-          <p>Selling Options</p>
-          <p>
-            <a v-on:click="sellBuyNowActive = !sellBuyNowActive">sell via buy now</a> |
-            <a v-on:click="sellAuctionActive = !sellAuctionActive" @closeViaAuction="closeSellAuction">sell via auction</a>
-            <router-link :to="auctionUrl" v-if="artwork.saleData.auctionId">| go to auction</router-link>
-          </p>
-        </div>
-
-        <sell-via-buy-now v-if="sellBuyNowActive" :artwork="artwork"/>
-        <sell-via-auction v-if="sellAuctionActive" :artwork="artwork"/>
 
         <router-link :to="registerUrl" class="artwork-action"  v-if="status === 'new' && !sold">Register</router-link>
-        <router-link :to="setPriceUrl" class="artwork-action"  v-if="status !== 'new' && !sold">Set Price</router-link>
-        <router-link :to="editUrl" class="artwork-action" v-if="editable">Edit</router-link>
+        <!-- <router-link :to="setPriceUrl" class="artwork-action"  v-if="status !== 'new' && !sold">Set Price</router-link> -->
+        <a class="artwork-action" v-if="canSellBuyNow" v-on:click="openBuyNowDialog">Buy</a>
+        <a class="artwork-action" v-if="canSell" v-on:click="openAuctionDialog">Bid</a>
+        <router-link :to="editUrl"    class="artwork-action" v-if="editable">Edit</router-link>
+        <router-link :to="auctionUrl" class="artwork-action" v-if="artwork.saleData.auctionId">Auction</router-link>
+
+        <sell-via-buy-now v-if="sellBuyNowActive" :artwork="artwork" :isModalActive="true" @closeDialog="closeDialog"/>
+        <sell-via-auction v-if="sellAuctionActive" :artwork="artwork" :isModalActive="true" @closeDialog="closeDialog"/>
+
         <br/>
         <div v-if="debugMode">
             <p class="artwork-caption">Owner: {{artwork.owner}}</p>
@@ -73,7 +69,16 @@ export default {
     deleteArtwork (id) {
       this.$store.dispatch('myArtworksStore/deleteMyArtwork', id)
     },
-    closeSellAuction (value) {
+    closeDialog (value) {
+      this.sellBuyNowActive = false
+      this.sellAuctionActive = false
+    },
+    openAuctionDialog (value) {
+      this.sellBuyNowActive = false
+      this.sellAuctionActive = true
+    },
+    openBuyNowDialog (value) {
+      this.sellBuyNowActive = true
       this.sellAuctionActive = false
     }
   },
@@ -87,6 +92,11 @@ export default {
     canSell () {
       let bcitem = this.artwork.bcitem
       return (bcitem && bcitem.itemIndex > -1 && !this.sold)
+    },
+    canSellBuyNow () {
+      let bcitem = this.artwork.bcitem
+      let canBuyNow = (bcitem && bcitem.itemIndex > -1 && !this.sold)
+      return canBuyNow && !this.artwork.saleData.auctionId
     },
     status () {
       return this.$store.getters['myArtworksStore/bcstatus'](this.artwork.id)

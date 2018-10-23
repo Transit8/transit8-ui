@@ -7,19 +7,17 @@
     <div class="media-body">
       <h4 class="media-heading">{{item.title}}</h4>
       {{item.description}}
-      <bidding-bar class="row" :saleData="item.saleData"/>
     </div>
   </div>
 </div>
 </template>
 
 <script>
-import BiddingBar from './BiddingBar'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
-  name: 'SingleAuctionItem',
-  components: { BiddingBar },
+  name: 'MySingleAuctionItem',
+  components: { },
   props: {
     item: {
       type: Object,

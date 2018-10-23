@@ -1,5 +1,5 @@
 // import eventBus from '@/services/eventBus'
-import webrtcService from '@/services/webrtc/webrtcService'
+import peerToPeerService from '@/services/peerToPeerService'
 import _ from 'lodash'
 
 /**
@@ -9,16 +9,16 @@ const messagingService = {
   messages: [],
   peers: [],
   sendMessageSignal: function (signal) {
-    webrtcService.session.signal({
+    peerToPeerService.session.signal({
       type: 'message',
       data: signal
-    }, webrtcService.handleError)
+    }, peerToPeerService.handleError)
   },
   sendSessionJoinedSignal: function (tokbox) {
-    webrtcService.session.signal({
+    peerToPeerService.session.signal({
       type: 'session-joined',
-      data: JSON.stringify(webrtcService.tokbox)
-    }, webrtcService.handleError)
+      data: JSON.stringify(peerToPeerService.tokbox)
+    }, peerToPeerService.handleError)
   },
   receiveMessageSignal: function (event) {
     console.log(event)

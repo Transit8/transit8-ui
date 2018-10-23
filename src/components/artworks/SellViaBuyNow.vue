@@ -1,12 +1,13 @@
 <template>
-  <div class="modal-dialog" role="document">
-  <form @submit.prevent="setPrice">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Sell Via Buy Now</h4>
-      </div>
-      <div class="modal-body">
+<div>
+  <uiv-modal :value="isModalActive" :append-to-body="false">
+    <div slot="title"><h1 class="modal-title">Sell via Buy Now</h1></div>
+    <div slot="close"><button type="button" class="close" v-on:click="closeModal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+    <div class="modal-body" v-if="message">
+      {{message}}
+    </div>
+    <div class="modal-body" v-else>
+      <form @submit.prevent="setPrice">
         <p>This item can be bought for the price you specify.</p>
         <p v-if="errors.length" :key="errors.length">
           <b>Please correct the following error(s):</b>
@@ -15,31 +16,40 @@
           </ul>
         </p>
         <div class="form-group">
+          <label for="currencyHelpBlock">Select Currency</label>
+          <select class="form-control" v-model="currency">
+            <option v-for="(value,key) in fiatRates" :key="key">{{ key }}</option>
+          </select>
+          <p id="currencyHelpBlock" class="form-text text-muted">
+            {{conversionMessage}}
+          </p>
+        </div>
+        <div class="form-group">
           <label>Amount {{currentSymbol}}</label>
           <input class="form-control" type="number" step="50" placeholder="Sale value of artwork" v-model="artwork.saleData.amount"  aria-describedby="amountHelpBlock">
           <p id="amountHelpBlock" class="form-text text-muted">
             {{valueInBitcoin(artwork.saleData.amount)}} Btc / {{valueInEther(artwork.saleData.amount)}} Eth
           </p>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" @click.prevent="setPrice">Save</button>
-      </div>
-    </div><!-- /.modal-content -->
-    </form>
-  </div><!-- /.modal-dialog -->
+      </form>
+    </div>
+    <div slot="footer">
+      <button type="button" class="btn btn-default" v-on:click="closeModal">Close</button>
+      <button type="button" class="btn btn-primary" @click.prevent="setPrice" v-if="!message">Set Price</button>
+    </div>
+  </uiv-modal>
+</div>
 </template>
 
 <script>
 import notify from '@/services/notify'
 import ethereumService from '@/services/ethereumService'
-import _ from 'lodash'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
   name: 'SellViaAuction',
   props: {
+    isModalActive: false,
     artwork: {
       type: Object,
       default () {
@@ -50,10 +60,10 @@ export default {
   data () {
     return {
       errors: [],
+      intval: null,
       auctionId: null,
       currency: 'EUR',
-      message: 'Please wait - we are updating the price of your item on the blockchain.',
-      isModalActive: false,
+      message: null,
     }
   },
   mounted () {
@@ -83,11 +93,8 @@ export default {
     },
   },
   methods: {
-    openModal () {
-      this.isModalActive = true
-    },
     closeModal () {
-      this.isModalActive = false
+      this.$emit('closeDialog')
     },
     valueInBitcoin (amount) {
       let fiatRates = this.$store.getters['conversionStore/getFiatRates']
@@ -140,28 +147,21 @@ export default {
         return
       }
 
-      this.message = 'Calling blockchain to set the price...'
+      this.message = 'Setting Price: Please confirm the transaction in your wallet...'
       let priceData = {
         itemIndex: artwork.bcitem.itemIndex,
         amountInWei: Math.trunc(artwork.saleData.amountInEther * 1000000000000000000)
       }
       let $self = this
       ethereumService.setPriceOnChain(priceData, function (result) {
-        $self.closeModal()
         artwork.bcitem.setPriceTxId = result.txId
         artwork.bcitem.status = 'price-set'
         $self.$store.commit('myArtworksStore/addMyArtwork', artwork)
+        $self.message = 'Setting Price: Blockchain called - saving data changes...'
         $self.$store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
           notify.info({title: 'Register Artwork.', text: 'Your user storage has been updated.'})
+          $self.closeModal()
         })
-        $self.$store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
-          if (blockchainItem) {
-            _.merge(artwork.bcitem, blockchainItem)
-            notify.info({title: 'Register Artwork.', text: 'Registration sent to blockchain.'})
-          }
-        })
-        $self.message = 'Your artwork has been registered - please allow a few minutes for the transaction to complete...'
-        notify.info({title: 'Register Artwork.', text: 'Your artwork has been registered - please allow a few minutes for the transaction to complete...'})
       }, function (error) {
         notify.error({title: 'Register Artwork.', text: 'Error setting price for your item. <br>' + error.message})
       })

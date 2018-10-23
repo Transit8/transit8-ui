@@ -124,11 +124,19 @@ const ethereumService = {
     })
   },
   fetchClientState: function (success, failure) {
-    xhrService.makeDirectCall(store.state.constants.ethGatewayUrl + '/api/ethereum' + '/client')
+    xhrService.makeDirectCall(store.state.constants.ethGatewayUrl + '/api/ethereum/client')
       .then(function (response) {
         let clientState = response.details
         clientState.metaMaskNetwork = ethereumService.getNetworkType()
         success(clientState)
+      }).catch(function (e) {
+        failure(e)
+      })
+  },
+  loadContract: function (contractAddress, success, failure) {
+    xhrService.makeDirectCall(store.state.constants.ethGatewayUrl + '/api/ethereum/load/' + contractAddress)
+      .then(function (response) {
+        success(response.details)
       }).catch(function (e) {
         failure(e)
       })

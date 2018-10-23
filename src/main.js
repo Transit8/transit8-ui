@@ -42,6 +42,7 @@ Vue.use(VModal, {
 })
 
 store.commit('constants', CONSTANTS)
+store.dispatch('fetchServerTime')
 store.dispatch('conversionStore/fetchFiatRates')
 store.dispatch('myAccountStore/fetchMyAccount')
 store.dispatch('ethStore/fetchClientState').then((clientState) => {

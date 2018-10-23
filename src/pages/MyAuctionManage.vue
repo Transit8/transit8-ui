@@ -18,25 +18,25 @@
   </div>
   <div class="row">
     <h4>Selling Items</h4>
-    <single-auction-item v-for="(item, index) of sellingItems" :key="index" :item="item" :sellingItem="true"/>
+    <my-single-auction-item v-for="(item, index) of sellingItems" :key="index" :item="item" :sellingItem="true"/>
   </div>
   <div class="row">
     <h4>Available Items</h4>
-    <single-auction-item v-for="(item, index) of availableItems" :key="index" :item="item" :sellingItem="false"/>
+    <my-single-auction-item v-for="(item, index) of availableItems" :key="index" :item="item" :sellingItem="false"/>
   </div>
 </div>
 </template>
 
 <script>
 import MySingleAuction from '../components/auctions/MySingleAuction'
-import SingleAuctionItem from '../components/auctions/SingleAuctionItem'
+import MySingleAuctionItem from '../components/auctions/MySingleAuctionItem'
 import utils from '@/services/utils'
 import notify from '@/services/notify'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
   name: 'MyAuctionManage',
-  components: { MySingleAuction, SingleAuctionItem },
+  components: { MySingleAuction, MySingleAuctionItem },
   data () {
     return {
       auction: {

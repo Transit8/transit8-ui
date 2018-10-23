@@ -73,6 +73,57 @@ const myAuctionsStore = {
       })
     },
 
+    addItem ({ commit, state }, data) {
+      return new Promise((resolve, reject) => {
+        if (!data.auctionId) {
+          reject(new Error('No auctionId found on the item - cannot add it to an auction it is not part of?'))
+        }
+        let auction = state.myAuctions.filter(auction => auction.auctionId === data.auctionId)[0]
+        if (!auction.items) {
+          auction.items = []
+        }
+        let index = _.findIndex(auction.items, function (o) {
+          return o.itemId === data.itemId
+        })
+        let auctionItem = {
+          itemId: data.itemId,
+          bids: [],
+        }
+        if (index > -1) {
+          reject(new Error('Unable to add item to auction: ' + auction.title + ' - can only add new items here.'))
+        } else {
+          auction.items.push(auctionItem)
+          return store.dispatch('myAuctionsStore/updateAuction', auction)
+        }
+      })
+    },
+
+    removeItem ({ commit, state }, data) {
+      return new Promise((resolve, reject) => {
+        if (!data.auctionId) {
+          reject(new Error('No auctionId found on the item - cannot remove an item from an auction it is not part of?'))
+        }
+        let auction = state.myAuctions.filter(auction => auction.auctionId === data.auctionId)[0]
+        if (!auction.items) {
+          auction.items = []
+        }
+        let itemsToRemove = _.find(auction.items, function (o) {
+          return o.itemId === data.itemId
+        })
+        if (itemsToRemove && itemsToRemove.length > 0) {
+          _.forEach(itemsToRemove, function () {
+            let index = _.findIndex(itemsToRemove.items, function (o) {
+              return o.itemId === data.itemId
+            })
+            auction.items.splice(index, 1)
+          })
+          return store.dispatch('myAuctionsStore/updateAuction', auction)
+        } else {
+          resolve({})
+        }
+      })
+    },
+
     fetchMyAuctions ({ commit, state }) {
       myAuctionsService.getMyAuctions(function (myAuctions) {
         commit('myAuctions', myAuctions)
