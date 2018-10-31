@@ -44,7 +44,6 @@
 
 <script>
 import ethereumService from '@/services/ethereumService'
-import _ from 'lodash'
 import utils from '@/services/utils'
 import notify from '@/services/notify'
 
@@ -107,13 +106,7 @@ export default {
         $self.$store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
           notify.info({title: 'Register Artwork.', text: 'User storage has been updated...'})
           $self.closeModal()
-          $self.$store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
-            if (blockchainItem) {
-              _.merge(artwork.bcitem, blockchainItem)
-              $self.$store.commit('myArtworksStore/addMyArtwork', artwork)
-            }
-            notify.info({title: 'Register Artwork.', text: 'Your artwork has been registered - please allow a few minutes for the transaction to complete...'})
-          })
+          $self.$store.dispatch('myArtworksStore/checkRegistration', artwork)
         })
       }, function (error) {
         notify.error({title: 'Register Artwork.', text: 'Error registering your item. <br>' + error.message})

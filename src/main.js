@@ -43,22 +43,22 @@ Vue.use(VModal, {
 
 store.commit('constants', CONSTANTS)
 store.dispatch('fetchServerTime')
-store.dispatch('conversionStore/fetchFiatRates')
-store.dispatch('myAccountStore/fetchMyAccount')
-store.dispatch('ethStore/fetchClientState').then((clientState) => {
-  ethereumService.connectToBlockChain(clientState)
-  store.dispatch('ethStore/fetchBlockchainItems').then((blockchainItems) => {
-    store.dispatch('myArtworksStore/fetchMyArtworks')
-    store.dispatch('artworkSearchStore/fetchRegisteredArtworks', blockchainItems)
-    store.dispatch('ethStore/receiveBlockchainEvents').then((message) => {
-      if (store.getters['isDebugMode']) {
-        notify.info({title: 'Blockchain Events.', text: message})
-      }
+store.dispatch('conversionStore/fetchConversionData').then((conversionData) => {
+  store.dispatch('myAccountStore/fetchMyAccount')
+  store.dispatch('ethStore/fetchClientState').then((clientState) => {
+    ethereumService.connectToBlockChain(clientState)
+    store.dispatch('ethStore/fetchBlockchainItems').then((blockchainItems) => {
+      store.dispatch('myArtworksStore/fetchMyArtworks')
+      store.dispatch('artworkSearchStore/fetchRegisteredArtworks', blockchainItems)
+      store.dispatch('ethStore/receiveBlockchainEvents').then((message) => {
+        if (store.getters['isDebugMode']) {
+          notify.info({title: 'Blockchain Events.', text: message})
+        }
+      })
     })
   })
+  store.dispatch('myAuctionsStore/fetchMyAuctions')
 })
-store.dispatch('myAuctionsStore/fetchMyAuctions')
-store.dispatch('conversionStore/fetchShapeShiftCryptoRate', 'eth_btc')
 
 /* eslint-disable no-new */
 new Vue({

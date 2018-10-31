@@ -55,7 +55,6 @@
 </template>
 
 <script>
-import notify from '@/services/notify'
 import utils from '@/services/utils'
 
 // noinspection JSUnusedGlobalSymbols
@@ -151,8 +150,9 @@ export default {
       }
     },
     removeFromAuction () {
-      this.$store.dispatch('myArtworksStore/removeFromAuction', this.artwork).then((artwork) => {
-        this.$emit('closeModal', 'Stored values')
+      let $self = this
+      this.$store.dispatch('myArtworksStore/removeFromAuction', {auctionId: this.artwork.saleData.auctionId, itemId: this.artwork.id}).then((artwork) => {
+        $self.$emit('closeModal', 'Stored values')
       }).catch(e => {
         console.log(e.message)
       })
@@ -163,42 +163,13 @@ export default {
       if (this.errors.length > 0) {
         return
       }
+      let $self = this
       this.$store.dispatch('myArtworksStore/addToAuction', this.artwork).then((artwork) => {
-        this.$emit('closeModal', 'Stored values')
+        $self.$emit('closeModal', 'Stored values')
       }).catch(e => {
         console.log(e.message)
       })
     },
-    setPrice: function () {
-      let artwork = this.artwork
-      artwork.saleData.soid = 2
-      artwork.saleData.amount = 0
-      artwork.saleData.reserve = Number(artwork.saleData.reserve)
-      artwork.saleData.increment = Number(artwork.saleData.increment)
-      artwork.saleData.fiatCurrency = this.currency
-      let fiatRate = this.$store.getters['conversionStore/getFiatRate'](this.currency)
-      artwork.saleData.initialRateBtc = fiatRate['15m']
-      let ethToBtc = this.$store.getters['conversionStore/getCryptoRate']('eth_btc')
-      artwork.saleData.initialRateEth = ethToBtc
-      artwork.saleData.amountInEther = this.valueInEther(artwork.saleData.amount)
-      artwork.saleData.auctionId = this.auctionId
-
-      this.validate(artwork.saleData)
-      if (this.errors.length > 0) {
-        return
-      }
-
-      this.message = 'Updating your user data...'
-      this.$store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
-        notify.info({title: 'Sell Via Auction', text: 'Updated item - updating auction now.'})
-        this.$store.dispatch('myAuctionsStore/addItem', artwork).then((auction) => {
-          notify.debug({title: 'Sell Via Auction', text: 'This artwork has been added to auction: ' + auction.title})
-          this.$emit('closeModal', 'Stored values')
-        }).catch(e => {
-          console.log(e.message)
-        })
-      })
-    }
   }
 }
 </script>

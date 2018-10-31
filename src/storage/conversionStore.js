@@ -28,15 +28,32 @@ const conversionStore = {
     }
   },
   actions: {
+    fetchConversionData ({ commit, state }) {
+      return new Promise((resolve, reject) => {
+        store.dispatch('conversionStore/fetchFiatRates').then((fiatRates) => {
+          commit('setFiatRates', fiatRates)
+          store.dispatch('conversionStore/fetchShapeShiftCryptoRate', 'eth_btc').then((cryptoRate) => {
+            commit('setCryptoRate', cryptoRate)
+            resolve({fiatRates: state.fiatRates, 'eth_btc': cryptoRate})
+          })
+        })
+      })
+    },
     fetchFiatRates ({ commit, state }) {
-      xhrService.makeGetCall('/api/exchange/rates').then(function (data) {
-        commit('setFiatRates', data.rates)
+      return new Promise((resolve, reject) => {
+        xhrService.makeGetCall('/api/exchange/rates').then(function (data) {
+          commit('setFiatRates', data.rates)
+          resolve(data.rates)
+        })
       })
     },
     fetchShapeShiftCryptoRate: function ({ commit, state }, pair) {
-      const url = store.state.constants.shapeShiftUrl + '/rate/' + pair
-      xhrService.makeDirectCall(url).then(function (cryptoRate) {
-        commit('setCryptoRate', cryptoRate)
+      return new Promise((resolve, reject) => {
+        const url = store.state.constants.shapeShiftUrl + '/rate/' + pair
+        xhrService.makeDirectCall(url).then(function (cryptoRate) {
+          commit('setCryptoRate', cryptoRate)
+          resolve(cryptoRate)
+        })
       })
     },
   }

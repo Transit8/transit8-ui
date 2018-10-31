@@ -126,8 +126,8 @@ const artworkSearchService = {
           success()
         } else {
           _.forEach(results, function (indexData) {
-            store.dispatch('userProfilesStore/addUserProfile', {username: indexData.owner}, {root: true})
-            store.dispatch('userProfilesStore/addUserProfile', {username: indexData.uploader}, {root: true})
+            store.dispatch('userProfilesStore/fetchUserProfile', {username: indexData.owner}, {root: true})
+            store.dispatch('userProfilesStore/fetchUserProfile', {username: indexData.uploader}, {root: true})
             let provGaiaUrl = utils.buildGaiaUrl(indexData.gaiaUrl, indexData.id)
             xhrService.makeDirectCall(provGaiaUrl)
               .then(function (provData) {
@@ -151,8 +151,8 @@ const artworkSearchService = {
           failure({ERR_CODE: 400, message: 'Failed to find in search index: ' + artworkId})
         } else {
           let indexData = results[0]
-          store.dispatch('userProfilesStore/addUserProfile', {username: indexData.owner}, {root: true})
-          store.dispatch('userProfilesStore/addUserProfile', {username: indexData.uploader}, {root: true})
+          store.dispatch('userProfilesStore/fetchUserProfile', {username: indexData.owner}, {root: true})
+          store.dispatch('userProfilesStore/fetchUserProfile', {username: indexData.uploader}, {root: true})
           xhrService.makeDirectCall(utils.buildGaiaUrl(indexData.gaiaUrl, indexData.id))
             .then(function (provData) {
               if (provData && provData.artwork && provData.artwork[0] && provData.artwork[0].dataUrl.length > 0) {

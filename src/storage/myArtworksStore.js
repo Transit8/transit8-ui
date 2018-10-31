@@ -53,7 +53,9 @@ const myArtworksStore = {
       return state.myArtworks.filter(artwork => auctionId === artwork.saleData.auctionId)
     },
     available: (state) => (auctionId) => {
-      return state.myArtworks.filter(artwork => auctionId !== artwork.saleData.auctionId)
+      // let available = state.myArtworks.filter(artwork => typeof (artwork.saleData.auctionId) === 'undefined')
+      let zerro = state.myArtworks.filter(artwork => typeof (artwork.saleData.auctionId) === 'undefined' || artwork.saleData.auctionId === 0 || artwork.saleData.auctionId !== auctionId)
+      return zerro
     }
   },
   mutations: {
@@ -77,9 +79,8 @@ const myArtworksStore = {
   actions: {
     addToAuction ({ commit, state }, artwork) {
       return new Promise((resolve, reject) => {
-        store.dispatch('myAuctionsStore/addItem', {itemId: artwork.id, owner: artwork.owner, auctionId: artwork.saleData.auctionId}).then((auction) => {
+        store.dispatch('myAuctionsStore/addItem', artwork).then((auction) => {
           notify.debug({title: 'Sell Via Auction', text: 'Item info added to auction.'})
-          artwork.saleData = utils.buildInitialSaleData()
           store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
             notify.debug({title: 'Sell Via Auction', text: 'Auction info added to artwork.'})
             resolve(artwork)
@@ -91,17 +92,23 @@ const myArtworksStore = {
         })
       })
     },
-    removeFromAuction ({ commit, state }, artwork) {
+    removeFromAuction ({ commit, state }, data) {
       return new Promise((resolve, reject) => {
-        store.dispatch('myAuctionsStore/removeItem', {itemId: artwork.id, auctionId: artwork.saleData.auctionId}).then((auction) => {
+        let artwork = state.myArtworks.filter(myArtwork => myArtwork.id === data.itemId)[0]
+        store.dispatch('myAuctionsStore/removeItem', {itemId: data.itemId, auctionId: data.auctionId}).then((auction) => {
           notify.debug({title: 'Sell Via Auction', text: 'Item info removed from auction.'})
-          artwork.saleData = utils.buildInitialSaleData()
-          store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
-            notify.debug({title: 'Sell Via Auction', text: 'Auction info removed from artwork.'})
-            resolve(artwork)
-          }).catch(e => {
-            reject(e)
-          })
+          if (artwork) {
+            artwork.saleData = utils.buildInitialSaleData()
+            store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
+              notify.debug({title: 'Sell Via Auction', text: 'Auction info removed from artwork.'})
+              resolve(artwork)
+            }).catch(e => {
+              notify.debug({title: 'Sell Via Auction', text: 'No artwork.'})
+              reject(e)
+            })
+          } else {
+            resolve({})
+          }
         }).catch(e => {
           reject(e)
         })
@@ -192,23 +199,38 @@ const myArtworksStore = {
       })
     },
 
+    checkRegistration ({ commit, state }, artwork) {
+      let count = 0
+      let intval = setInterval(function () {
+        store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
+          if (blockchainItem && artwork.bcitem.price === blockchainItem.price) {
+            clearInterval(intval)
+          }
+          if (count >= 5) {
+            clearInterval(intval)
+          }
+          if (blockchainItem) {
+            utils.convertPrices(artwork, blockchainItem)
+            commit('addMyArtwork', artwork)
+            notify.info({title: 'Update Artwork', text: 'New price has been set in blockchain.'})
+          }
+          count++
+        })
+      }, 2000)
+    },
+
     updateArtwork ({ commit, state }, artwork) {
       return new Promise((resolve, reject) => {
         myArtworksService.updateArtwork(artwork, function (artwork) {
           commit('addMyArtwork', artwork)
-          let intval = setInterval(function () {
-            store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
-              if (artwork.bcitem.price === blockchainItem.price) {
-                clearInterval(intval)
-              }
-              if (blockchainItem) {
-                utils.convertPrices(artwork, blockchainItem)
-                commit('addMyArtwork', artwork)
-                notify.info({title: 'Update Artwork', text: 'New price has been set in blockchain.'})
-              }
-            })
-          }, 2000)
-          resolve(artwork)
+          store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
+            if (blockchainItem) {
+              utils.convertPrices(artwork, blockchainItem)
+              commit('addMyArtwork', artwork)
+              notify.info({title: 'Update Artwork', text: 'New price has been set in blockchain.'})
+            }
+            resolve(artwork)
+          })
         },
         function (error) {
           console.log('Error uploading artwork: ', error)

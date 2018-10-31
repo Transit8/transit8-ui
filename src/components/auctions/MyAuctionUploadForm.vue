@@ -139,6 +139,9 @@ export default {
         this.auction.auctionType = 'webcast'
         this.auction.startDate = moment(this.startDate).valueOf()
         this.auction.endDate = moment(this.endDate).valueOf()
+        if (!this.auction.messages) {
+          this.auction.messages = []
+        }
         if (this.mode === 'update') {
           this.auction.auctionId = this.auctionId
           this.$store.dispatch('myAuctionsStore/updateAuction', this.auction).then((auction) => {

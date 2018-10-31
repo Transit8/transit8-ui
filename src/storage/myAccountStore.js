@@ -22,7 +22,11 @@ const myAccountStore = {
   },
   actions: {
     fetchMyAccount ({ commit, state }) {
-      commit('myProfile', myAccountService.myProfile())
+      return new Promise((resolve, reject) => {
+        let myProfile = myAccountService.myProfile()
+        commit('myProfile', myProfile)
+        resolve(myProfile)
+      })
     },
   }
 }

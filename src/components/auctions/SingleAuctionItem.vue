@@ -2,25 +2,28 @@
 <div class="col-md-12">
   <div class="media">
     <div class="media-left">
-      <img :src="item.image" :alt="item.title" class="media-object" style="max-width: 150px"/>
+      <img :src="artwork.image" :alt="artwork.title" class="media-object" style="max-width: 150px"/>
     </div>
     <div class="media-body">
-      <h4 class="media-heading">{{item.title}}</h4>
-      {{item.description}}
-      <bidding-bar class="row" :saleData="item.saleData"/>
+      <div class="row">
+        <div class="col-md-12">
+          <h4 class="media-heading">{{artwork.title}}</h4>
+          {{artwork.description}}
+        </div>
+      </div>
     </div>
   </div>
 </div>
 </template>
 
 <script>
-import BiddingBar from './BiddingBar'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
   name: 'SingleAuctionItem',
-  components: { BiddingBar },
+  components: { },
   props: {
+    auctionId: null,
     item: {
       type: Object,
       default () {
@@ -31,6 +34,9 @@ export default {
   methods: {
   },
   computed: {
+    artwork () {
+      return this.$store.getters['artworkSearchStore/getArtwork'](this.item.itemId)
+    },
   }
 }
 </script>

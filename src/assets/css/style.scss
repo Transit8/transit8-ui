@@ -462,7 +462,7 @@ section {
 
   h1, h2 { font-size: 55px; margin-bottom: 24px; }
   p { font-size: 21px; margin-bottom: 30px;
-  
+
   &.block-img {
     text-align: center;
     max-width: 100%;
@@ -477,20 +477,20 @@ section {
       p { word-break: break-all; }
       .name { font-size: 36px; line-height: normal; margin-bottom: 5px; }
       .about { font-size: 24px; line-height: normal; margin-bottom: 5px; }
-    }  
+    }
   }
 
   @media(max-width: 992px) {
     h1, h2 { font-size: 36px; margin-bottom: 20px; }
     p { font-size: 18px; margin-bottom: 20px; }
-  
+
     .team-members-list {
       .team-member-item {
         margin-bottom: 50px;
         img { margin-bottom: 24px; }
         .name { font-size: 24px; }
         .about { font-size: 21px; }
-      }  
+      }
     }
   }
 }
@@ -647,9 +647,9 @@ section {
     }
   }
 
-  .artist-description { 
-    height: 69px; 
-    overflow: hidden; 
+  .artist-description {
+    height: 69px;
+    overflow: hidden;
     -webkit-transition: all 2s ease;
     -moz-transition: all 2s ease;
     -o-transition: all 2s ease;
@@ -707,7 +707,7 @@ section {
 
     @media screen and(max-width: 992px) {
       padding-right: 0;
-      
+
     }
   }
 }
@@ -731,8 +731,8 @@ section {
     }
   }
   .action-button {
-    font-size: 48px; 
-    line-height: normal; 
+    font-size: 48px;
+    line-height: normal;
     position: absolute;
     top: 0;
     bottom: 0;
@@ -806,7 +806,7 @@ input.form-control.bid-input {
    p { font-size: 36px; margin-bottom: 30px;
       @media(max-width: 768px){
       font-size: 18px;
-    } 
+    }
   }
  }
 
@@ -929,7 +929,7 @@ footer {
   }
 
   p { margin-bottom: 0; }
-  
+
 }
 
 /* 404 - Blockchain settings */
@@ -938,7 +938,7 @@ footer {
 
   .title, .subtext { font-size: 30px; letter-spacing: 1px; line-height: normal; margin-bottom: 42px; }
   .strong { font-weight: bold; }
-  a { text-decoration: underline; 
+  a { text-decoration: underline;
     &:hover, &:focus, &:active { color: $grey-medium; }
   }
   p { font-size: 18px; margin-bottom: 24px; }
@@ -1127,7 +1127,7 @@ footer {
     }
   }
 }
-  
+
   /* typography */
   h1 {
     font-size: 40px;
@@ -1251,7 +1251,18 @@ footer {
 
 }
 
-
+.auction-item-container {
+  background: #ccc;
+  margin: 15px;
+  padding: 15px;
+  border: 1pt solid black;
+}
+.auction-hammer-item {
+  background: yellow;
+  margin: 15px 40px 15px 15px;
+  padding: 15px;
+  border: 1pt solid black;
+}
 
 @media (max-width: 480px) {
 .slider-container {
@@ -1268,7 +1279,7 @@ footer {
     }
   }
 }
-  
+
 
   .title-big {
     font-size: 24px;
@@ -1291,4 +1302,3 @@ footer {
     }
   }
 }
-

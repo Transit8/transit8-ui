@@ -2,6 +2,14 @@ import SHA256 from 'crypto-js/sha256'
 import _ from 'lodash'
 import store from '@/storage/store'
 import moment from 'moment'
+import BigNumber from 'bignumber.js'
+import {ec as EC} from 'elliptic'
+import bitcoin from 'bitcoinjs-lib'
+import bitcoinMessage from 'bitcoinjs-message'
+import CryptoJS from 'crypto-js'
+import bs58check from 'bs58check'
+
+const UNCOMPRESSED_PUBKEY_HEADER = 27
 
 const utils = {
   dt_Offset (serverTime, compareTime) {
@@ -50,20 +58,35 @@ const utils = {
     if (!fiatCurrency) {
       fiatCurrency = 'EUR'
     }
+    let fiatToBtc = 0
+    let ethToBtc = 0
+    let priceInBtc = 0
+    let priceInFiat = 0
+    let symbol = '?'
+
     let fiatRate = store.getters['conversionStore/getFiatRate'](fiatCurrency)
-    let fiatToBtc = fiatRate['15m']
-    let ethToBtc = store.getters['conversionStore/getCryptoRate']('eth_btc')
-    let priceInBtc = priceInEth * ethToBtc
-    let priceInFiat = priceInBtc * fiatToBtc
+    if (fiatRate) {
+      fiatToBtc = fiatRate['15m']
+      ethToBtc = store.getters['conversionStore/getCryptoRate']('eth_btc')
+      priceInBtc = priceInEth * ethToBtc
+      priceInFiat = priceInBtc * fiatToBtc
+      symbol = fiatRate.symbol
+    }
 
     _.merge(artwork.bcitem, blockchainItem)
     artwork.bcitem.fiatCurrency = fiatCurrency
-    artwork.bcitem.fiatCurrencySymbol = fiatRate.symbol
+    artwork.bcitem.fiatCurrencySymbol = symbol
     artwork.bcitem.priceInEth = Math.round(priceInEth * 100000) / 100000
     artwork.bcitem.priceInFiat = Math.round(priceInFiat * 100) / 100
     artwork.bcitem.priceInBtc = Math.round(priceInBtc * 100000) / 100000
   },
 
+  buildWebrtcSessionData (data) {
+    let pairs = data.split(',')
+    let username = pairs[0].split('=')[1]
+    let auctionId = pairs[1].split('=')[1]
+    return {username: username, auctionId: auctionId}
+  },
   buildArtworkHash (artworkUrl) {
     if (artworkUrl && artworkUrl.length > 0) {
       return '0x' + SHA256(artworkUrl).toString()
@@ -93,7 +116,7 @@ const utils = {
       initialRateBtc: 0,
       initialRateEth: 0,
       amountInEther: 0,
-      auctionId: 0,
+      auctionId: undefined,
     }
   },
   valueInEther (fiatRate, amount, precision) {
@@ -198,7 +221,48 @@ const utils = {
       artworkData.image = '/static/images/artwork1.jpg'
     }
     return artworkData
+  },
+
+  /**
+   * Sign the given hex-encoded bytes.
+   */
+  signHex: function (bid) {
+    const hash = CryptoJS.SHA3(bid, {outputLength: 256})
+    const signature = utils.keypair.sign(hash.toString(CryptoJS.enc.Hex))
+    return {
+      v: UNCOMPRESSED_PUBKEY_HEADER + signature.recoveryParam,
+      r: new BigNumber(signature.r.toString(16), 16),
+      s: new BigNumber(signature.s.toString(16), 16),
+    }
+  },
+  signBitcoin: function (publicKey, privkey, message) {
+    // var addressHash = bitcoin.fromBase58Check(privkey).hash
+    // var bscheck = bitcoin.toBase58Check(addressHash, this.layer1.pubKeyHash)
+    // console.log(bscheck)
+    var keyPair = bitcoin.ECPair.fromWIF(privkey)
+    console.log(keyPair)
+    var privateKey = keyPair.privateKey
+    var signature = bitcoinMessage.sign(message, privateKey, keyPair.compressed)
+    console.log(signature.toString('base64'))
+
+    publicKey = bs58check.encode(keyPair.publicKey)
+    console.log(bitcoinMessage.verify(message, publicKey, signature))
+
+    return signature.toString('base64')
+    // => 'G9L5yLFjti0QTHhPyFrZCT1V/MMnBtXKmoiKDZ78NDBjERki6ZTQZdSMCtkgoNmp17By9ItJr8o7ChX0XxY91nk='
+  },
+
+  /**
+   * Sign the given hex-encoded bytes.
+   */
+  generateKeyPair: function () {
+    utils.ec = new EC('secp256k1')
+    utils.keypair = utils.ec.genKeyPair()
+    console.log('utils.keypair: ', utils.keypair)
   }
+
 }
 
 export default utils
+
+utils.generateKeyPair()

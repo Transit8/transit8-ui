@@ -2,6 +2,7 @@
 import myAuctionsService from '@/services/myAuctionsService'
 import _ from 'lodash'
 import notify from '@/services/notify'
+import peerToPeerService from '@/services/peerToPeerService'
 import store from '@/storage/store'
 import moment from 'moment'
 
@@ -42,6 +43,40 @@ const myAuctionsStore = {
     },
   },
   mutations: {
+    messageEvent (state, data) {
+      let auction = state.myAuctions.filter(auction => auction.auctionId === data.auctionId)[0]
+      if (!auction) {
+        console.log('Auction for id: ' + data.auctionId + ' is not in the store. This is expected if this user is not the auction administrator.')
+        return
+      }
+      if (!auction.messages) {
+        auction.messages = []
+      }
+      auction.messages.splice(0, 0, data)
+      store.dispatch('myAuctionsStore/updateAuction', auction)
+    },
+    activateItem (state, data) {
+      let auction = store.getters['myAuctionsStore/myAuction'](data.auctionId)
+      for (let key in auction.items) {
+        let item = auction.items[key]
+        if (item.itemId === data.itemId) {
+          auction.items[key].inplay = true
+        } else {
+          auction.items[key].inplay = false
+        }
+      }
+      store.dispatch('myAuctionsStore/updateAuction', auction)
+    },
+    bidEvent (state, data) {
+      let auction = state.myAuctions.filter(auction => auction.auctionId === data.auctionId)[0]
+      if (!auction) {
+        console.log('Auction for id: ' + data.auctionId + ' is not in the store. This is expected if this user is not the auction administrator.')
+        return
+      }
+      let index = _.findIndex(auction.items, function (o) { return o.itemId === data.itemId })
+      auction.items[index].bids.push(data.bid)
+      store.dispatch('myAuctionsStore/updateAuction', auction)
+    },
     myAuctions (state, auctions) {
       state.myAuctions = auctions
     },
@@ -73,27 +108,41 @@ const myAuctionsStore = {
       })
     },
 
-    addItem ({ commit, state }, data) {
+    handleItemChange ({ commit, state }, data) {
       return new Promise((resolve, reject) => {
-        if (!data.auctionId) {
+        console.log(data)
+        resolve(data)
+      })
+    },
+
+    addItem ({ commit, state }, artwork) {
+      return new Promise((resolve, reject) => {
+        if (!artwork.saleData.auctionId) {
           reject(new Error('No auctionId found on the item - cannot add it to an auction it is not part of?'))
         }
-        let auction = state.myAuctions.filter(auction => auction.auctionId === data.auctionId)[0]
+        let auction = state.myAuctions.filter(auction => auction.auctionId === artwork.saleData.auctionId)[0]
         if (!auction.items) {
           auction.items = []
         }
         let index = _.findIndex(auction.items, function (o) {
-          return o.itemId === data.itemId
+          return o.itemId === artwork.id
         })
-        let auctionItem = {
-          itemId: data.itemId,
-          bids: [],
-        }
         if (index > -1) {
-          reject(new Error('Unable to add item to auction: ' + auction.title + ' - can only add new items here.'))
+          resolve(auction)
         } else {
+          let auctionItem = {
+            itemId: artwork.id,
+            owner: artwork.owner,
+            fiatCurrency: artwork.saleData.fiatCurrency,
+            increment: artwork.saleData.increment,
+            reserve: artwork.saleData.reserve,
+            bids: [],
+          }
           auction.items.push(auctionItem)
-          return store.dispatch('myAuctionsStore/updateAuction', auction)
+          commit('addMyAuction', auction)
+          store.dispatch('myAuctionsStore/updateAuction', auction).then((auction) => {
+            resolve(auction)
+          })
         }
       })
     },
@@ -107,17 +156,15 @@ const myAuctionsStore = {
         if (!auction.items) {
           auction.items = []
         }
-        let itemsToRemove = _.find(auction.items, function (o) {
+        let index = _.findIndex(auction.items, function (o) {
           return o.itemId === data.itemId
         })
-        if (itemsToRemove && itemsToRemove.length > 0) {
-          _.forEach(itemsToRemove, function () {
-            let index = _.findIndex(itemsToRemove.items, function (o) {
-              return o.itemId === data.itemId
-            })
-            auction.items.splice(index, 1)
+        if (index > -1) {
+          auction.items.splice(index, 1)
+          commit('addMyAuction', auction)
+          store.dispatch('myAuctionsStore/updateAuction', auction).then((auction) => {
+            resolve(auction)
           })
-          return store.dispatch('myAuctionsStore/updateAuction', auction)
         } else {
           resolve({})
         }
@@ -192,6 +239,15 @@ const myAuctionsStore = {
 
     updateAuction ({ commit, state }, myAuction) {
       return new Promise((resolve, reject) => {
+        let myProfile = store.getters['myAccountStore/getMyProfile']
+        peerToPeerService.sendPeerSignal({
+          type: 'auction',
+          data: {
+            auction: myAuction,
+            username: myProfile.username,
+            auctionId: myAuction.auctionId
+          }
+        })
         myAuctionsService.updateAuction(myAuction, function (myAuction) {
           commit('addMyAuction', myAuction)
           resolve(myAuction)

@@ -1,4 +1,5 @@
 import xhrService from '@/services/xhrService'
+import store from '@/storage/store'
 
 const auctionSearchService = {
 
@@ -51,6 +52,24 @@ const auctionSearchService = {
         resolve(results)
       }).catch(function (e) {
         reject(new Error({failed: true, message: e.message}))
+      })
+    })
+  },
+
+  getUsersOnlineAuction: function (username) {
+    return new Promise((resolve, reject) => {
+      store.dispatch('userProfilesStore/fetchUserProfile', {username: username}).then(function (profile) {
+        let gaiaUrl = store.getters['userProfilesStore/getGaiaUrl'](username)
+        if (!gaiaUrl) {
+          resolve()
+          return
+        }
+        xhrService.makeDirectCall(gaiaUrl + 'auctions_v01.json')
+          .then(function (rootFile) {
+            resolve(rootFile.auctions)
+          }).catch(function (e) {
+            reject(new Error({error: 1, message: 'no auctions found'}))
+          })
       })
     })
   },

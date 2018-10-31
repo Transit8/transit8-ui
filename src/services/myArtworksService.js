@@ -34,8 +34,8 @@ const myArtworksService = {
             let userProfile = store.getters['myAccountStore/getMyProfile']
             indexData.uploader = userProfile.username
           }
-          store.dispatch('userProfilesStore/addUserProfile', {username: indexData.uploader}, {root: true})
-          store.dispatch('userProfilesStore/addUserProfile', {username: indexData.owner}, {root: true})
+          store.dispatch('userProfilesStore/fetchUserProfile', {username: indexData.uploader}, {root: true})
+          store.dispatch('userProfilesStore/fetchUserProfile', {username: indexData.owner}, {root: true})
           myArtworksService.fetchMyProvenanceFile(indexData, success, failure)
         })
       }
@@ -54,8 +54,8 @@ const myArtworksService = {
         store.commit('myArtworksStore/blockstackRootFile', blockstackRootFile)
         _.forEach(blockstackRootFile.records, function (indexData) {
           if (indexData.id === artworkId) {
-            store.dispatch('userProfilesStore/addUserProfile', {username: indexData.uploader}, {root: true})
-            store.dispatch('userProfilesStore/addUserProfile', {username: indexData.owner}, {root: true})
+            store.dispatch('userProfilesStore/fetchUserProfile', {username: indexData.uploader}, {root: true})
+            store.dispatch('userProfilesStore/fetchUserProfile', {username: indexData.owner}, {root: true})
             myArtworksService.fetchMyProvenanceFile(indexData, success, failure)
           }
         })

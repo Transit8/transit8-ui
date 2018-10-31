@@ -16,9 +16,23 @@ const userProfilesStore = {
       if (matches.length > 0) {
         return matches[0]
       } else {
-        // store.dispatch('userProfilesStore/addUserProfile', {username: username}, {root: true})
+        // store.dispatch('userProfilesStore/fetchUserProfile', {username: username}, {root: true})
         return {}
       }
+    },
+    getGaiaUrl: (state) => (username) => {
+      let gaiaUrl
+      let profiles = state.userProfiles.filter(profile => profile.username === username)
+      if (profiles.length > 0) {
+        let domain = location.origin
+        let profile = profiles[0]
+        for (var key in profile.apps) {
+          if (key === domain) {
+            gaiaUrl = profile.apps[key]
+          }
+        }
+      }
+      return gaiaUrl
     },
     getProfiles: (state) => {
       return state.userProfiles
@@ -35,7 +49,7 @@ const userProfilesStore = {
     },
   },
   actions: {
-    addUserProfile ({ commit, state }, user) {
+    fetchUserProfile ({ commit, state }, user) {
       return new Promise((resolve, reject) => {
         if (!user.username || user.username.length === 0 || user.username.indexOf('not given') > -1) {
           resolve()
