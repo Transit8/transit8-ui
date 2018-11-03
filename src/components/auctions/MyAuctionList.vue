@@ -1,18 +1,18 @@
 <template>
-<section>
+<div class="innerpage mt-50 col-md-12">
   <div class="row">
     <div class="col-md-12">
-      <h1>My Upcoming Auctions <span>({{myAuctionsFutureCount}})</span></h1>
+      <h1>My Auctions <span>({{myAuctionsFutureCount}})</span></h1>
       <my-single-auction v-for="(auction, index) of myAuctionsFuture" :key="index" :auction="auction"/>
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
-      <h1>My Past Auctions <span>({{myAuctionsPastCount}})</span></h1>
+      <h1>Past Auctions <span>({{myAuctionsPastCount}})</span></h1>
       <my-single-auction v-for="(auction, index) of myAuctionsPast" :key="index" :auction="auction"/>
     </div>
   </div>
-</section>
+</div>
 </template>
 
 <script>

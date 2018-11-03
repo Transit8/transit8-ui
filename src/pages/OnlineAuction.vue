@@ -1,34 +1,33 @@
 <template>
-<section class="white-bg black">
-<div class="container wide">
-  <div class="row">
-    <div class="col-md-6">
-      <h3>{{auction.title}}</h3>
+<section class="white-bg black pt-120 pb-120">
+  <div class="container wide">
+    <div class="row">
+      <h1 class="innerpage">{{auction.title}} ({{artworksSize}} items)</h1>
       <p>{{auction.description}}</p>
-      <p>Countdown: {{countdown}}</p>
-      <p>{{artworksSize}} items</p>
+      <p>{{countdown}}</p>
+      <div class="col-md-6">
+        <hammer-item :item="hammerItem" :auctionId="auctionId"/>
+      </div>
+      <div class="col-md-6">
+        <div class="row">
+          <div class="col-md-12">
+            <h4>Watchers</h4>
+            <p v-for="(peer, index) of peers" :key="index">
+              {{peer.username}} <span v-if="myUsername() === peer.username">me!</span> <span v-if="administrator === peer.username">Clerk!</span>
+            </p>
+          </div>
+        </div>
+        <video-stream :canPublish="false"/>
+        <message-stream :auctionId="auctionId" :administrator="false"/>
+      </div>
     </div>
-    <video-stream :canPublish="false"/>
-    <message-stream :auctionId="auctionId" :administrator="false"/>
+    <div class="row" v-if="artworksSize > 0">
+      <div class="col-md-9">
+        <h4>Next Items</h4>
+        <single-auction-item class="auction-item-container" v-for="(item, index) of sellingItems" :key="index" :item="item" :auctionId="auctionId"/>
+      </div>
+    </div>
   </div>
-  <div class="row">
-    <div class="col-md-9">
-      <hammer-item :item="hammerItem" :auctionId="auctionId"/>
-    </div>
-    <div class="col-md-3">
-      <h4>Peers</h4>
-      <p v-for="(peer, index) of peers" :key="index">
-        {{peer.username}} <span v-if="myUsername() === peer.username">me!</span> <span v-if="administrator === peer.username">Clerk!</span>
-      </p>
-    </div>
-  </div>
-  <div class="row" style="margin-top: 40px">
-    <div class="col-md-9">
-      <h4>Next Items</h4>
-      <single-auction-item class="auction-item-container" v-for="(item, index) of sellingItems" :key="index" :item="item" :auctionId="auctionId"/>
-    </div>
-  </div>
-</div>
 </section>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="innerpage mt-50 col-md-12">
   <div>
     <uiv-modal :value="isModalActive" :append-to-body="true">
       <div slot="title"><h1 class="login-modal-title">Updating Data</h1></div>
@@ -14,7 +14,7 @@
     </uiv-modal>
   </div>
 
-  <form class="form-horizontal" style="margin: 0 150px 0 150px;">
+  <form class="form-horizontal">
     <p v-if="errors.length" :key="errors.length">
       <b>Please correct the following error(s):</b>
       <ul>

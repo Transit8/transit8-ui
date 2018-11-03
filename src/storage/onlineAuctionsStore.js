@@ -31,6 +31,14 @@ const onlineAuctionsStore = {
     getPeers: (state) => {
       return state.onlinePeers
     },
+    getPeer: (state) => (username) => {
+      return state.onlinePeers.filter(peer => peer.username === username)[0]
+    },
+    getAdministratorPeer: (state, getters) => (auctionId) => {
+      let auction = getters.onlineAuction(auctionId)
+      let peer = getters.getPeer(auction.administrator)
+      return peer
+    },
     onlineAuctions: (state, getters) => {
       return state.onlineAuctions
     },
@@ -44,6 +52,7 @@ const onlineAuctionsStore = {
     },
   },
   mutations: {
+
     messageEvent (state, data) {
       let auctionId = data.auctionId
       let auction = state.onlineAuctions.filter(auction => auction.auctionId === auctionId)[0]
@@ -55,45 +64,43 @@ const onlineAuctionsStore = {
         auction.messages = []
       }
       auction.messages.splice(0, 0, data)
-      store.commit('myAuctionsStore/messageEvent', data)
+      // store.commit('myAuctionsStore/messageEvent', data)
     },
-    bidEvent (state, data) {
+
+    itemUpdateEvent (state, data) {
       let auctionId = data.auctionId
       let auction = state.onlineAuctions.filter(auction => auction.auctionId === auctionId)[0]
       if (!auction) {
-        console.log('Auction for id: ' + data.auctionId + ' is not in the store. This is expected if this user is the auction administrator.')
+        console.log('Auction not found - this means the logged in user is the administrator and the auction has already been updated in myAuctionsStore.')
         return
       }
-      let index = _.findIndex(auction.items, function (o) { return o.itemId === data.itemId })
-      let item = auction.items[index]
-      item.bids.push(data.bid)
-      store.commit('myAuctionsStore/bidEvent', data)
+      let index = _.findIndex(auction.items, function (o) { return o.itemId === data.item.itemId })
+      auction.items[index] = data.item
+      store.commit('onlineAuctionsStore/onlineAuction', auction)
     },
+
     newPeer (state, data) {
-      let index = _.findIndex(state.onlinePeers, function (o) {
-        return o.username === data.username
-      })
+      let index = _.findIndex(state.onlinePeers, function (o) { return o.username === data.username })
       if (index === -1) {
         state.onlinePeers.splice(0, 0, data)
       }
     },
+
     farewellPeer (state, data) {
-      let index = _.findIndex(state.onlinePeers, function (o) {
-        return o.username === data.username
-      })
+      let index = _.findIndex(state.onlinePeers, function (o) { return o.username === data.username })
       if (index > -1) {
         state.onlinePeers.splice(index, 1)
       }
     },
+
     onlineAuctions (state, auctions) {
       for (var key in auctions) {
         store.commit('onlineAuctionsStore/onlineAuction', auctions[key])
       }
     },
+
     onlineAuction (state, auction) {
-      let index = _.findIndex(state.onlineAuctions, function (o) {
-        return o.auctionId === auction.auctionId
-      })
+      let index = _.findIndex(state.onlineAuctions, function (o) { return o.auctionId === auction.auctionId })
       if (index === -1) {
         state.onlineAuctions.splice(0, 0, auction)
       } else {
@@ -113,9 +120,7 @@ const onlineAuctionsStore = {
               auctionSearchService.getUsersOnlineAuction(auctionsFromSearch[0].administrator).then((auctionsFromUserStorage) => {
                 if (auctionsFromUserStorage) {
                   commit('onlineAuctions', auctionsFromUserStorage)
-                  let index = _.findIndex(auctionsFromUserStorage, function (o) {
-                    return o.auctionId === auctionId
-                  })
+                  let index = _.findIndex(auctionsFromUserStorage, function (o) { return o.auctionId === auctionId })
                   if (index > -1) {
                     resolve(auctionsFromUserStorage[index])
                   } else {

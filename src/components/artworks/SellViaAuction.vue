@@ -22,7 +22,7 @@
         </p>
       </div>
       <div class="form-group">
-        <label>Reserve {{currentSymbol}}</label>
+        <label>Reserve {{currencySymbol}}</label>
         <input class="form-control" type="number" step="50" placeholder="Reserve price" v-model="artwork.saleData.reserve"  aria-describedby="reserveHelpBlock">
         <p id="reserveHelpBlock" class="form-text text-muted">
           This item will not sell if the bidding does not meet or exceed this amount.<br/>
@@ -30,7 +30,7 @@
         </p>
       </div>
       <div class="form-group">
-        <label>Increment {{currentSymbol}}</label>
+        <label>Increment {{currencySymbol}}</label>
         <input class="form-control" type="number" step="50" placeholder="Increment value" v-model="artwork.saleData.increment"  aria-describedby="incrementHelpBlock">
         <p id="incrementHelpBlock" class="form-text text-muted">
           {{valueInBitcoin(artwork.saleData.increment)}} Btc / {{valueInEther(artwork.saleData.increment)}} Eth
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import utils from '@/services/utils'
+import moneyUtils from '@/services/moneyUtils'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -84,56 +84,36 @@ export default {
     fiatRates () {
       return this.$store.getters['conversionStore/getFiatRates']
     },
+
     auctionTitle () {
       return this.$store.getters['myAuctionsStore/myAuction'](this.artwork.saleData.auctionId).title
     },
+
     auctions () {
       return this.$store.getters['myAuctionsStore/myAuctionsFuture']
     },
+
     conversionMessage () {
-      let fiatRate = this.$store.getters['conversionStore/getFiatRate'](this.currency)
-      let ethToBtc = this.$store.getters['conversionStore/getCryptoRate']('eth_btc')
-      let fiatToBtc = fiatRate['15m']
-      let symbol = fiatRate['symbol']
-      fiatToBtc = Math.round(fiatRate['15m'] * 100) / 100
-      let fiatToEther = fiatRate['15m'] * ethToBtc
-      let conversionMessage = '1 Bitcoin = ' + fiatToBtc + ' ' + symbol + ' / 1 Ether = ' + fiatToEther + ' ' + symbol
-      return conversionMessage
+      return moneyUtils.conversionMessage(this.currency)
     },
-    currentSymbol () {
-      let fiatRates = this.$store.getters['conversionStore/getFiatRates']
-      if (fiatRates && this.currency && fiatRates[this.currency]) {
-        return fiatRates[this.currency]['symbol']
-      }
+
+    currencySymbol () {
+      return moneyUtils.currencySymbol(this.currency)
     },
   },
   methods: {
     closeModal () {
       this.$emit('closeDialog')
     },
+
     valueInBitcoin (amount) {
-      let fiatRates = this.$store.getters['conversionStore/getFiatRates']
-      let currentCurrency = fiatRates[this.currency]
-      let conversion = currentCurrency['15m']
-      return this.convert(amount, conversion, 100000000)
+      return moneyUtils.valueInBitcoin(this.currency, amount)
     },
+
     valueInEther (amount) {
-      let fiatRates = this.$store.getters['conversionStore/getFiatRates']
-      let currentCurrency = fiatRates[this.currency]
-      let conversion = currentCurrency['15m']
-      let ethToBtc = this.$store.getters['conversionStore/getCryptoRate']('eth_btc')
-      conversion = conversion * ethToBtc
-      return this.convert(amount, conversion, 100000000)
+      return moneyUtils.valueInEther(this.currency, amount)
     },
-    convert (amount, conversion, precision) {
-      if (typeof amount === 'string') {
-        amount = Number(amount)
-      }
-      if (typeof amount === 'number') {
-        conversion = amount / conversion
-      }
-      return Math.round(conversion * precision) / precision
-    },
+
     validate: function (saleData) {
       this.errors = []
       if (saleData.soid !== 2) {
@@ -152,20 +132,20 @@ export default {
     removeFromAuction () {
       let $self = this
       this.$store.dispatch('myArtworksStore/removeFromAuction', {auctionId: this.artwork.saleData.auctionId, itemId: this.artwork.id}).then((artwork) => {
-        $self.$emit('closeModal', 'Stored values')
+        $self.closeModal()
       }).catch(e => {
         console.log(e.message)
       })
     },
     addToAuction () {
-      this.artwork.saleData = utils.buildSaleDataFromUserInput(this.auctionId, this.currency, this.artwork.saleData)
+      this.artwork.saleData = moneyUtils.buildSaleDataFromUserInput(this.auctionId, this.currency, this.artwork.saleData)
       this.validate(this.artwork.saleData)
       if (this.errors.length > 0) {
         return
       }
       let $self = this
       this.$store.dispatch('myArtworksStore/addToAuction', this.artwork).then((artwork) => {
-        $self.$emit('closeModal', 'Stored values')
+        $self.closeModal()
       }).catch(e => {
         console.log(e.message)
       })

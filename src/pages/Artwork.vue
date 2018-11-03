@@ -62,7 +62,7 @@ import ArtworkSlider from '../components/artworks/ArtworkSlider'
 import ArtworkSliderControls from '../components/artworks/ArtworkSliderControls'
 import ethereumService from '@/services/ethereumService'
 import notify from '@/services/notify'
-import utils from '@/services/utils'
+import moneyUtils from '@/services/moneyUtils'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -170,7 +170,7 @@ export default {
         notify.info({title: 'Purchase Artwork.', text: 'Artwork purchase order sent to blockchain.'})
         artwork.owner = buyer
         artwork.bcitem.blockstackId = buyer
-        artwork.saleData = utils.buildInitialSaleData()
+        artwork.saleData = moneyUtils.buildInitialSaleData()
         $self.$store.dispatch('myArtworksStore/transferArtwork', artwork).then((artwork) => {
           notify.info({title: 'Purchase Artwork.', text: 'Artwork info has been moved to your user storage.'})
           $self.$store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {

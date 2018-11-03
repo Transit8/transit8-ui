@@ -1,9 +1,11 @@
 <template>
-<section id="pdp-slider" class="pb-3 white-bg pt-60 pb-60">
+<section class="white-bg black pt-120 pb-120">
   <div class="container wide">
     <div class="row">
-      <h1>Update Artwork</h1>
-      <my-artwork-upload-form :artworkId="artworkId" :mode="'update'"/>
+      <div class="col-md-12">
+        <h1 class="innerpage">Update Artwork</h1>
+        <my-artwork-upload-form :artworkId="artworkId" :mode="'update'"/>
+      </div>
     </div>
   </div>
 </section>

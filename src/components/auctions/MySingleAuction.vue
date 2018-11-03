@@ -1,17 +1,12 @@
 <template>
 <div class="col-md-12">
-  <h3>{{auction.title}}</h3>
+  <h3><router-link :to="onlineAuctionUrl">{{auction.title}}</router-link></h3>
   <p>{{auction.description}}</p>
-  <p>Countdown: {{countdown}}</p>
-  <div class="row">
-    <div class="col-sm-3">
-      <router-link :to="manageUrl">manage auction</router-link>
-      <router-link :to="onlineAuctionUrl">online auction</router-link>
-    </div>
-  </div>
-  <div class="row" v-if="debugMode">
+  <p>{{countdown}}</p>
+  <div class="row pull-right">
     <div class="col-sm-12">
-      <p v-html="auction"></p>
+      <router-link :to="manageUrl">manage auction</router-link> |
+      <router-link :to="onlineAuctionUrl">online auction</router-link>
     </div>
   </div>
 </div>

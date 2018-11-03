@@ -2,6 +2,7 @@
 import artworkSearchService from '@/services/artworkSearchService'
 import _ from 'lodash'
 import utils from '../services/utils'
+import moneyUtils from '../services/moneyUtils'
 import store from '@/storage/store'
 
 const artworkSearchStore = {
@@ -106,7 +107,7 @@ const artworkSearchStore = {
             if (artwork.artwork && artwork.artwork[0] && artwork.artwork[0].dataUrl.length > 0) {
               let timestamp = utils.buildArtworkHash(artwork.artwork[0].dataUrl)
               let blockchainItem = store.getters['ethStore/getBlockchainItem'](timestamp)
-              utils.convertPrices(artwork, blockchainItem)
+              moneyUtils.convertPrices(artwork, blockchainItem)
               if (artwork.owner !== artwork.bcitem.blockstackId) {
                 artwork.owner = artwork.bcitem.blockstackId
               }
@@ -130,7 +131,7 @@ const artworkSearchStore = {
       for (var index = 0; index < maximum; index++) {
         let blockchainItem = blockchainItems[index]
         artworkSearchService.findArtworks({term: 'title', query: blockchainItem.title}, function (artwork) {
-          utils.convertPrices(artwork, blockchainItem)
+          moneyUtils.convertPrices(artwork, blockchainItem)
           store.dispatch('artworkSearchStore/fetchArtwork', artwork.id)
         },
         function (error) {

@@ -1,6 +1,6 @@
 <template>
 <div class="col-md-12">
-  <h3><router-link :to="auctionUrl">{{auction.title}}</router-link></h3>
+  <h4><router-link :to="auctionUrl">{{auction.title}}</router-link></h4>
   <p>{{auction.description}}</p>
   <p>Countdown: {{countdown}}</p>
 </div>

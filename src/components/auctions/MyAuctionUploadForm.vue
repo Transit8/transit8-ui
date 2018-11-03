@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="innerpage mt-50">
   <div>
     <uiv-modal :value="isModalActive" :append-to-body="true">
       <div slot="title"><h1 class="login-modal-title">Updating Data</h1></div>

@@ -1,11 +1,13 @@
 <template>
-<section class="white-bg black">
-<div class="container wide">
-  <div class="row">
-    <h4>Upcoming Auctions ({{auctionsSize}} found)</h4>
-    <single-auction v-for="(auction, index) of auctions" :key="index" :auction="auction"/>
+<section class="white-bg black pt-120 pb-120">
+  <div class="container wide">
+    <div class="row">
+
+      <h1 class="innerpage">Upcoming Auctions ({{auctionsSize}})</h1>
+      <single-auction class="row" v-for="(auction, index) of auctions" :key="index" :auction="auction"/>
+
+    </div>
   </div>
-</div>
 </section>
 </template>
 

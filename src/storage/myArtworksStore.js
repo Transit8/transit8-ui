@@ -3,7 +3,7 @@ import myArtworksService from '@/services/myArtworksService'
 import _ from 'lodash'
 import notify from '@/services/notify'
 import store from '@/storage/store'
-import utils from '@/services/utils'
+import moneyUtils from '@/services/moneyUtils'
 
 const myArtworksStore = {
   namespaced: true,
@@ -98,7 +98,7 @@ const myArtworksStore = {
         store.dispatch('myAuctionsStore/removeItem', {itemId: data.itemId, auctionId: data.auctionId}).then((auction) => {
           notify.debug({title: 'Sell Via Auction', text: 'Item info removed from auction.'})
           if (artwork) {
-            artwork.saleData = utils.buildInitialSaleData()
+            artwork.saleData = moneyUtils.buildInitialSaleData()
             store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
               notify.debug({title: 'Sell Via Auction', text: 'Auction info removed from artwork.'})
               resolve(artwork)
@@ -138,7 +138,7 @@ const myArtworksStore = {
               myArtwork.bcitem = {}
             }
             myArtwork.bcitem.status = 'registered'
-            utils.convertPrices(myArtwork, blockchainItem)
+            moneyUtils.convertPrices(myArtwork, blockchainItem)
             if (myArtwork.owner !== blockchainItem.blockstackId) {
               myArtwork.owner = blockchainItem.blockstackId
               store.dispatch('myArtworksStore/updateArtwork', myArtwork)
@@ -158,7 +158,7 @@ const myArtworksStore = {
         myArtworksService.getMyArtwork(artworkId, function (myArtwork) {
           let blockchainItem = store.getters['ethStore/getBlockchainItem'](myArtwork.timestamp)
           myArtwork.blockchainItem = blockchainItem
-          utils.convertPrices(myArtwork, blockchainItem)
+          moneyUtils.convertPrices(myArtwork, blockchainItem)
           if (myArtwork.owner !== blockchainItem.blockstackId) {
             myArtwork.owner = blockchainItem.blockstackId
             store.dispatch('myArtworksStore/updateArtwork', myArtwork)
@@ -210,7 +210,7 @@ const myArtworksStore = {
             clearInterval(intval)
           }
           if (blockchainItem) {
-            utils.convertPrices(artwork, blockchainItem)
+            moneyUtils.convertPrices(artwork, blockchainItem)
             commit('addMyArtwork', artwork)
             notify.info({title: 'Update Artwork', text: 'New price has been set in blockchain.'})
           }
@@ -225,7 +225,7 @@ const myArtworksStore = {
           commit('addMyArtwork', artwork)
           store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
             if (blockchainItem) {
-              utils.convertPrices(artwork, blockchainItem)
+              moneyUtils.convertPrices(artwork, blockchainItem)
               commit('addMyArtwork', artwork)
               notify.info({title: 'Update Artwork', text: 'New price has been set in blockchain.'})
             }

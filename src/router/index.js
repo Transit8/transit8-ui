@@ -11,8 +11,6 @@ import Artist from '../pages/Artist'
 import HowItWorks from '../pages/HowItWorks'
 import Resources from '../pages/Resources'
 import Search from '../pages/Search'
-import MyArtworkSetPrice from '../pages/MyArtworkSetPrice'
-import MyArtworkRegister from '../pages/MyArtworkRegister'
 import MyArtworks from '../pages/MyArtworks'
 import MyArtworkUpload from '../pages/MyArtworkUpload'
 import MyArtworkUpdate from '../pages/MyArtworkUpdate'
@@ -163,8 +161,24 @@ const router = new Router({
     },
     {
       path: '/online-auctions',
+      meta: { requiresAuth: true },
       name: 'onlineAuctions',
       component: OnlineAuctions,
+    },
+    {
+      path: '/my-auctions/manage/:auctionId',
+      meta: { requiresAuth: true },
+      component: MyAuctionManage,
+    },
+    {
+      path: '/my-auctions/update/:auctionId',
+      meta: { requiresAuth: true },
+      component: MyAuctionUpdate,
+    },
+    {
+      path: '/my-auctions/upload',
+      meta: { requiresAuth: true },
+      component: MyAuctionUpload,
     },
     {
       path: '/my-auctions',
@@ -174,15 +188,6 @@ const router = new Router({
         {
           path: '',
           component: MyAuctionList,
-        }, {
-          path: '/my-auctions/update/:auctionId',
-          component: MyAuctionUpdate,
-        }, {
-          path: '/my-auctions/upload',
-          component: MyAuctionUpload,
-        }, {
-          path: '/my-auctions/manage/:auctionId',
-          component: MyAuctionManage,
         }
       ]
     },
@@ -202,18 +207,6 @@ const router = new Router({
       path: '/my-artworks',
       name: 'my-artworks',
       component: MyArtworks,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: '/my-artworks/register/:artworkId',
-      name: 'myArtworkRegister',
-      component: MyArtworkRegister,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: '/my-artworks/set-price/:artworkId',
-      name: 'myArtworkSetPrice',
-      component: MyArtworkSetPrice,
       meta: { requiresAuth: true },
     },
     {

@@ -23,12 +23,17 @@
             </router-link>
           </li>
           <li>
-            <router-link to="/my-auctions" class="navbar-item" v-if="debugMode">
+            <router-link to="/my-auctions" class="navbar-item">
               My Auctions
             </router-link>
           </li>
           <li>
-            <router-link to="/online-auctions" class="navbar-item" v-if="debugMode">
+            <router-link to="/my-auctions/upload" class="navbar-item">
+              New Auction
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/online-auctions" class="navbar-item">
               Online Auctions
             </router-link>
           </li>

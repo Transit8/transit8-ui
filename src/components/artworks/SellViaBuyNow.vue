@@ -7,6 +7,7 @@
       {{message}}
     </div>
     <div class="modal-body" v-else>
+      <p class="form-text text-muted">Note: set the value to 0 to remove from sale.</p>
       <form @submit.prevent="setPrice">
         <p>This item can be bought for the price you specify.</p>
         <p v-if="errors.length" :key="errors.length">
@@ -25,10 +26,10 @@
           </p>
         </div>
         <div class="form-group">
-          <label>Amount {{currentSymbol}}</label>
-          <input class="form-control" type="number" step="50" placeholder="Sale value of artwork" v-model="artwork.saleData.amount"  aria-describedby="amountHelpBlock">
+          <label>Amount {{currencySymbol}}</label>
+          <input class="form-control" type="number" step="50" placeholder="Sale value of artwork" v-model="amount"  aria-describedby="amountHelpBlock">
           <p id="amountHelpBlock" class="form-text text-muted">
-            {{valueInBitcoin(artwork.saleData.amount)}} Btc / {{valueInEther(artwork.saleData.amount)}} Eth
+            {{valueInBitcoin}} Btc / {{valueInEther}} Eth
           </p>
         </div>
       </form>
@@ -44,6 +45,7 @@
 <script>
 import notify from '@/services/notify'
 import ethereumService from '@/services/ethereumService'
+import moneyUtils from '@/services/moneyUtils'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -60,78 +62,63 @@ export default {
   data () {
     return {
       errors: [],
-      intval: null,
-      auctionId: null,
+      amount: 0,
       currency: 'EUR',
       message: null,
     }
   },
   mounted () {
+    this.amount = this.artwork.saleData.amount
+    if (this.artwork.saleData.auctionId && this.artwork.saleData.soid === 2) {
+      this.message = 'This artwork is part of an auction - remove it from the auction if you want to sell it by buy now.'
+    }
   },
   computed: {
     fiatRates () {
       return this.$store.getters['conversionStore/getFiatRates']
     },
+
     auctions () {
       return this.$store.getters['myAuctionsStore/myAuctionsFuture']
     },
-    conversionMessage () {
-      let fiatRate = this.$store.getters['conversionStore/getFiatRate'](this.currency)
-      let ethToBtc = this.$store.getters['conversionStore/getCryptoRate']('eth_btc')
-      let fiatToBtc = fiatRate['15m']
-      let symbol = fiatRate['symbol']
-      fiatToBtc = Math.round(fiatRate['15m'] * 100) / 100
-      let fiatToEther = fiatRate['15m'] * ethToBtc
-      let conversionMessage = '1 Bitcoin = ' + fiatToBtc + ' ' + symbol + ' / 1 Ether = ' + fiatToEther + ' ' + symbol
-      return conversionMessage
+
+    valueInBitcoin () {
+      return moneyUtils.valueInBitcoin(this.currency, this.amount)
     },
-    currentSymbol () {
-      let fiatRates = this.$store.getters['conversionStore/getFiatRates']
-      if (fiatRates && this.currency && fiatRates[this.currency]) {
-        return fiatRates[this.currency]['symbol']
-      }
+
+    valueInEther () {
+      return moneyUtils.valueInEther(this.currency, this.amount)
+    },
+
+    conversionMessage () {
+      return moneyUtils.conversionMessage(this.currency)
+    },
+
+    currencySymbol () {
+      return moneyUtils.currencySymbol(this.currency)
     },
   },
   methods: {
     closeModal () {
       this.$emit('closeDialog')
     },
-    valueInBitcoin (amount) {
-      let fiatRates = this.$store.getters['conversionStore/getFiatRates']
-      let currentCurrency = fiatRates[this.currency]
-      let conversion = currentCurrency['15m']
-      return this.convert(amount, conversion, 100000000)
-    },
-    valueInEther (amount) {
-      let fiatRates = this.$store.getters['conversionStore/getFiatRates']
-      let currentCurrency = fiatRates[this.currency]
-      let conversion = currentCurrency['15m']
-      let ethToBtc = this.$store.getters['conversionStore/getCryptoRate']('eth_btc')
-      conversion = conversion * ethToBtc
-      return this.convert(amount, conversion, 100000000)
-    },
-    convert (amount, conversion, precision) {
-      if (typeof amount === 'string') {
-        amount = Number(amount)
-      }
-      if (typeof amount === 'number') {
-        conversion = amount / conversion
-      }
-      return Math.round(conversion * precision) / precision
-    },
+
     validate: function (saleData) {
       this.errors = []
-      if (!saleData.amount || saleData.amount === 0) {
-        this.errors.push({ERR_CODE: 301, message: 'Amount required if selling by buy now.'})
-      }
-      if (saleData.soid !== 1) {
-        this.errors.push({ERR_CODE: 301, message: 'Selling via buy now?'})
-      }
     },
+
     setPrice: function () {
       let artwork = this.artwork
+      this.validate(artwork.saleData)
+      if (this.errors.length > 0) {
+        return
+      }
+
       artwork.saleData.soid = 1
-      artwork.saleData.amount = Number(artwork.saleData.amount)
+      artwork.saleData.amount = Number(this.amount)
+      if (artwork.saleData.amount === 0) {
+        artwork.saleData.soid = 0
+      }
       artwork.saleData.reserve = 0
       artwork.saleData.increment = 0
       artwork.saleData.fiatCurrency = this.currency
@@ -139,18 +126,13 @@ export default {
       artwork.saleData.initialRateBtc = fiatRates[this.currency]['15m']
       let ethToBtc = this.$store.getters['conversionStore/getCryptoRate']('eth_btc')
       artwork.saleData.initialRateEth = ethToBtc
-      artwork.saleData.amountInEther = this.valueInEther(artwork.saleData.amount)
+      artwork.saleData.amountInEther = moneyUtils.valueInEther(this.currency, artwork.saleData.amount)
       artwork.saleData.auctionId = null
-
-      this.validate(artwork.saleData)
-      if (this.errors.length > 0) {
-        return
-      }
 
       this.message = 'Setting Price: Please confirm the transaction in your wallet...'
       let priceData = {
         itemIndex: artwork.bcitem.itemIndex,
-        amountInWei: Math.trunc(artwork.saleData.amountInEther * 1000000000000000000)
+        amountInWei: moneyUtils.valueInWei(artwork.saleData.fiatCurrency, artwork.saleData.amount)
       }
       let $self = this
       ethereumService.setPriceOnChain(priceData, function (result) {

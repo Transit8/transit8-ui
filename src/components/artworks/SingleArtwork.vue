@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="url" :class="[artworkWidth]" class="col-xs-12 grid-item">
+  <router-link :to="artworkUrl" :class="[artworkWidth]" class="col-xs-12 grid-item">
     <img :src="artwork.image" :alt="artwork.title">
     <!-- TO DO: in design, artwork caption is artist name -->
     <p class="art-title">{{artwork.title}}</p>
@@ -27,13 +27,7 @@ export default {
     artworkWidth () {
       return `col-sm-${this.width}`
     },
-    registerUrl () {
-      return `/provenance/register/${this.artwork.id}`
-    },
-    editUrl () {
-      return `/provenance/edit/${this.artwork.id}`
-    },
-    url () {
+    artworkUrl () {
       return `/artworks/${this.artwork.id}`
     }
   }

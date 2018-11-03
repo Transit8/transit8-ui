@@ -1,51 +1,61 @@
 <template>
-<div class="container wide">
-  <div class="row">
-    <div class="col-md-6">
-      <h3>{{auction.title}}</h3>
-      <p>{{auction.description}}</p>
-      <!--
-      <p v-html="auction.items" v-if="debugMode"></p>
-      -->
-      <p>Starts: {{startsIn(auction.startDate)}}</p>
-      <p><router-link :to="onlineAuctionUrl">manage auction</router-link></p>
-      <p>{{sellingItemsSize}} items</p>
+<section class="white-bg black pt-120 pb-120">
+  <div class="container wide">
+    <div class="row">
+
+      <h1 class="innerpage">{{auction.title}}</h1>
       <div class="row">
-        <div class="col-sm-3 pull-right">
-          <router-link :to="updateUrl">edit</router-link> |
-          <!-- <a href="#" @click="deleteAuction()">delete</a> | -->
-          <span v-if="auction.privacy === 'private'"><a href="#" @click="makePublic()">make public</a></span>
-          <span v-else><a href="#" @click="makePrivate()">make private</a></span>
+        <div class="col-md-6">
+          <div class="row">
+            <div class="col-md-12">
+              <hammer-item :item="hammerItem" :admin="true" :auctionId="auctionId"/>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="row">
+            <div class="col-sm-12">
+              <h3>{{startsIn(auction.startDate)}}</h3>
+              <p>{{auction.description}}</p>
+              <ul>
+                <li><router-link :to="updateUrl">edit</router-link></li>
+                <li><router-link :to="onlineAuctionUrl">public auction</router-link></li>
+                <!-- <li><a href="#" @click="deleteAuction()">delete</a></li> -->
+                <li v-if="auction.privacy === 'private'"><span><a href="#" @click="makePublic()">make public</a></span></li>
+                <li v-else><span><a href="#" @click="makePrivate()">make private</a></span></li>
+              </ul>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <h4>Watchers</h4>
+              <p v-for="(peer, index) of peers" :key="index">
+                {{peer.username}} <span v-if="myUsername() === peer.username">me!</span> <span v-if="administrator === peer.username">Clerk!</span>
+              </p>
+            </div>
+          </div>
+          <video-stream :canPublish="true"/>
+          <message-stream :auctionId="auctionId" :administrator="true"/>
         </div>
       </div>
-    </div>
-    <video-stream :canPublish="true"/>
-    <message-stream :auctionId="auctionId" :administrator="true"/>
-  </div>
-  <div class="row">
-    <div class="col-md-9">
-      <hammer-item :item="hammerItem" :auctionId="auctionId"/>
-    </div>
-    <div class="col-md-3">
-      <h4>Peers</h4>
-      <p v-for="(peer, index) of peers" :key="index">
-        {{peer.username}}
-      </p>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-9">
-      <h4>Selling Items</h4>
-      <my-single-auction-item class="auction-item-container" v-for="(item, index) of sellingItems" :key="index" :item="item" :auctionId="auctionId" :sellingItem="true"/>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h4>Selling Items ({{sellingItemsSize}})</h4>
+          <my-single-auction-item class="auction-item-container" v-for="(item, index) of sellingItems" :key="index" :item="item" :auctionId="auctionId" :sellingItem="true"/>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h4>Available Items</h4>
+          <my-single-auction-item class="auction-item-container" v-for="(item, index) of availableItems" :key="index" :item="item" :auctionId="auctionId" :sellingItem="false"/>
+        </div>
+      </div>
+
     </div>
   </div>
-  <div class="row">
-    <div class="col-md-12">
-      <h4>Available Items</h4>
-      <my-single-auction-item class="auction-item-container" v-for="(item, index) of availableItems" :key="index" :item="item" :auctionId="auctionId" :sellingItem="false"/>
-    </div>
-  </div>
-</div>
+</section>
 </template>
 
 <script>
@@ -89,6 +99,14 @@ export default {
     startsIn (date) {
       return utils.dt_Offset(date)
     },
+    myUsername () {
+      let myProfile = this.$store.getters['myAccountStore/getMyProfile']
+      if (myProfile) {
+        return myProfile.username
+      } else {
+        return ''
+      }
+    },
     deleteAuction () {
       this.$store.dispatch('myAuctionsStore/deleteMyAuction', this.auctionId)
     },
@@ -110,9 +128,20 @@ export default {
       let sellingItems = this.$store.getters['myArtworksStore/auctioning'](this.auctionId)
       return sellingItems.length
     },
+    administrator () {
+      let auction = this.$store.getters['onlineAuctionsStore/onlineAuction'](this.auctionId)
+      if (auction) {
+        return auction.administrator
+      } else {
+        return {}
+      }
+    },
     auction () {
       let auction = this.$store.getters['myAuctionsStore/myAuction'](this.auctionId)
-      return auction | {}
+      if (!auction || !auction.auctionId) {
+        auction = {}
+      }
+      return auction
     },
     peers () {
       return this.$store.getters['onlineAuctionsStore/getPeers']
@@ -130,7 +159,6 @@ export default {
         let hammerItems = auction.items.filter(item => item.inplay)
         if (hammerItems && hammerItems.length === 1) {
           hammerItem = hammerItems[0]
-          hammerItem.admin = true
         }
       }
       return hammerItem

@@ -9,9 +9,6 @@ const apiKey = process.env.TOK_BOX_API_KEY
  *  The service is a client to the brightblock sever.
 **/
 const peerToPeerService = {
-  handleError: function (e) {
-    console.log(e)
-  },
   getSessionToken: function (username, recordId) {
     return new Promise(function (resolve) {
       xhrService.makeGetCall('/token/' + username + '/' + recordId)
@@ -22,7 +19,7 @@ const peerToPeerService = {
   },
   disconnect: function (username, recordId) {
     peerToPeerService.sendPeerSignal({
-      type: 'session-farewell',
+      type: 'session:farewell',
       data: peerToPeerService.tokbox
     })
     peerToPeerService.stopPublishing()
@@ -37,7 +34,9 @@ const peerToPeerService = {
       insertMode: 'append',
       width: '100%',
       height: '250px'
-    }, peerToPeerService.handleError)
+    }, function (e) {
+      console.log(e)
+    })
   },
   streamDestroyed: function (event) {
     // called when another client starts publishing a stream
@@ -54,24 +53,45 @@ const peerToPeerService = {
     if (!signal.data || !signal.data.username || signal.data.username === 'anon') {
       return
     }
+    if (signal.type.indexOf('-adm-') > 1) {
+      let peer = store.getters['onlineAuctionsStore/getAdministratorPeer'](signal.data.auctionId)
+      if (!peer || !peer.connection) {
+        throw new Error('No administrator present - please wait for the administrator to join the session.')
+      }
+      signal.to = peer.connection
+    }
     signal.data = JSON.stringify(signal.data)
+    // Note: not setting this causes the annoying 'Websocket closed or closing message'
+    signal.retryAfterReconnect = true
     if (peerToPeerService.session) {
-      peerToPeerService.session.signal(signal, peerToPeerService.handleError)
+      console.log('Sending signal: ' + signal.type)
+      peerToPeerService.session.signal(signal, function (error) {
+        if (error) {
+          console.log('signal error (' + error.name + '): ' + error.message, signal)
+        } else {
+          console.log('signal sent: ' + signal.type, signal.data)
+        }
+      })
     } else {
-      console.log('Unable to send webrtc signal to peers: ', signal.data)
+      console.log('Unable to send signal - no session. Signal data: ', signal.data)
     }
   },
   peerSignal: function (event) {
     let data = JSON.parse(event.data)
+    console.log('Signal in: ' + event.type, data)
     if (!data.username || data.username === 'anon') {
       return
     }
-    if (event.type === 'signal:message') {
+    if (event.type === 'signal:wa-adm-message-send') {
+      store.commit('myAuctionsStore/messageEvent', data)
+    } else if (event.type === 'signal:wa-messages-update') {
       store.commit('onlineAuctionsStore/messageEvent', data)
-    } else if (event.type === 'signal:bid') {
-      store.commit('onlineAuctionsStore/bidEvent', data)
-    } else if (event.type === 'signal:auction') {
+    } else if (event.type === 'signal:wa-adm-bid-send') {
+      store.commit('myAuctionsStore/sendBidEvent', data)
+    } else if (event.type === 'signal:wa-auction-update') {
       store.commit('onlineAuctionsStore/onlineAuction', data.auction)
+    } else if (event.type === 'signal:wa-item-update') {
+      store.commit('onlineAuctionsStore/itemUpdateEvent', data)
     }
   },
   startPublishing: function () {
@@ -98,14 +118,14 @@ const peerToPeerService = {
       connectionCreated: function (event) {
         console.log('Event connection data: ' + event.connection.data)
         connectionCount++
-        store.commit('onlineAuctionsStore/newPeer', utils.buildWebrtcSessionData(event.connection.data))
+        store.commit('onlineAuctionsStore/newPeer', utils.buildWebrtcSessionData(event.connection, event.connection.data))
         if (event.connection.connectionId !== peerToPeerService.session.connection.connectionId) {
           console.log('Another client connected. ' + connectionCount + ' total.')
         }
       },
       connectionDestroyed: function connectionDestroyedHandler (event) {
         connectionCount--
-        store.commit('onlineAuctionsStore/farewellPeer', utils.buildWebrtcSessionData(event.connection.data))
+        store.commit('onlineAuctionsStore/farewellPeer', utils.buildWebrtcSessionData(event.connection.connectionId, event.connection.data))
         console.log('A client disconnected. ' + connectionCount + ' total.')
       }
     })
@@ -120,10 +140,11 @@ const peerToPeerService = {
     peerToPeerService.session.on('sessionDisconnected', peerToPeerService.sessionDisconnected)
     peerToPeerService.session.on('streamCreated', peerToPeerService.streamCreated)
     peerToPeerService.session.on('streamDestroyed', peerToPeerService.streamDestroyed) // .connect(tokbox.token)
-    peerToPeerService.session.on('signal:bid', peerToPeerService.peerSignal)
-    peerToPeerService.session.on('signal:item', peerToPeerService.peerSignal)
-    peerToPeerService.session.on('signal:auction', peerToPeerService.peerSignal)
-    peerToPeerService.session.on('signal:message', peerToPeerService.peerSignal)
+    peerToPeerService.session.on('signal:wa-adm-bid-send', peerToPeerService.peerSignal)
+    peerToPeerService.session.on('signal:wa-adm-message-send', peerToPeerService.peerSignal)
+    peerToPeerService.session.on('signal:wa-item-update', peerToPeerService.peerSignal)
+    peerToPeerService.session.on('signal:wa-auction-update', peerToPeerService.peerSignal)
+    peerToPeerService.session.on('signal:wa-messages-update', peerToPeerService.peerSignal)
   },
   startSession: function (username, recordId) {
     if (!username || username === 'anon') {
