@@ -2,6 +2,7 @@
 import auctionSearchService from '@/services/auctionSearchService'
 import _ from 'lodash'
 import store from '@/storage/store'
+import biddingUtils from '@/services/biddingUtils'
 
 const onlineAuctionsStore = {
   namespaced: true,
@@ -56,26 +57,44 @@ const onlineAuctionsStore = {
     messageEvent (state, data) {
       let auctionId = data.auctionId
       let auction = state.onlineAuctions.filter(auction => auction.auctionId === auctionId)[0]
-      if (!auction) {
-        console.log('Auction for id: ' + data.auctionId + ' is not in the store. This is expected if this user is the auction administrator.')
-        return
-      }
+      if (!auction) return
       if (!auction.messages) {
         auction.messages = []
       }
       auction.messages.splice(0, 0, data)
-      // store.commit('myAuctionsStore/messageEvent', data)
+      store.commit('onlineAuctionsStore/onlineAuction', auction)
     },
 
-    itemUpdateEvent (state, data) {
+    activateItemEvent (state, data) {
+      let auction = state.onlineAuctions.filter(auction => auction.auctionId === data.auctionId)[0]
+      if (!auction) return
+      biddingUtils.makeItemActive(auction, data.itemId)
+      store.commit('onlineAuctionsStore/onlineAuction', auction)
+    },
+
+    receiveBidEvent (state, data) {
+      let auction = state.onlineAuctions.filter(auction => auction.auctionId === data.auctionId)[0]
+      if (!auction) return
+      biddingUtils.addBid(auction, data.itemId, data.bid)
+      store.commit('onlineAuctionsStore/onlineAuction', auction)
+    },
+
+    sellItemEvent (state, data) {
+      let auction = state.myAuctions.filter(auction => auction.auctionId === data.auctionId)[0]
+      let index = _.findIndex(auction.items, function (o) { return o.itemId === data.itemId })
+      auction.items[index].sellingStatus = 'selling'
+      auction.items[index].paused = true
+      store.commit('onlineAuctionsStore/onlineAuction', auction)
+    },
+
+    pauseItemEvent (state, data) {
       let auctionId = data.auctionId
       let auction = state.onlineAuctions.filter(auction => auction.auctionId === auctionId)[0]
       if (!auction) {
         console.log('Auction not found - this means the logged in user is the administrator and the auction has already been updated in myAuctionsStore.')
         return
       }
-      let index = _.findIndex(auction.items, function (o) { return o.itemId === data.item.itemId })
-      auction.items[index] = data.item
+      biddingUtils.pauseBidding(auction, data.itemId)
       store.commit('onlineAuctionsStore/onlineAuction', auction)
     },
 
@@ -100,6 +119,7 @@ const onlineAuctionsStore = {
     },
 
     onlineAuction (state, auction) {
+      if (!auction) return
       let index = _.findIndex(state.onlineAuctions, function (o) { return o.auctionId === auction.auctionId })
       if (index === -1) {
         state.onlineAuctions.splice(0, 0, auction)

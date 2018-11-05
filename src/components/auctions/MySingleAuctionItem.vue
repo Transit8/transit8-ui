@@ -64,10 +64,10 @@ export default {
       })
     },
     activateBidding (value) {
-      this.$store.commit('myAuctionsStore/activateItem', {auctionId: this.auctionId, itemId: this.item.itemId})
+      this.$store.commit('myAuctionsStore/activateItemEvent', {auctionId: this.auctionId, itemId: this.item.itemId})
     },
     deactivateBidding (value) {
-      this.$store.commit('myAuctionsStore/activateItem', {auctionId: this.auctionId, itemId: null})
+      this.$store.commit('myAuctionsStore/activateItemEvent', {auctionId: this.auctionId, itemId: null})
     },
     closeDialog (value) {
       this.sellAuctionActive = false

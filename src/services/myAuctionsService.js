@@ -41,7 +41,7 @@ const myAuctionsService = {
         success(rootFile.auctions)
       },
       function () {
-        failure({ERR_CODE: 'AUCTIONS_1', message: 'Error fetching auctions root file!'})
+        failure({ERR_CODE: 'AUCTIONS_2', message: 'Error fetching auctions root file!'})
       })
   },
 
@@ -52,7 +52,7 @@ const myAuctionsService = {
         success(rootFile.auctions[index])
       },
       function () {
-        failure({ERR_CODE: 'AUCTIONS_1', message: 'Error fetching auctions root file!'})
+        failure({ERR_CODE: 'AUCTIONS_3', message: 'Error fetching auctions root file!'})
       })
   },
 

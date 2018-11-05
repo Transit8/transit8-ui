@@ -139,7 +139,9 @@ export default {
     auction () {
       let auction = this.$store.getters['myAuctionsStore/myAuction'](this.auctionId)
       if (!auction || !auction.auctionId) {
-        auction = {}
+        auction = {
+          items: []
+        }
       }
       return auction
     },
@@ -155,7 +157,7 @@ export default {
     hammerItem () {
       let hammerItem = {}
       let auction = this.$store.getters['myAuctionsStore/myAuction'](this.auctionId)
-      if (auction) {
+      if (auction && auction.items) {
         let hammerItems = auction.items.filter(item => item.inplay)
         if (hammerItems && hammerItems.length === 1) {
           hammerItem = hammerItems[0]

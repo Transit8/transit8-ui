@@ -56,7 +56,7 @@ export default {
         this.$store.commit('myAuctionsStore/messageEvent', data)
       } else {
         peerToPeerService.sendPeerSignal({
-          type: 'wa-messages-update',
+          type: 'wa-message-send-adm',
           data: data
         })
       }

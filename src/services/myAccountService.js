@@ -22,14 +22,14 @@ const myAccountService = {
     if (account) {
       let authResponseToken = account.authResponseToken
       var privateKey = account.appPrivateKey + '01'
-      console.log('Private Key: ' + privateKey)
+      // console.log('Private Key: ' + privateKey)
       privateKey = hexStringToECPair(privateKey).toWIF()
-      console.log('Private Key WIF: ' + privateKey)
+      // console.log('Private Key WIF: ' + privateKey)
       let decodedToken = decodeToken(authResponseToken)
       let publicKey = decodedToken.payload.public_keys[0]
       // publicKey = hexStringToECPair(publicKey).toWIF()
-      console.log('Public Key: ' + publicKey)
-      console.log('Public Address: ' + publicKeyToAddress(publicKey))
+      // console.log('Public Key: ' + publicKey)
+      // console.log('Public Address: ' + publicKeyToAddress(publicKey))
       let showAdmin = account.username === 'mike.personal.id' || account.username.indexOf('brightblock') > -1 || account.username.indexOf('antonio') > -1
       let person = new Person(account.profile)
       myProfile = {

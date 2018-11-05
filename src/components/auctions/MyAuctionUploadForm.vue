@@ -23,12 +23,7 @@
     </p>
 
     <div class="form-group">
-      <label>Auctioneer: {{username}}</label>
-    </div>
-
-    <div class="form-group">
-      <label>Administrator: {{username}}</label>
-      <p>Only the auction administrator is able to change information about the auction.</p>
+      <p>Only auction administrators ({{username}}) are able to change information about the auction.</p>
     </div>
 
     <div class="form-group">

@@ -2,6 +2,7 @@
 import myAuctionsService from '@/services/myAuctionsService'
 import _ from 'lodash'
 import notify from '@/services/notify'
+import biddingUtils from '@/services/biddingUtils'
 import peerToPeerService from '@/services/peerToPeerService'
 import store from '@/storage/store'
 import moment from 'moment'
@@ -54,67 +55,62 @@ const myAuctionsStore = {
       }
       auction.messages.splice(0, 0, data)
       store.commit('myAuctionsStore/addMyAuction', auction)
-      store.dispatch('myAuctionsStore/updateMessagesAndPeers', auction)
+      store.dispatch('myAuctionsStore/updateAuction', auction).then((auction) => {
+        peerToPeerService.sendPeerSignal({
+          type: 'wa-message-update',
+          data: data
+        })
+      })
     },
 
-    activateItem (state, data) {
+    activateItemEvent (state, data) {
       let auction = store.getters['myAuctionsStore/myAuction'](data.auctionId)
-      for (let key in auction.items) {
-        let item = auction.items[key]
-        if (item.itemId === data.itemId) {
-          auction.items[key].inplay = true
-          item = auction.items[key]
-        } else {
-          auction.items[key].inplay = false
-        }
-      }
-      store.dispatch('myAuctionsStore/updateAuctionAndPeers', auction)
+      biddingUtils.makeItemActive(auction, data.itemId)
+      store.dispatch('myAuctionsStore/updateAuction', auction).then((auction) => {
+        let myProfile = store.getters['myAccountStore/getMyProfile']
+        data.username = myProfile.username
+        peerToPeerService.sendPeerSignal({
+          type: 'wa-item-activate',
+          data: data
+        })
+      })
     },
 
     sendBidEvent (state, data) {
       let auction = state.myAuctions.filter(auction => auction.auctionId === data.auctionId)[0]
-      if (!auction) {
-        console.log('Auction for id: ' + data.auctionId + ' is not in the store. This is expected if this user is not the auction administrator.')
-        return
-      }
-      let index = _.findIndex(auction.items, function (o) { return o.itemId === data.itemId })
-      let bidIndex = _.findIndex(auction.items[index].bids, function (o) { return o.amount === data.bid.amount })
-      if (bidIndex > -1) {
-        // Duplicate bid: don't push this bid but still send the auction update out to regain correct state..
-        console.log('Duplicate bid detected. A connected peer may be seeing the incorrect bidding state!')
-      } else {
-        auction.items[index].bids.push(data.bid)
-      }
-      store.commit('myAuctionsStore/addMyAuction', auction)
-      store.dispatch('myAuctionsStore/updateItemAndPeers', {auction: auction, item: auction.items[index]})
+      biddingUtils.addBid(auction, data.itemId, data.bid)
+      store.dispatch('myAuctionsStore/updateAuction', auction).then((auction) => {
+        let myProfile = store.getters['myAccountStore/getMyProfile']
+        data.username = myProfile.username
+        peerToPeerService.sendPeerSignal({
+          type: 'wa-bid-receive',
+          data: data
+        })
+      })
     },
 
-    sellEvent (state, data) {
+    sellItemEvent (state, data) {
       let auction = state.myAuctions.filter(auction => auction.auctionId === data.auctionId)[0]
-      if (!auction) {
-        console.log('Auction for id: ' + data.auctionId + ' is not in the store. This is expected if this user is not the auction administrator.')
-        return
-      }
       let index = _.findIndex(auction.items, function (o) { return o.itemId === data.itemId })
-      auction.items[index].inplay = false
       auction.items[index].sellingStatus = 'selling'
-      store.dispatch('myAuctionsStore/updateItemAndPeers', {auction: auction, item: auction.items[index]})
+      auction.items[index].paused = true
+      store.dispatch('myAuctionsStore/updateAuction', auction).then((auction) => {
+        peerToPeerService.sendPeerSignal({
+          type: 'wa-item-selling',
+          data: data
+        })
+      })
     },
 
-    pauseEvent (state, data) {
+    pauseItemEvent (state, data) {
       let auction = state.myAuctions.filter(auction => auction.auctionId === data.auctionId)[0]
-      if (!auction) {
-        console.log('Auction for id: ' + data.auctionId + ' is not in the store. This is expected if this user is not the auction administrator.')
-        return
-      }
-      let index = _.findIndex(auction.items, function (o) { return o.itemId === data.itemId })
-      // auction.items[index].inplay = false
-      if (auction.items[index].sellingStatus === 'paused') {
-        auction.items[index].sellingStatus = 'active'
-      } else {
-        auction.items[index].sellingStatus = 'paused'
-      }
-      store.dispatch('myAuctionsStore/updateItemAndPeers', {auction: auction, item: auction.items[index]})
+      biddingUtils.pauseBidding(auction, data.itemId)
+      store.dispatch('myAuctionsStore/updateAuction', auction).then((auction) => {
+        peerToPeerService.sendPeerSignal({
+          type: 'wa-item-pause',
+          data: data
+        })
+      })
     },
 
     myAuctions (state, auctions) {
@@ -298,40 +294,6 @@ const myAuctionsStore = {
           })
           resolve(auction)
         })
-      })
-    },
-
-    updateItemAndPeers ({ commit, state }, data) {
-      return new Promise((resolve, reject) => {
-        store.dispatch('myAuctionsStore/updateAuction', data.auction).then((auction) => {
-          let myProfile = store.getters['myAccountStore/getMyProfile']
-          peerToPeerService.sendPeerSignal({
-            type: 'wa-item-update',
-            data: {
-              item: data.item,
-              username: myProfile.username,
-              auctionId: data.auction.auctionId
-            }
-          })
-        })
-        resolve(data.auction)
-      })
-    },
-
-    updateMessagesAndPeers ({ commit, state }, auction) {
-      return new Promise((resolve, reject) => {
-        store.dispatch('myAuctionsStore/updateAuction', auction).then((auction) => {
-          let myProfile = store.getters['myAccountStore/getMyProfile']
-          peerToPeerService.sendPeerSignal({
-            type: 'wa-messages-update',
-            data: {
-              messages: auction.messages,
-              username: myProfile.username,
-              auctionId: auction.auctionId
-            }
-          })
-        })
-        resolve(auction)
       })
     },
   }

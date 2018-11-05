@@ -29,18 +29,18 @@ const peerToPeerService = {
   },
   streamCreated: function (event) {
     // called when another client starts publishing a stream
-    console.log('Remote stream created:' + event.stream.id)
+    console.log('opentok: Remote stream created:' + event.stream.id)
     peerToPeerService.session.subscribe(event.stream, 'subscriber', {
       insertMode: 'append',
       width: '100%',
       height: '250px'
     }, function (e) {
-      console.log(e)
+      console.log('opentok: ' + e)
     })
   },
   streamDestroyed: function (event) {
     // called when another client starts publishing a stream
-    console.log('Stream ' + event.stream.name + ' ended. ' + event.reason)
+    console.log('opentok: Stream ' + event.stream.name + ' ended. ' + event.reason)
   },
   sessionDisconnected: function (event) {
     // called when another client starts publishing a stream
@@ -53,7 +53,7 @@ const peerToPeerService = {
     if (!signal.data || !signal.data.username || signal.data.username === 'anon') {
       return
     }
-    if (signal.type.indexOf('-adm-') > 1) {
+    if (signal.type.indexOf('-adm') > 1) {
       let peer = store.getters['onlineAuctionsStore/getAdministratorPeer'](signal.data.auctionId)
       if (!peer || !peer.connection) {
         throw new Error('No administrator present - please wait for the administrator to join the session.')
@@ -64,34 +64,40 @@ const peerToPeerService = {
     // Note: not setting this causes the annoying 'Websocket closed or closing message'
     signal.retryAfterReconnect = true
     if (peerToPeerService.session) {
-      console.log('Sending signal: ' + signal.type)
+      console.log('opentok: Sending signal: ' + signal.type)
       peerToPeerService.session.signal(signal, function (error) {
         if (error) {
-          console.log('signal error (' + error.name + '): ' + error.message, signal)
+          console.log('opentok: signal error (' + error.name + '): ' + error.message, signal)
         } else {
-          console.log('signal sent: ' + signal.type, signal.data)
+          console.log('opentok: signal sent: ' + signal.type, signal.data)
         }
       })
     } else {
-      console.log('Unable to send signal - no session. Signal data: ', signal.data)
+      console.log('opentok: Unable to send signal - no session. Signal data: ', signal.data)
     }
   },
   peerSignal: function (event) {
     let data = JSON.parse(event.data)
-    console.log('Signal in: ' + event.type, data)
+    console.log('opentok: Signal in: ' + event.type, data)
     if (!data.username || data.username === 'anon') {
       return
     }
-    if (event.type === 'signal:wa-adm-message-send') {
+    if (event.type === 'signal:wa-message-send-adm') {
       store.commit('myAuctionsStore/messageEvent', data)
-    } else if (event.type === 'signal:wa-messages-update') {
+    } else if (event.type === 'signal:wa-message-update') {
       store.commit('onlineAuctionsStore/messageEvent', data)
-    } else if (event.type === 'signal:wa-adm-bid-send') {
+    } else if (event.type === 'signal:wa-bid-send-adm') {
       store.commit('myAuctionsStore/sendBidEvent', data)
+    } else if (event.type === 'signal:wa-bid-receive') {
+      store.commit('onlineAuctionsStore/receiveBidEvent', data)
+    } else if (event.type === 'signal:wa-item-pause') {
+      store.commit('onlineAuctionsStore/pauseItemEvent', data)
+    } else if (event.type === 'signal:wa-item-selling') {
+      store.commit('onlineAuctionsStore/sellItemEvent', data)
+    } else if (event.type === 'signal:wa-item-activate') {
+      store.commit('onlineAuctionsStore/activateItemEvent', data)
     } else if (event.type === 'signal:wa-auction-update') {
       store.commit('onlineAuctionsStore/onlineAuction', data.auction)
-    } else if (event.type === 'signal:wa-item-update') {
-      store.commit('onlineAuctionsStore/itemUpdateEvent', data)
     }
   },
   startPublishing: function () {
@@ -113,25 +119,19 @@ const peerToPeerService = {
   },
   start: function () {
     peerToPeerService.session = OT.initSession(apiKey, peerToPeerService.tokbox.sessionId)
-    let connectionCount = 0
     peerToPeerService.session.on({
       connectionCreated: function (event) {
-        console.log('Event connection data: ' + event.connection.data)
-        connectionCount++
+        console.log('opentok: Connection event data: ' + event.connection.data)
         store.commit('onlineAuctionsStore/newPeer', utils.buildWebrtcSessionData(event.connection, event.connection.data))
-        if (event.connection.connectionId !== peerToPeerService.session.connection.connectionId) {
-          console.log('Another client connected. ' + connectionCount + ' total.')
-        }
       },
       connectionDestroyed: function connectionDestroyedHandler (event) {
-        connectionCount--
         store.commit('onlineAuctionsStore/farewellPeer', utils.buildWebrtcSessionData(event.connection.connectionId, event.connection.data))
-        console.log('A client disconnected. ' + connectionCount + ' total.')
+        console.log('opentok: Disconnection event data: ' + event.connection.data)
       }
     })
     peerToPeerService.session.connect(peerToPeerService.tokbox.token, function (err) {
       if (err) {
-        console.log(err)
+        console.log('opentok: Connection error' + err)
       }
     })
 
@@ -140,18 +140,21 @@ const peerToPeerService = {
     peerToPeerService.session.on('sessionDisconnected', peerToPeerService.sessionDisconnected)
     peerToPeerService.session.on('streamCreated', peerToPeerService.streamCreated)
     peerToPeerService.session.on('streamDestroyed', peerToPeerService.streamDestroyed) // .connect(tokbox.token)
-    peerToPeerService.session.on('signal:wa-adm-bid-send', peerToPeerService.peerSignal)
-    peerToPeerService.session.on('signal:wa-adm-message-send', peerToPeerService.peerSignal)
-    peerToPeerService.session.on('signal:wa-item-update', peerToPeerService.peerSignal)
+    peerToPeerService.session.on('signal:wa-bid-send-adm', peerToPeerService.peerSignal)
+    peerToPeerService.session.on('signal:wa-bid-receive', peerToPeerService.peerSignal)
+    peerToPeerService.session.on('signal:wa-item-pause', peerToPeerService.peerSignal)
+    peerToPeerService.session.on('signal:wa-item-activate', peerToPeerService.peerSignal)
+    peerToPeerService.session.on('signal:wa-item-selling', peerToPeerService.peerSignal)
     peerToPeerService.session.on('signal:wa-auction-update', peerToPeerService.peerSignal)
-    peerToPeerService.session.on('signal:wa-messages-update', peerToPeerService.peerSignal)
+    peerToPeerService.session.on('signal:wa-message-send-adm', peerToPeerService.peerSignal)
+    peerToPeerService.session.on('signal:wa-message-update', peerToPeerService.peerSignal)
   },
   startSession: function (username, recordId) {
     if (!username || username === 'anon') {
       return
     }
     if (peerToPeerService.session && peerToPeerService.session.isConnected()) {
-      console.log('Connected to session: ' + peerToPeerService.session.connection.connectionId)
+      console.log('opentok: Connected to session: ' + peerToPeerService.session.connection.connectionId)
       return
     }
     if (!username || !recordId) {

@@ -61,7 +61,7 @@ const moneyUtils = {
       let fiatRate = store.getters['conversionStore/getFiatRate'](currency)
       return fiatRate['symbol']
     } catch (err) {
-      console.log(err)
+      // Rates not yet synced with server. Not a concern as reactive ui is notified when they arrive.
       return ''
     }
   },

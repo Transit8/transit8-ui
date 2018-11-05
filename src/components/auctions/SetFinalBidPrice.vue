@@ -36,6 +36,7 @@ export default {
   props: {
     isModalActive: false,
     amount: null,
+    auctionId: null,
     item: {
       type: Object,
       default () {
@@ -94,6 +95,7 @@ export default {
     },
 
     setPrice: function () {
+      this.$store.commit('myAuctionsStore/sellItemEvent', {auctionId: this.auctionId, itemId: this.item.itemId})
       let artwork = this.$store.getters['artworkSearchStore/getArtwork'](this.item.itemId)
       this.message = 'Setting Price: Please confirm the transaction in your wallet...'
       let priceData = {
@@ -104,11 +106,12 @@ export default {
       ethereumService.setPriceOnChain(priceData, function (result) {
         artwork.bcitem.setPriceTxId = result.txId
         artwork.bcitem.status = 'price-set'
-        notify.info({title: 'Register Artwork.', text: 'Your user storage has been updated.'})
+        // $self.$store.commit('myAuctionsStore/sellItemEvent', {auctionId: $self.auctionId, itemId: $self.item.itemId})
+        notify.info({title: 'Set Price.', text: 'The final bid amount has been saved on chain - ready for payment.'})
         $self.closeModal()
       }, function (error) {
         console.log(error)
-        notify.error({title: 'Register Artwork.', text: 'Error setting price for your item.'})
+        notify.error({title: 'Set Price.', text: 'Error setting price for your item.'})
       })
     }
   }
