@@ -91,15 +91,18 @@ export default {
   },
   created () {
     this.artworkId = Number(this.$route.params.artworkId)
-    this.$store.dispatch('artworkSearchStore/fetchArtwork', this.artworkId).then((artwork) => {
-      this.artwork = artwork
-      if (artwork.bcitem && artwork.bcitem.itemIndex > -1) {
-        // check for redirect to auctions...
-        if (artwork.saleData.auctionId) {
-          this.$router.push('/online-auction/' + artwork.saleData.auctionId)
+    this.artwork = this.$store.getters['artworkSearchStore/getArtwork'](this.artworkId)
+    if (!this.artwork) {
+      this.$store.dispatch('artworkSearchStore/fetchArtwork', this.artworkId).then((artwork) => {
+        this.artwork = artwork
+        if (artwork.bcitem && artwork.bcitem.itemIndex > -1) {
+          // check for redirect to auctions...
+          if (artwork.saleData.auctionId) {
+            this.$router.push('/online-auction/' + artwork.saleData.auctionId)
+          }
         }
-      }
-    })
+      })
+    }
   },
   computed: {
     artist () {

@@ -106,6 +106,11 @@ export default {
       ethereumService.setPriceOnChain(priceData, function (result) {
         artwork.bcitem.setPriceTxId = result.txId
         artwork.bcitem.status = 'price-set'
+        $self.$store.dispatch('myArtworksStore/syncBlockchainState', artwork).then((artwork) => {
+          if (artwork) {
+            $self.artwork = artwork
+          }
+        })
         // $self.$store.commit('myAuctionsStore/sellItemEvent', {auctionId: $self.auctionId, itemId: $self.item.itemId})
         notify.info({title: 'Set Price.', text: 'The final bid amount has been saved on chain - ready for payment.'})
         $self.closeModal()

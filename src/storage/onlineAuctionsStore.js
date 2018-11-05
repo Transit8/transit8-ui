@@ -35,6 +35,26 @@ const onlineAuctionsStore = {
     getPeer: (state) => (username) => {
       return state.onlinePeers.filter(peer => peer.username === username)[0]
     },
+    getWinning: (state, getters) => (data) => {
+      let winning = []
+      try {
+        let auction = getters.onlineAuction(data.auctionId)
+        for (var key in auction.items) {
+          try {
+            let item = auction.items[key]
+            let currentHighestBid = item.bids[item.bids.length - 1]
+            if (currentHighestBid.bidder === data.username) {
+              winning.push(item)
+            }
+          } catch (err) {
+            // no bids..
+          }
+        }
+      } catch (err) {
+        // no bids..
+      }
+      return winning
+    },
     getAdministratorPeer: (state, getters) => (auctionId) => {
       let auction = getters.onlineAuction(auctionId)
       let peer = getters.getPeer(auction.administrator)

@@ -8,20 +8,19 @@
     </div>
     <div class="row" v-if="inplay">
       <div class="col-md-12">
-        <button class="btn btn-block black action-button text-uppercase" :class="bidStatusClass" :disabled="paused" style="max-width: 450px" @click.prevent="bid(nextBid)">Bid {{currencySymbol}} {{nextBid}} {{item.fiatCurrency}}</button>
+        <button class="btn btn-block black action-button text-uppercase" :class="bidStatusClass" :disabled="paused || item.paused || item.sellingStatus === 'selling'" style="max-width: 450px" @click.prevent="bid(nextBid)">Bid {{currencySymbol}} {{nextBid}} {{item.fiatCurrency}}</button>
       </div>
     </div>
     <div class="row" style="max-width: 450px" v-if="selling && !admin">
-      <div class="col-md-12 center-block text-center" v-html="sellingMessage">
-      </div>
+      <div class="col-md-12 center-block text-center" v-html="sellingMessage"></div>
     </div>
     <div v-if="admin" class="row">
-      <div class="col-md-12" style="margin-top: 20px;" v-if="item.paused && item.sellingStatus === 'active'">
+      <div class="col-md-12" style="margin-top: 20px;" v-if="item.paused && item.sellingStatus !== 'selling'">
         <button class="btn btn-block yellow-bg black action-button text-uppercase" style="max-width: 450px" v-on:click="openSetFinalBidPriceDialog">Sell ({{currentBid}})</button>
         <set-final-bid-price v-if="setFinalBidPriceActive" :item="item" :amount="currentBid" :auctionId="auctionId" :isModalActive="true" @closeDialog="closeDialog"/>
       </div>
       <div class="col-md-12" style="margin-top: 20px;" v-if="item.sellingStatus === 'selling'">
-        <p>confirming...</p>
+        <p>confirming...{{artwork.bcitem.itemIndex}}, {{artwork.bcitem.status}}, {{artwork.bcitem.price}}</p>
         <button class="btn btn-block yellow-bg black action-button text-uppercase" style="max-width: 450px" v-on:click="openSetFinalBidPriceDialog">Confirm Price</button>
       </div>
       <div class="col-md-12" style="margin-top: 20px;">
@@ -55,6 +54,7 @@ export default {
   data () {
     return {
       setFinalBidPriceActive: false,
+      paused: false
     }
   },
   methods: {
@@ -69,18 +69,16 @@ export default {
       }
       this.$store.commit('myAuctionsStore/pauseItemEvent', data)
     },
-    paused () {
-      return this.item.paused || this.item.sellingStatus === 'selling'
-    },
     closeDialog (value) {
       this.setFinalBidPriceActive = false
     },
     bid (amount) {
       let $self = this
       setTimeout(function () {
-        $self.item.paused = false
+        $self.paused = false
+        // $self.$forceUpdate()
       }, 2000)
-      this.item.paused = true
+      this.paused = true
       let bidSignal = biddingUtils.bidSignal(amount, this.item.itemId, this.auctionId)
       if (this.admin) {
         this.$store.commit('myAuctionsStore/sendBidEvent', bidSignal)

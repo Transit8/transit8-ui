@@ -84,7 +84,11 @@ export default {
         $self.$store.dispatch('myArtworksStore/updateArtwork', artwork).then((artwork) => {
           notify.info({title: 'Register Artwork.', text: 'User storage has been updated...'})
           $self.closeModal()
-          $self.$store.dispatch('myArtworksStore/checkRegistration', artwork)
+          $self.$store.dispatch('myArtworksStore/syncBlockchainState', artwork).then((artwork) => {
+            if (artwork) {
+              $self.artwork = artwork
+            }
+          })
         })
       }, function (error) {
         console.log(error)

@@ -199,24 +199,27 @@ const myArtworksStore = {
       })
     },
 
-    checkRegistration ({ commit, state }, artwork) {
-      let count = 0
-      let intval = setInterval(function () {
-        store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
-          if (blockchainItem && artwork.bcitem.price === blockchainItem.price) {
-            clearInterval(intval)
-          }
-          if (count >= 5) {
-            clearInterval(intval)
-          }
-          if (blockchainItem) {
-            moneyUtils.convertPrices(artwork, blockchainItem)
-            commit('addMyArtwork', artwork)
-            notify.info({title: 'Update Artwork', text: 'New price has been set in blockchain.'})
-          }
-          count++
-        })
-      }, 2000)
+    syncBlockchainState ({ commit, state }, artwork) {
+      return new Promise((resolve, reject) => {
+        let count = 0
+        let intval = setInterval(function () {
+          store.dispatch('ethStore/fetchBlockchainItem', {timestamp: artwork.timestamp}).then((blockchainItem) => {
+            if (blockchainItem && artwork.bcitem.price === blockchainItem.price) {
+              clearInterval(intval)
+            }
+            if (count >= 5) {
+              clearInterval(intval)
+            }
+            if (blockchainItem) {
+              moneyUtils.convertPrices(artwork, blockchainItem)
+              commit('addMyArtwork', artwork)
+              resolve(artwork)
+              notify.info({title: 'Blockchain Artwork Sync', text: 'New price has been set in blockchain.'})
+            }
+            count++
+          })
+        }, 2000)
+      })
     },
 
     updateArtwork ({ commit, state }, artwork) {

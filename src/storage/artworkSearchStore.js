@@ -63,9 +63,7 @@ const artworkSearchStore = {
   },
   mutations: {
     addArtwork (state, registeredArtwork) {
-      let index = _.findIndex(state.artworks, function (o) {
-        return o.id === registeredArtwork.id
-      })
+      let index = _.findIndex(state.artworks, function (o) { return o.id === registeredArtwork.id })
       if (index === -1) {
         state.artworks.push(registeredArtwork)
       } else {
@@ -93,13 +91,14 @@ const artworkSearchStore = {
       commit('clearArtwork')
       artworkSearchService.findArtworks(query, function (artwork) {
         if (artwork) {
-          store.dispatch('artworkSearchStore/fetchArtwork', artwork.id)
+          store.dispatch('artworkSearchStore/userArtwork', {username: artwork.owner, artworkId: artwork.id})
         }
       },
       function (error) {
         console.log('Error fetching artworks: ', error)
       })
     },
+
     fetchArtwork ({ commit, state }, artworkId) {
       return new Promise((resolve, reject) => {
         artworkSearchService.findArtwork(artworkId, function (artwork) {
@@ -125,18 +124,49 @@ const artworkSearchStore = {
         })
       })
     },
-    fetchRegisteredArtworks ({ commit, state }, blockchainItems) {
-      // let blockchainItems = store.getters['ethStore/getBlockchainItems']
-      let maximum = Math.min(blockchainItems.length, 20)
-      for (var index = 0; index < maximum; index++) {
-        let blockchainItem = blockchainItems[index]
-        artworkSearchService.findArtworks({term: 'title', query: blockchainItem.title}, function (artwork) {
-          moneyUtils.convertPrices(artwork, blockchainItem)
-          store.dispatch('artworkSearchStore/fetchArtwork', artwork.id)
+
+    userArtwork ({ commit, state }, data) {
+      return new Promise((resolve, reject) => {
+        artworkSearchService.userArtwork(data.artworkId, data.username, function (artwork) {
+          if (artwork) {
+            if (artwork.artwork && artwork.artwork[0] && artwork.artwork[0].dataUrl.length > 0) {
+              let timestamp = utils.buildArtworkHash(artwork.artwork[0].dataUrl)
+              let blockchainItem = store.getters['ethStore/getBlockchainItem'](timestamp)
+              moneyUtils.convertPrices(artwork, blockchainItem)
+              if (artwork.owner !== artwork.bcitem.blockstackId) {
+                artwork.owner = artwork.bcitem.blockstackId
+              }
+            }
+            commit('addArtwork', artwork)
+          }
         },
         function (error) {
           console.log('Error fetching recent artworks: ', error)
         })
+      })
+    },
+
+    fetchRegisteredArtworks ({ commit, state }, blockchainItems) {
+      // let blockchainItems = store.getters['ethStore/getBlockchainItems']
+      let maximum = Math.min(blockchainItems.length, 20)
+      let users = ''
+      for (var index = 0; index < maximum; index++) {
+        let blockchainItem = blockchainItems[index]
+        if (users.indexOf(blockchainItem.blockstackId) === -1) {
+          users += blockchainItem.blockstackId + ','
+          artworkSearchService.userArtworks(blockchainItem.blockstackId, function (artwork) {
+            if (artwork) {
+              moneyUtils.convertPrices(artwork, blockchainItem)
+              if (artwork.owner !== artwork.bcitem.blockstackId) {
+                artwork.owner = artwork.bcitem.blockstackId
+              }
+              commit('addArtwork', artwork)
+            }
+          },
+          function (error) {
+            console.log('Error fetching recent artworks: ', error)
+          })
+        }
       }
     },
   }

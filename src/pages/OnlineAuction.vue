@@ -9,6 +9,14 @@
         <hammer-item :item="hammerItem" :auctionId="auctionId"/>
       </div>
       <div class="col-md-6">
+        <div class="row" v-if="winning.length > 0">
+          <div class="col-md-12">
+            <h4>Won items</h4>
+            <p v-for="(item, index) of winning" :key="index">
+              {{item.itemId}}
+            </p>
+          </div>
+        </div>
         <div class="row">
           <div class="col-md-12">
             <h4>Watchers</h4>
@@ -45,7 +53,8 @@ export default {
   components: { SingleAuctionItem, HammerItem, VideoStream, MessageStream },
   data () {
     return {
-      auctionId: null
+      auctionId: null,
+      username: null
     }
   },
   beforeDestroy () {
@@ -55,6 +64,7 @@ export default {
     window.addEventListener('beforeunload', this.stopPublishing)
     this.auctionId = Number(this.$route.params.auctionId)
     this.$store.dispatch('myAccountStore/fetchMyAccount').then((myProfile) => {
+      this.username = myProfile.username
       this.$store.dispatch('onlineAuctionsStore/fetchOnlineAuction', this.auctionId).then((auction) => {
         try {
           peerToPeerService.startSession(myProfile.username, auction.auctionId)
@@ -90,6 +100,10 @@ export default {
       } else {
         return {}
       }
+    },
+    winning () {
+      let winning = this.$store.getters['onlineAuctionsStore/getWinning']({auctionId: this.auctionId, username: this.username})
+      return winning
     },
     sellingItems () {
       let auction = this.$store.getters['onlineAuctionsStore/onlineAuction'](this.auctionId)

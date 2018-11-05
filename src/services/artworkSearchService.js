@@ -2,6 +2,9 @@ import xhrService from '@/services/xhrService'
 import store from '@/storage/store'
 import _ from 'lodash'
 import utils from './utils'
+import {
+  getFile,
+} from 'blockstack'
 
 /**
  *  The service is a client to the brightblock sever side grpc client.
@@ -128,6 +131,10 @@ const artworkSearchService = {
           _.forEach(results, function (indexData) {
             store.dispatch('userProfilesStore/fetchUserProfile', {username: indexData.owner}, {root: true})
             store.dispatch('userProfilesStore/fetchUserProfile', {username: indexData.uploader}, {root: true})
+            artworkSearchService.fetchProvenanceFile(indexData, indexData.owner, success, failure)
+            /**
+             * let blockstack do the work of reading from the users gaia storage.
+             *
             let provGaiaUrl = utils.buildGaiaUrl(indexData.gaiaUrl, indexData.id)
             xhrService.makeDirectCall(provGaiaUrl)
               .then(function (provData) {
@@ -137,11 +144,68 @@ const artworkSearchService = {
                 console.log('Unable to add record: ' + indexData.id, e)
                 failure({error: 1, message: 'no artworks found'})
               })
+              */
           })
         }
       }).catch(function (e) {
         failure({error: 2, message: 'no artworks found'})
       })
+  },
+
+  userArtworks: function (username, success, failure) {
+    const artworkRootFileName = store.state.constants.artworkRootFileName
+    getFile(artworkRootFileName, {decrypt: false, username: username}).then(function (file) {
+      if (!file) {
+        success()
+      } else {
+        let userRootFile = JSON.parse(file)
+        _.forEach(userRootFile.records, function (indexData) {
+          store.dispatch('userProfilesStore/fetchUserProfile', {username: indexData.uploader}, {root: true})
+          store.dispatch('userProfilesStore/fetchUserProfile', {username: indexData.owner}, {root: true})
+          artworkSearchService.fetchProvenanceFile(indexData, username, success, failure)
+        })
+      }
+    }).catch(function (e) {
+      failure({ERR_CODE: 101, message: 'Error fetching blockstack root file!'})
+    })
+  },
+
+  userArtwork: function (username, artworkId, success, failure) {
+    const artworkRootFileName = store.state.constants.artworkRootFileName
+    getFile(artworkRootFileName, {decrypt: false, username: username}).then(function (file) {
+      if (!file) {
+        success()
+      } else {
+        let userRootFile = JSON.parse(file)
+        let index = _.findIndex(userRootFile.records, function (o) { return o.id === artworkId })
+        let indexData = userRootFile.records[index]
+        store.dispatch('userProfilesStore/fetchUserProfile', {username: indexData.uploader}, {root: true})
+        store.dispatch('userProfilesStore/fetchUserProfile', {username: indexData.owner}, {root: true})
+        artworkSearchService.fetchProvenanceFile(indexData, username, success, failure)
+      }
+    }).catch(function (e) {
+      failure({ERR_CODE: 101, message: 'Error fetching blockstack root file!'})
+    })
+  },
+
+  fetchProvenanceFile: function (indexData, username, success, failure) {
+    let gaiaArtworkFileName = store.state.constants.gaiaArtworkFileName
+    let fileToFetch = gaiaArtworkFileName + indexData.id + '.json'
+    getFile(fileToFetch, {decrypt: false, username: username}).then(function (file) {
+      if (file) {
+        try {
+          let provData = JSON.parse(file)
+          provData.id = indexData.id
+          success(utils.convertFromBlockstack({indexData: indexData, provData: provData}))
+        } catch (err) {
+          console.error('Corrupt json file - skipping! file: ' + file, err)
+        }
+      } else {
+        failure({ERR_CODE: 1, message: 'no provenance file found'})
+      }
+    }).catch(function (e) {
+      failure({ERR_CODE: 2, message: 'Error fetching provenance file found: ', exception: e})
+    })
   },
 
   findArtwork: function (artworkId, success, failure) {
@@ -153,6 +217,10 @@ const artworkSearchService = {
           let indexData = results[0]
           store.dispatch('userProfilesStore/fetchUserProfile', {username: indexData.owner}, {root: true})
           store.dispatch('userProfilesStore/fetchUserProfile', {username: indexData.uploader}, {root: true})
+          artworkSearchService.fetchProvenanceFile(indexData, indexData.owner, success, failure)
+          /**
+           * let blockstack do the work of reading from the users gaia storage.
+           *
           xhrService.makeDirectCall(utils.buildGaiaUrl(indexData.gaiaUrl, indexData.id))
             .then(function (provData) {
               if (provData && provData.artwork && provData.artwork[0] && provData.artwork[0].dataUrl.length > 0) {
@@ -167,6 +235,7 @@ const artworkSearchService = {
               console.log('Unable to add record: ' + indexData.id, e)
               failure({error: 1, message: 'no artworks found'})
             })
+            */
         }
       }).catch(function (e) {
         failure({error: 2, message: 'no artworks found'})
